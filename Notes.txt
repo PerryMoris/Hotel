@@ -6,7 +6,13 @@
 2. cd into the project directory 'cd Hotel' after that run this command
     'pip install -r requirements.txt'
 
-""" ACTIVITIES """
+3. lets use, username=teamhotel, and password=admin as our admin credentials,
+    please if you have an activity for anyone, please write it under the activities
+    and if you are don with your assigned activity, please delete that activity
+    from below
+
+
+***ACTIVITIES***
 Elija, please create the template for login.html, and dashboard.html
 in the login.html, the form you will create, make the method='post',
 give the Username name input a name='username', and with the password input
