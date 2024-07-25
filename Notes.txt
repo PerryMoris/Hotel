@@ -1,0 +1,13 @@
+1. first create virtual environment outside the project
+    directory such that the venv will be in th same directory
+    as the project(Hotel)
+    use 'pythom -m virtualenv venv'
+
+2. cd into the project directory 'cd Hotel' after that run this command
+    'pip install -r requirements.txt'
+
+""" ACTIVITIES """
+Elija, please create the template for login.html, and dashboard.html
+in the login.html, the form you will create, make the method='post',
+give the Username name input a name='username', and with the password input
+give it a name='password' in order to match the views.py

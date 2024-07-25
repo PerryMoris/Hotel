@@ -1,3 +1,11 @@
 from django.contrib import admin
+from .models import *
+from . import models
 
-# Register your models here.
+admin.site.register(Booked)
+admin.site.register(Client)
+admin.site.register(Category)
+admin.site.register(Rooms)
+admin.site.register(Payments)
+admin.site.register(Service_Request)
+admin.site.register(Cleaning)
