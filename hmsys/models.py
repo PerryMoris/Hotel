@@ -26,6 +26,7 @@ class Rooms (models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=False)
     number = models.CharField(max_length=255, null=True, blank=False)
     lan_line = models.CharField(max_length=255, null=True, blank=True)
+    properties = models.TextField(null=True, blank=True)
     amount = models.PositiveIntegerField(null=True, blank=False)
     occupied = models.BooleanField(default=False)
 
@@ -71,4 +72,19 @@ class Service_Request(models.Model):
         return f"{self.booked.client} - {self.requested:[70]}"
     
 class Cleaning(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='user')
+    room = models.ForeignKey(Rooms, on_delete=models.CASCADE, null=True, blank=True)
+    challenges = models.TextField(null=True, blank=True)
+    time = models.DateTimeField(null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - Room cleaned ({self.room})"
+    
+class ClientChallenges (models.Model):
+    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, verbose_name="client", null=True, blank=False)
+    challenges = models.TextField(null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"From - {self.client.get_full_name()}"
