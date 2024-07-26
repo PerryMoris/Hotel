@@ -42,4 +42,4 @@ def home(request):
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
     }
-    return render(request, 'dashboard.html', context)
+    return render(request, 'index.html', context)
