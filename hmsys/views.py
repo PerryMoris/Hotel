@@ -10,6 +10,7 @@ from django.db.models import Sum, F
 
 def login_view(request):
     if request.user.is_authenticated:
+        print("user logged in already")
         return redirect('home')
     if request.method == 'POST':
         username = request.POST['username']
@@ -17,6 +18,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            print("login successful")
             return redirect('home') 
         else:
             error_message = "Invalid login credentials. Please try again."
