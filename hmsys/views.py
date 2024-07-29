@@ -46,7 +46,7 @@ def home(request):
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
     }
-    return render(request, 'index.html', context)
+    return render(request, 'home.html', context)
 
 def roomlist (request):
         return render(request, "underconstruct.html")
