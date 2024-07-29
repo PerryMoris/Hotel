@@ -65,12 +65,12 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Staff</a>
                         <div class="dropdown-menu rounded-0 m-0">
-                            <a href="kitchen.html" class="dropdown-item">Kitchen</a>
-                            <a href="cleaners.html" class="dropdown-item">Cleaners</a>
-                            <a href="security.html" class="dropdown-item">Security</a>
+                            <a href="{% url 'kitchen' %}" class="dropdown-item">Kitchen</a>
+                            <a href="{% url 'cleaners' %}" class="dropdown-item">Cleaners</a>
+                            <a href="{% url 'security' %}" class="dropdown-item">Security</a>
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                    <a href="{% url 'contact' %}" class="nav-item nav-link">Contact</a>
                 </div>
                 <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
                         class="fa fa-arrow-right ms-3"></i></a>
