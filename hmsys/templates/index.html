@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
+{% load static %}
+
 <head>
     <meta charset="utf-8">
     <title>Hotel Management</title>
@@ -45,7 +46,7 @@
 
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-            <a href="index.html" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
+            <a href="{% url 'index' %}" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
                 <h1 class="m-0 text-primary">Admin</h1>
             </a>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -56,21 +57,21 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
                         <div class="dropdown-menu rounded-0 m-0">
-                            <a href="room-list.html" class="dropdown-item">Rooms</a>
-                            <a href="client-detail.html" class="dropdown-item">Clients</a>
+                            <a href="{% url 'room-list' %}" class="dropdown-item">Rooms</a>
+                            <a href="{% url 'client-detail' %}" class="dropdown-item">Clients</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Staff</a>
                         <div class="dropdown-menu rounded-0 m-0">
-                            <a href="kitchen.html" class="dropdown-item">Kitchen</a>
-                            <a href="cleaners.html" class="dropdown-item">Cleaners</a>
-                            <a href="security.html" class="dropdown-item">Security</a>
+                            <a href="{% url 'kitchen' %}" class="dropdown-item">Kitchen</a>
+                            <a href="{% url 'cleaners' %}" class="dropdown-item">Cleaners</a>
+                            <a href="{% url 'security' %}" class="dropdown-item">Security</a>
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                    <a href="#footer" class="nav-item nav-link">Contact</a>
                 </div>
-                <a href="logout.html" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i class="fa fa-arrow-right ms-3"></i></a>
+                <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i class="fa fa-arrow-right ms-3"></i></a>
             </div>
         </nav>
         <!-- Navbar End -->
@@ -87,8 +88,8 @@
                                 <div class="col-10 col-lg-8">
                                     <h1 class="display-3 text-white animated slideInDown mb-4">A Best Place to Stay</h1>
                                     <p class="fs-5 fw-medium text-white mb-4 pb-2">Luxury, Elegance, Quality.</p>
-                                    <a href="Book_A_Client.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
-                                    <a href="client-detail.html" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
+                                    <a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
+                                    <a href="{% url 'client-detail' %}" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +103,7 @@
                                 <div class="col-10 col-lg-8">
                                     <h1 class="display-3 text-white animated slideInDown mb-4">A Best Place to Stay</h1>
                                     <p class="fs-5 fw-medium text-white mb-4 pb-2">Luxury, Elegance, Quality.</p>
-                                    <a href="Book_A_Client.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
+                                    <a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
                                     <a href="" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
                                 </div>
                             </div>
@@ -114,7 +115,7 @@
         <!-- Carousel End -->
 
         <!-- Footer Start -->
-        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div id="footer"  container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
             <div class="container py-5">
                 <div class="row g-5">
                     <div class="col-lg-3 col-md-6">
