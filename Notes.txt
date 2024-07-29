@@ -7,7 +7,4 @@
 
 
 ***ACTIVITIES***
-Elija, please create the template for login.html, and dashboard.html
-in the login.html, the form you will create, make the method='post',
-give the Username's input a name='username', and with the password's input
-give it a name='password' in order to match the views.py
+All activities have been done
