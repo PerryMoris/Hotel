@@ -386,6 +386,10 @@
     border-right: 1px solid rgba(255, 255, 255, .1);
 }
 
+.card {
+    border: 1px solid #008000;
+}
+
 .footer .footer-menu a:last-child {
     margin-right: 0;
     padding-right: 0;

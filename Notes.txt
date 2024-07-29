@@ -16,3 +16,6 @@ total clients, and total amount
 
 you can use bootstrap to create the cards
 >>>>>>> 43cb6d319f7dcdbaad121b340d82b892bf3b02d7
+
+Staff should be changed to admin
+Contact should be 

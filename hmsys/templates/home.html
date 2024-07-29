@@ -81,13 +81,46 @@
         <div class="container-fluid p-0">
             <div class="owl-carousel header-carousel position-relative">
                 <div class="owl-carousel-item position-relative">
-                    <img class="img-fluid" src="img/carousel-1.jpg" alt="">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(43, 57, 64, .5);">
+                    <img class="img-fluid" src="{% static 'img/carousel-1.jpg' %}" alt="">
+                    <div class="position-absolute top-0 start-0 w-100 h-75 d-flex align-items-center" style="background: rgba(43, 57, 64, .5);">
                         <div class="container">
                             <div class="row justify-content-start">
                                 <div class="col-10 col-lg-8">
                                     <h1 class="display-3 text-white animated slideInDown mb-4">A Best Place to Stay</h1>
                                     <p class="fs-5 fw-medium text-white mb-4 pb-2">Luxury, Elegance, Quality.</p>
+                                    
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h2 style="text-decoration: underline;">Rooms</h2>
+                                                        <p style="color: rgb(34, 255, 0);">Total Rooms: <span id="totalBeds">100</span></p>
+                                                        <p>Available Rooms: <span id="availableBeds">75</span></p>
+                                                        <p>Occupied Rooms: <span id="occupiedBeds">25</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h2 style="text-decoration: underline;">Clients On Board</h2>
+                                                        <p><span id="clientsOnboard">50</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <h2 style="text-decoration: underline;">Room Prices</h2>
+                                                        <ul id="roomPrices">
+                                                            <li>Standard: Ghc100</li>
+                                                            <li>Deluxe: Ghc150</li>
+                                                            <li>Suite: Ghc250</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    </div>
                                     <a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
                                     <a href="{% url 'client-detail' %}" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
                                 </div>
@@ -96,13 +129,46 @@
                     </div>
                 </div>
                 <div class="owl-carousel-item position-relative">
-                    <img class="img-fluid" src="img/carousel-2.jpg" alt="">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(43, 57, 64, .5);">
+                    <img class="img-fluid" src="{% static 'img/carousel-1.jpg' %}" alt="">
+                    <div class="position-absolute top-0 start-0 w-100 h-75 d-flex align-items-center" style="background: rgba(43, 57, 64, .5);">
                         <div class="container">
                             <div class="row justify-content-start">
                                 <div class="col-10 col-lg-8">
                                     <h1 class="display-3 text-white animated slideInDown mb-4">A Best Place to Stay</h1>
                                     <p class="fs-5 fw-medium text-white mb-4 pb-2">Luxury, Elegance, Quality.</p>
+                                        
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <h2 style="text-decoration: underline; text-decoration-color: green;">Rooms</h2>
+                                                            <p style="color: rgb(89, 255, 0);">Total Rooms: <span id="totalBeds">100</span></p>
+                                                            <p>Available Rooms: <span id="availableBeds">75</span></p>
+                                                            <p>Occupied Rooms: <span id="occupiedBeds">25</span></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <h2 style="text-decoration: underline; text-decoration-color: green;">Clients Onboard</h2>
+                                                            <p><span id="clientsOnboard">50</span></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <h2 style="text-decoration: underline; text-decoration-color: green;">Room Prices</h2>
+                                                            <ul id="roomPrices">
+                                                                <li>Standard: Ghc100</li>
+                                                                <li>Deluxe: Ghc150</li>
+                                                                <li>Suite: Ghc250</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                     <a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
                                     <a href="" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
                                 </div>
@@ -115,7 +181,7 @@
         <!-- Carousel End -->
 
         <!-- Footer Start -->
-        <div id="footer"  container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div id="footer"  container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn data-wow-delay="0.1s">
             <div class="container py-5">
                 <div class="row g-5">
                     <div class="col-lg-3 col-md-6">
