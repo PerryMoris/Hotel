@@ -26,6 +26,10 @@ def login_view(request):
     
     return render(request, 'login.html')
 
+def logout_view(request):
+    logout(request)
+    return redirect('login') 
+
 @login_required(login_url="login/")
 def home(request):
     number_of_clients = Client.objects.all().count()
@@ -43,3 +47,23 @@ def home(request):
         'total_arrears': total_arrears,
     }
     return render(request, 'index.html', context)
+
+def roomlist (request):
+        return render(request, "underconstruct.html")
+
+
+def clientdetail (request):
+        return render(request, "underconstruct.html")
+
+
+def kitchen (request):
+        return render(request, "underconstruct.html")
+
+def cleaners (request):
+        return render(request, "underconstruct.html")
+
+def security (request):
+        return render(request, "underconstruct.html")
+
+def bookclient (request):
+        return render(request, "underconstruct.html")

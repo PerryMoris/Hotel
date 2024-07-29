@@ -7,4 +7,12 @@
 
 
 ***ACTIVITIES***
+<<<<<<< HEAD
 All activities have been done
+=======
+
+In the dashboard or home, create four small cards, for total beds, total available beds, 
+total clients, and total amount
+
+you can use bootstrap to create the cards
+>>>>>>> 43cb6d319f7dcdbaad121b340d82b892bf3b02d7
