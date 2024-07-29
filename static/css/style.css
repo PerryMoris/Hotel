@@ -29,7 +29,6 @@
     opacity: 1;
 }
 
-
 /*** Button ***/
 .btn {
     font-family: 'Inter', sans-serif;
@@ -267,7 +266,6 @@
 }
 
 
-/*** Job Listing ***/
 .nav-pills .nav-item .active {
     border-bottom: 2px solid var(--primary);
 }
@@ -322,6 +320,12 @@
     border-color: var(--primary);
 }
 
+.finance-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    background-color: green;
+}
 
 /*** Footer ***/
 .footer .btn.btn-social {

@@ -51,7 +51,6 @@ def home(request):
 def roomlist (request):
         return render(request, "underconstruct.html")
 
-
 def clientdetail (request):
         return render(request, "underconstruct.html")
 

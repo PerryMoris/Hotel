@@ -17,5 +17,5 @@ total clients, and total amount
 you can use bootstrap to create the cards
 >>>>>>> 43cb6d319f7dcdbaad121b340d82b892bf3b02d7
 
-Staff should be changed to admin
-Contact should be 
+Chairman, I want to put the dashboard details beneath the carousel on the homepage and see how it looks but I have also created a dashboard.html just in case its not nice
+I am struggling to put the 'Finance' in a box, centered in the middle, let look at it tomorrow God willing
