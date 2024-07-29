@@ -47,3 +47,20 @@ def home(request):
         'total_arrears': total_arrears,
     }
     return render(request, 'index.html', context)
+
+def roomlist (request):
+        return render(request, "underconstruct.html")
+
+
+def clientdetail (request):
+        return render(request, "underconstruct.html")
+
+
+def kitchen (request):
+        return render(request, "underconstruct.html")
+
+def cleaners (request):
+        return render(request, "underconstruct.html")
+
+def security (request):
+        return render(request, "underconstruct.html")
