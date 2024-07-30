@@ -78,4 +78,44 @@
         </center>
     </div>
 </div>
+
+<center>
+<a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
+<a href="{% url 'client-detail' %}" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
+</center>
+
+<div class="container">
+    <h2>Arrears</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Client</th>
+                <th scope="col">Room</th>
+                <th scope="col">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Kweku John</td>
+                <td>Standard</td>
+                <td>Ghc320</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob Adjo</td>
+                <td>Deluxe</td>
+                <td>Ghc420</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td>Larry Benson</td>
+                <td>Ordinary</td>
+                <td>Ghc540</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 {% endblock %}

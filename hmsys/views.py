@@ -64,7 +64,7 @@ def dashboard(request):
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
     }
-    return render(request, 'dashboard.html', context)
+    return render(request, 'dash2.html', context)
 
 
 def roomlist (request):
