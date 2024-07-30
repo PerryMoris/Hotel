@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    <style>
+        .sumcard{
+            margin-top: 50px;
+            margin-bottom: 20px;
+            margin-left: 10%;
+            margin-right: 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .actcard1{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 5px solid darkgreen;
+            width: 250px;
+            height: 150px;
+            background-color: aliceblue;
+        }
+        .actcard2{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 5px solid rgb(100, 0, 67);
+            width: 250px;
+            height: 150px;
+            background-color: aliceblue;
+        }
+        .actcard3{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 5px solid rgb(158, 50, 0);
+            width: 250px;
+            height: 150px;
+            background-color: aliceblue;
+        }
+        .actcard4{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 5px solid rgb(0, 150, 155);
+            width: 250px;
+            height: 150px;
+            background-color: aliceblue;
+        }
+    </style>
+{% endblock %}
+'number_of_clients': number_of_clients,
+'number_of_rooms': ,
+'available_rooms' : available_rooms,
+'total_arrears': total_arrears,
+{% block content %}
+<div class="sumcard">
+    <div class="actcard1">
+        <center style="margin-top: 30px; margin-bottom: auto;">
+            <h3>No. Of Rooms</h3>
+            <h3>{{number_of_rooms}}</h3>
+        </center>
+    </div>
+    <div class="actcard2">
+        <center style="margin-top: 30px; margin-bottom: auto;">
+            <h3>Available Rooms</h3>
+            <h3>{{available_rooms}}</h3>
+        </center>
+    </div>
+    <div class="actcard3">
+        <center style="margin-top: 30px; margin-bottom: auto;">
+            <h3>No. Of Clients</h3>
+            <h3>{{number_of_clients}}</h3>
+        </center>
+    </div>
+    <div class="actcard4">
+        <center style="margin-top: 30px; margin-bottom: auto;">
+            <h3>Total Arrears</h3>
+            <h3>{{total_arrears}}</h3>
+        </center>
+    </div>
+</div>
+{% endblock %}
