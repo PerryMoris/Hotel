@@ -86,11 +86,9 @@ def cleaners (request):
 def security (request):
         return render(request, "underconstruct.html")
 
-def bookclient (request):
-        return render(request, "bookclient.html")
 
 
-def register_and_book(request):
+def bookclient(request):
     if request.method == "POST":
         # Get client data from request.POST
         surname = request.POST.get("surname")
@@ -108,8 +106,8 @@ def register_and_book(request):
 
         # Get booking data from request.POST
         room_id = request.POST.get("room")
-        check_in = parse_date(request.POST.get("check_in"))
-        check_out = parse_date(request.POST.get("check_out"))
+        check_in = parse_date(request.POST.get("checkin"))
+        check_out = parse_date(request.POST.get("checkout"))
         amount_paid = int(request.POST.get("amount_paid"))
 
         # Fetch the room
@@ -128,15 +126,20 @@ def register_and_book(request):
             Check_in=check_in,
             Check_out=check_out
         )
-
+        room.occupied = True
+        room.save()
         # Create and save Payment
         payment = Payments.objects.create(
-            mode="Cash",  
+            mode=request.POST.get("payment_mode"),  
             booked=booked,
             amount_due=amount_due,
             amount_paid=amount_paid
         )
 
-    else:
-        return render(request, 'register_and_book.html')
+        # Redirect to a success page or render the same template with a success message
+        return render(request, "bookclient.html", {"success": True})
 
+    else:
+        # Fetch available rooms
+        rooms = Rooms.objects.filter(occupied=False)
+        return render(request, "bookclient.html", {"rooms": rooms})

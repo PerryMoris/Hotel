@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block style %}
-
+<!-- Add your styles here if needed -->
 {% endblock %}
 
 {% block content %}
@@ -13,8 +13,10 @@
         <div class="row">
             <div class="col-md-6">
                 <h2>Client Details</h2>
-                <form>
+                <form method="post" action="{% url 'Book_A_Client' %}">
+                    {% csrf_token %}
                     <div class="mb-3">
+<<<<<<< HEAD
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" name="name" placeholder="Enter full name">
                     </div>
@@ -29,60 +31,104 @@
                     <div class="mb-3">
                         <label for="address" class="form-label">Address</label>
                         <input type="text" class="form-control" name="address" placeholder="Enter your address">
+=======
+                        <label for="surname" class="form-label">Surname</label>
+                        <input type="text" class="form-control" id="surname" name="surname" placeholder="Enter your surname">
                     </div>
-                </form>
+                    <div class="mb-3">
+                        <label for="othernames" class="form-label">Othernames</label>
+                        <input type="text" class="form-control" id="othernames" name="othernames" placeholder="Enter your other names">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter your address">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile" class="form-label">Mobile</label>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="Enter your mobile number">
+>>>>>>> b27ea63fa6160be474b6de8f25e21c4c67067539
+                    </div>
             </div>
             <div class="col-md-6">
                 <h2>Room Booking</h2>
-                <form>
                     <div class="mb-3">
                         <label for="room" class="form-label">Room</label>
-                        <select class="form-select" id="room">
-                            <option value="standard">Select Room</option>
-                            <option value="standard">Standard</option>
-                            <option value="deluxe">Deluxe</option>
-                            <option value="suite">Suite</option>
+                        <select class="form-select" id="room" name="room" onchange="calculateAmountDue()">
+                            <option value="">Select Room</option>
+                            {% for room in rooms %}
+                            <option value="{{ room.id }}" data-price="{{ room.amount }}">{{ room.category }} - {{ room.number }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="room" class="form-label">Mode of Payment</label>
-                        <select class="form-select" id="room">
-                            <option value="standard">Select Mode of Payment</option>
-                            <option value="standard">Bank Transfer</option>
-                            <option value="deluxe">Cash</option>
-                            <option value="suite">MoMo</option>
+                        <label for="payment_mode" class="form-label">Mode of Payment</label>
+                        <select class="form-select" id="payment_mode" name="payment_mode">
+                            <option value="">Select Mode of Payment</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="cash">Cash</option>
+                            <option value="momo">MoMo</option>
                         </select>
                     </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                        <label for="amount" class="form-label">Amount Paid</label> 
-                        <input type="tel" class="form-control" id="address" placeholder="Enter Amount Ghc">
-                        </div>
-                        <div class="col-md-4">
-                        <label for="amount" class="form-label">Arrears</label>
-                        <input type="tel" class="form-control" id="address" placeholder="Balance Ghc">
-                        </div>
-                    </div>
+                    
                     <div class="mb-3">
                         <label for="checkin" class="form-label">Check-in</label>
-                        <input type="date" class="form-control" id="checkin">
+                        <input type="date" class="form-control" id="checkin" name="checkin" onchange="calculateAmountDue()">
                     </div>
                     <div class="mb-3">
                         <label for="checkout" class="form-label">Check-out</label>
-                        <input type="date" class="form-control" id="checkout">
+                        <input type="date" class="form-control" id="checkout" name="checkout" onchange="calculateAmountDue()">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="amount_paid" class="form-label">Amount Paid</label>
+                            <input type="tel" class="form-control" id="amount_paid" name="amount_paid" placeholder="Enter Amount Ghc" oninput="calculateArrears()">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="amount_due" class="form-label">Amount Due</label>
+                            <input type="tel" class="form-control" id="amount_due" name="amount_due" placeholder="Amount Due Ghc" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="arrears" class="form-label">Arrears</label>
+                            <input type="tel" class="form-control" id="arrears" name="arrears" placeholder="Balance Ghc" readonly>
+                        </div>
+                    </div>
+                    <div class="col-12 " style="margin-top: 10px;">
+                        <button type="submit" class="btn btn-primary">Book Client</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <center><div class="col-12">
-        <button type="submit" class="btn btn-primary">Book Client</button>
-    </div>
-    </center>
+    <script>
+        function calculateAmountDue() {
+            var checkin = document.getElementById("checkin").value;
+            var checkout = document.getElementById("checkout").value;
+            var roomSelect = document.getElementById("room");
+            var selectedRoom = roomSelect.options[roomSelect.selectedIndex];
+            var roomPrice = selectedRoom.getAttribute("data-price");
 
-</html>
+            if (checkin && checkout && roomPrice) {
+                var checkinDate = new Date(checkin);
+                var checkoutDate = new Date(checkout);
+                var timeDiff = checkoutDate - checkinDate;
+                var days = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
+                if (days > 0) {
+                    var amountDue = days * roomPrice;
+                    document.getElementById("amount_due").value = amountDue;
+                    calculateArrears();
+                }
+            }
+        }
+
+        function calculateArrears() {
+            var amountPaid = parseFloat(document.getElementById("amount_paid").value) || 0;
+            var amountDue = parseFloat(document.getElementById("amount_due").value) || 0;
+            var arrears = amountDue - amountPaid;
+            document.getElementById("arrears").value = arrears > 0 ? arrears : 0;
+        }
+    </script>
+</body>
 
 {% endblock %}
-    
