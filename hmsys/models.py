@@ -58,6 +58,10 @@ class Payments(models.Model):
             self.fully_paid = False
         super().save(*args, **kwargs)
 
+    def arrears(self):
+        arrea = self.amount_due - self.amount_paid
+        return arrea if arrea > 0 else 0
+
     def __str__(self):
         return f"{self.booked} - {self.amount_paid}"
 
