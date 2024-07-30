@@ -52,7 +52,8 @@ def home(request):
 def dashboard(request):
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
-    available_rooms = Rooms.objects.filter(occupied = False)
+    available_rooms = Rooms.objects.filter(occupied = False).count()
+    arrears_clients = Payments.objects.filter(fully_paid = False)
     total_arrears = Payments.objects.aggregate(
         total_arrears=Sum(F('amount_due') - F('amount_paid'))
         )['total_arrears']
@@ -63,6 +64,7 @@ def dashboard(request):
         'number_of_rooms': number_of_rooms,
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
+        'arrears_clients': arrears_clients,
     }
     return render(request, 'dash2.html', context)
 
