@@ -71,7 +71,7 @@ def dashboard(request):
 
 
 def roomlist (request):
-        return render(request, "underconstruct.html")
+        return render(request, "room-list.html")
 
 def clientdetail (request):
         return render(request, "underconstruct.html")
