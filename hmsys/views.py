@@ -87,3 +87,60 @@ def security (request):
 
 def bookclient (request):
         return render(request, "underconstruct.html")
+
+from django.shortcuts import render, redirect
+from django.utils.dateparse import parse_date
+from django.http import HttpResponse
+from datetime import datetime
+from .models import Client, Rooms, Booked, Payments
+
+def register_and_book(request):
+    if request.method == "POST":
+        # Get client data from request.POST
+        surname = request.POST.get("surname")
+        othernames = request.POST.get("othernames")
+        address = request.POST.get("address")
+        mobile = request.POST.get("mobile")
+        
+        # Create and save Client
+        client = Client.objects.create(
+            surname=surname,
+            othernames=othernames,
+            address=address,
+            mobile=mobile
+        )
+
+        # Get booking data from request.POST
+        room_id = request.POST.get("room")
+        check_in = parse_date(request.POST.get("check_in"))
+        check_out = parse_date(request.POST.get("check_out"))
+        amount_paid = int(request.POST.get("amount_paid"))
+
+        # Fetch the room
+        room = Rooms.objects.get(id=room_id)
+
+        # Calculate the number of days
+        days = (check_out - check_in).days if check_out else 1
+
+        # Calculate the amount due
+        amount_due = days * room.amount
+
+        # Create and save Booked
+        booked = Booked.objects.create(
+            client=client,
+            room=room,
+            Check_in=check_in,
+            Check_out=check_out
+        )
+
+        # Create and save Payment
+        payment = Payments.objects.create(
+            mode="Cash",  
+            booked=booked,
+            amount_due=amount_due,
+            amount_paid=amount_paid
+        )
+
+    else:
+        return render(request, 'register_and_book.html')
+
