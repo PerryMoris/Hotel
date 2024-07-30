@@ -48,6 +48,25 @@ def home(request):
     }
     return render(request, 'home.html', context)
 
+@login_required(login_url="login/")
+def dashboard(request):
+    number_of_clients = Client.objects.all().count()
+    number_of_rooms = Rooms.objects.all().count()
+    available_rooms = Rooms.objects.filter(occupied = False)
+    total_arrears = Payments.objects.aggregate(
+        total_arrears=Sum(F('amount_due') - F('amount_paid'))
+        )['total_arrears']
+    total_arrears = total_arrears if total_arrears else 0
+
+    context ={
+        'number_of_clients': number_of_clients,
+        'number_of_rooms': number_of_rooms,
+        'available_rooms' : available_rooms,
+        'total_arrears': total_arrears,
+    }
+    return render(request, 'dashboard.html', context)
+
+
 def roomlist (request):
         return render(request, "underconstruct.html")
 

@@ -12,5 +12,6 @@ urlpatterns = [
   path("security", views.security, name="security" ),
   path("bookclient", views.bookclient, name="Book_A_Client" ),
   path("security", views.security, name="security" ),
+  path("dashboard", views.dashboard, name="dashboard" ),
 ]
 
