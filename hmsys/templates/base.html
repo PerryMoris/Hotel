@@ -51,7 +51,7 @@
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
             <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-                <h1 class="m-0 text-primary">Admin</h1>
+                <h1 class="m-0 text-primary">HMS</h1>
             </a>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse"
                 data-bs-target="#navbarCollapse">
@@ -59,6 +59,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
                         <div class="dropdown-menu rounded-0 m-0">
@@ -72,9 +73,10 @@
                             <a href="{% url 'kitchen' %}" class="dropdown-item">Kitchen</a>
                             <a href="{% url 'cleaners' %}" class="dropdown-item">Cleaners</a>
                             <a href="{% url 'security' %}" class="dropdown-item">Security</a>
+                            <a href="{% url 'admin:index' %}" class="dropdown-item" target="_blank">Admin Page</a>
                         </div>
                     </div>
-                    <a href="#footer" class="nav-item nav-link">Contact</a>
+                    <a href="#footer" class="nav-item nav-link">Complains</a>
                 </div>
                 <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
                         class="fa fa-arrow-right ms-3"></i></a>

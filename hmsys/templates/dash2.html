@@ -47,10 +47,7 @@
         }
     </style>
 {% endblock %}
-'number_of_clients': number_of_clients,
-'number_of_rooms': ,
-'available_rooms' : available_rooms,
-'total_arrears': total_arrears,
+
 {% block content %}
 <div class="sumcard">
     <div class="actcard1">
@@ -96,24 +93,15 @@
             </tr>
         </thead>
         <tbody>
+            {% for x in arrears_clients %}
             <tr>
                 <th scope="row">1</th>
-                <td>Kweku John</td>
-                <td>Standard</td>
-                <td>Ghc320</td>
+                <td>{{x.booked.client.get_full_name}}</td>
+                <td>{{x.booked.room}}</td>
+                <td>{{x.arrears}}</td>
             </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob Adjo</td>
-                <td>Deluxe</td>
-                <td>Ghc420</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Larry Benson</td>
-                <td>Ordinary</td>
-                <td>Ghc540</td>
-            </tr>
+            
+            {% endfor %}
         </tbody>
     </table>
 </div>
