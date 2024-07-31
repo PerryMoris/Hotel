@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, date
 from django.db.models import Sum, F
 from django.utils.dateparse import parse_date
 from django.http import JsonResponse
+from .forms import *
 
 def check_user_exists(request):
     mobile = request.GET.get('mobile', None)
@@ -76,17 +77,34 @@ def dashboard(request):
     return render(request, 'dash2.html', context)
 
 
-def roomlist (request):
-        allrooms = Rooms.objects.all()
-        booked = Rooms.objects.filter(occupied=True)
-        unavailable = Rooms.objects.filter(occupied=False)
 
-        context ={
-             'allrooms': allrooms,
-             'booked':booked,
-             'unavailable':unavailable,
-        }
-        return render(request, "room-list.html", context)
+def roomlist(request):
+    category_id = request.GET.get('category')
+    if category_id:
+        allrooms = Rooms.objects.filter(category_id=category_id)
+    else:
+        allrooms = Rooms.objects.all()
+    
+    booked = allrooms.filter(occupied=True)
+    available = allrooms.filter(occupied=False)
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        form = RoomForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('room-list')
+    else:
+        form = RoomForm()
+
+    context = {
+        'allrooms': allrooms,
+        'booked': booked,
+        'available': available,
+        'categories': categories,
+        'form': form,
+    }
+    return render(request, "room-list.html", context)
 
 def clientdetail (request):
         return render(request, "underconstruct.html")
