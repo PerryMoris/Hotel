@@ -2,6 +2,12 @@
 {% load static %}
 
 {% block style %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'package/dist/sweetalert2.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/sweetalert2.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'fontawesome/css/all.css' %}">
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <style>
         .sumcard{
             margin-top: 50px;
@@ -88,19 +94,19 @@
 
 <div class="container">
     <h2>Arrears</h2>
-    <table class="table">
+    <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Client</th>
-                <th scope="col">Room</th>
-                <th scope="col">Arrears</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Arrears</th>
             </tr>
         </thead>
         <tbody>
             {% for x in arrears_clients %}
             <tr>
-                <th scope="row">1</th>
+                <th scope="row">{{x.id}}</th>
                 <td>{{x.booked.client.get_full_name}}</td>
                 <td>{{x.booked.room}}</td>
                 <td>{{x.arrears}}</td>
@@ -112,3 +118,48 @@
 </div>
 
 {% endblock %}
+{% block js %}
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'js/buttons.print.min.js' %}"></script>
+<script src="{% static 'js/jszip.min.js' %}"></script>
+<script src="{% static 'js/pdfmake.min.js' %}"></script>
+<script src="{% static 'js/vfs_fonts.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-success'
+                }
+            ]
+        });
+    });
+</script>
+
+    {% endblock %}
