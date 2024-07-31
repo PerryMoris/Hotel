@@ -87,23 +87,48 @@
 
     <script>
         document.getElementById('mobile').addEventListener('input', function() {
-            var mobileNumber = this.value;
-        
-            if (mobileNumber) {
-                fetch(`/check-user-exists/?mobile=${mobileNumber}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        var message = document.getElementById('message');
-                        if (data.exists) {
-                            message.textContent = "User already exists";
-                            message.style.color = "green";
-                        } else {
-                            message.textContent = "User doesn't exist";
-                            message.style.color = "blue";
-                        }
-                    });
-            }
-        });
+        var mobileNumber = this.value;
+
+        if (mobileNumber) {
+            fetch(`/check-user-exists/?mobile=${mobileNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    var message = document.getElementById('message');
+                    var surname = document.getElementById('surname');
+                    var othernames = document.getElementById('othernames');
+                    var address = document.getElementById('address');
+
+                    if (data.exists) {
+                        message.textContent = "User already exists";
+                        message.style.color = "green";
+
+                        // Disable the fields
+                        surname.disabled = true;
+                        othernames.disabled = true;
+                        address.disabled = true;
+
+                        // Remove the required attribute
+                        surname.required = false;
+                        othernames.required = false;
+                        address.required = false;
+                    } else {
+                        message.textContent = "User doesn't exist";
+                        message.style.color = "blue";
+
+                        // Enable the fields
+                        surname.disabled = false;
+                        othernames.disabled = false;
+                        address.disabled = false;
+
+                        // Add the required attribute
+                        surname.required = true;
+                        othernames.required = true;
+                        address.required = true;
+                    }
+                });
+        }
+    });
+
         </script>
         
 
