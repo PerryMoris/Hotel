@@ -29,6 +29,7 @@ class Rooms (models.Model):
     properties = models.TextField(null=True, blank=True)
     amount = models.PositiveIntegerField(null=True, blank=False)
     occupied = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='room_images/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.category} - {self.number}"
@@ -39,6 +40,7 @@ class Booked (models.Model):
     Check_in = models.DateTimeField(null=True, blank=False)
     Check_out = models.DateTimeField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self):
         return f"{self.client.get_full_name()} - {self.room}"
@@ -50,6 +52,7 @@ class Payments(models.Model):
     amount_paid = models.PositiveIntegerField(null=True, blank=True)
     fully_paid = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if self.amount_due == self.amount_paid:

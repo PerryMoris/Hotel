@@ -71,7 +71,16 @@ def dashboard(request):
 
 
 def roomlist (request):
-        return render(request, "room-list.html")
+        allrooms = Rooms.objects.all()
+        booked = Rooms.objects.filter(occupied=True)
+        unavailable = Rooms.objects.filter(occupied=False)
+
+        context ={
+             'allrooms': allrooms,
+             'booked':booked,
+             'unavailable':unavailable,
+        }
+        return render(request, "room-list.html", context)
 
 def clientdetail (request):
         return render(request, "underconstruct.html")
