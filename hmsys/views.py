@@ -7,6 +7,12 @@ from . models import *
 from datetime import datetime, timedelta, date
 from django.db.models import Sum, F
 from django.utils.dateparse import parse_date
+from django.http import JsonResponse
+
+def check_user_exists(request):
+    mobile = request.GET.get('mobile', None)
+    exists = Client.objects.filter(mobile=mobile).exists()
+    return JsonResponse({'exists': exists})
 
 
 def login_view(request):
@@ -71,7 +77,16 @@ def dashboard(request):
 
 
 def roomlist (request):
-        return render(request, "room-list.html")
+        allrooms = Rooms.objects.all()
+        booked = Rooms.objects.filter(occupied=True)
+        unavailable = Rooms.objects.filter(occupied=False)
+
+        context ={
+             'allrooms': allrooms,
+             'booked':booked,
+             'unavailable':unavailable,
+        }
+        return render(request, "room-list.html", context)
 
 def clientdetail (request):
         return render(request, "underconstruct.html")
@@ -90,19 +105,20 @@ def security (request):
 
 def bookclient(request):
     if request.method == "POST":
-        # Get client data from request.POST
         surname = request.POST.get("surname")
         othernames = request.POST.get("othernames")
         address = request.POST.get("address")
         mobile = request.POST.get("mobile")
         
-        # Create and save Client
-        client = Client.objects.create(
-            surname=surname,
-            othernames=othernames,
-            address=address,
-            mobile=mobile
-        )
+        try:
+            client = Client.objects.get(mobile=mobile)
+        except Client.DoesNotExist:
+            client = Client.objects.create(
+                surname=surname,
+                othernames=othernames,
+                address=address,
+                mobile=mobile
+            )
 
         # Get booking data from request.POST
         room_id = request.POST.get("room")
