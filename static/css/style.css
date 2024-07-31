@@ -320,12 +320,6 @@
     border-color: var(--primary);
 }
 
-.finance-box {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 30px;
-    background-color: green;
-}
 
 /*** Footer ***/
 .footer .btn.btn-social {
