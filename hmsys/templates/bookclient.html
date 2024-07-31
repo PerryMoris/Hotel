@@ -78,7 +78,7 @@
                         </div>
                     </div>
                     <div class="col-12 " style="margin-top: 10px;">
-                        <button type="submit" class="btn btn-primary">Book Client</button>
+                        <button id="sub" type="submit" class="btn btn-primary">Book Client</button>
                     </div>
                 </form>
             </div>
@@ -97,6 +97,7 @@
                     var surname = document.getElementById('surname');
                     var othernames = document.getElementById('othernames');
                     var address = document.getElementById('address');
+                    var sub = document.getElementById('sub')
 
                     if (data.exists) {
                         message.textContent = "User already exists";
@@ -106,6 +107,7 @@
                         surname.disabled = true;
                         othernames.disabled = true;
                         address.disabled = true;
+                        sub.textContent = "Re-book Client"
 
                         // Remove the required attribute
                         surname.required = false;
@@ -119,6 +121,7 @@
                         surname.disabled = false;
                         othernames.disabled = false;
                         address.disabled = false;
+                        sub.textContent = "Book Client"
 
                         // Add the required attribute
                         surname.required = true;
