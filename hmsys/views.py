@@ -107,7 +107,7 @@ def roomlist(request):
     return render(request, "room-list.html", context)
 
 def clientdetail (request):
-        return render(request, "underconstruct.html")
+        return render(request, "client-detail.html")
 
 
 def kitchen (request):
