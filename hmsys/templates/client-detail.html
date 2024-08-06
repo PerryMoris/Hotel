@@ -2,6 +2,23 @@
 {% load static %}
 {% load humanize %}
 {% block style %}
+<style>
+    .badgee {
+        
+  
+  color: white;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 50%;
+
+}
+.succ {
+    background-color: rgb(10, 59, 0);
+}
+.err{
+    background-color: red;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -52,9 +69,9 @@
                 <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
                     
                     <li class="nav-item">
-                        <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-1">
                             <h6 class="mt-n1 mb-0">Clients Checked Out <span
-                                style="padding: 2px 5px;  color: white; border-radius: 50%; background-color:rgb(18, 87, 18)">
+                                class="badgee succ">
                                 {{cbookedc}}</span>
                             </h6>
                         </a>
@@ -63,7 +80,7 @@
                         <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill"
                             href="#tab-3">
                             <h6 class="mt-n1 mb-0">On Board <badge
-                                    style="padding: 2px 5px; color: white; border-radius: 50%; background-color:brown">
+                                class="badgee err">
                                     {{bookedc}}</badge>
                             </h6>
                         </a>
