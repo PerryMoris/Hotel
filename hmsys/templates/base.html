@@ -82,6 +82,7 @@
                         </div>
                     </div>
                     <a href="#footer" class="nav-item nav-link">Complains</a>
+                    <button style="border: none;" id="fullscreenButton"><i class="fas fa-expand"></i></button>
                 </div>
                 <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
                         class="fa fa-arrow-right ms-3"></i></a>
@@ -101,7 +102,40 @@
 <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
 <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('fullscreenButton').addEventListener('click', function() {
+    if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+            document.documentElement.msRequestFullscreen();
+        }
+        document.getElementById('fullscreenIcon').src = 'exit-fullscreen-icon.png'; // Change to exit fullscreen icon
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari, and Opera
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+        }
+        document.getElementById('fullscreenIcon').src = 'fullscreen-icon.png'; // Change back to fullscreen icon
+    }
+});
 
+document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement) {
+        document.getElementById('fullscreenIcon').src = 'fullscreen-icon.png'; // Ensure icon changes back when exiting fullscreen
+    }
+});
+
+</script>
 {% block js %}
 {% endblock %}
 <!-- Template Javascript -->
