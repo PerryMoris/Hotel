@@ -9,6 +9,26 @@
 
 <br>
 <body>
+    {% if error %}
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "Client is already booked in an occupied room."
+    });
+</script>
+{% endif %}
+
+{% if success %}
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Client booked successfully!'
+    });
+</script>
+{% endif %}
+
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -164,6 +184,8 @@
             document.getElementById("arrears").value = arrears > 0 ? arrears : 0;
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 </body>
 
 {% endblock %}

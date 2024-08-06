@@ -5,288 +5,184 @@
 {% endblock %}
 
 {% block content %}
-        <!-- Jobs Start -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Booked Clients</h1>
-                <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
-                    <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
-                        <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill"
-                                href="#tab-1">
-                                <h6 class="mt-n1 mb-0">Clients Checked Out</h6>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill"
-                                href="#tab-2">
-                                <h6 class="mt-n1 mb-0">Checking Out Soon</h6>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill"
-                                href="#tab-3">
-                                <h6 class="mt-n1 mb-0">On Board</h6>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div id="tab-1" class="tab-pane fade show p-0 active">
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                            alt="" style="width: 80px; height: 80px;">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">Room 103</h5>
-                                            <h5 class="mb-3">Elijah Acquah</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                            <span class="text-truncate me-3"><i
-                                                    class="far fa-clock text-primary me-2"></i>Full
-                                                Time</span>
-                                            <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Send an Email</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="Book_A_Client.html">Re-Book Client</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                            alt="" style="width: 80px; height: 80px;">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">Room 101</h5>
-                                            <h5 class="mb-3">Elijah Acquah</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                            <span class="text-truncate me-3"><i
-                                                    class="far fa-clock text-primary me-2"></i>Full
-                                                Time</span>
-                                            <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Send an Email</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="Book_A_Client.html">Re-Book Client</a>
-                                        </div>
+<!-- Jobs Start -->
+<div class="container">
+    <div class="row" style="margin-top: 30px;">
+        <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Booked Clients</h1>
+        <div><a href="{% url 'Book_A_Client' %}" class="btn btn-success">Book A Client</a>
+</div><hr><br>
+        <div class="col-7">
+            <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
+                <thead>
+                    <tr>
+                        <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
+                        <th scope="col" style=" font-weight: bolder; font-size: large;">Name</th>
+                        <th scope="col" style=" font-weight: bolder; font-size: large;">Address</th>
+                        <th scope="col" style=" font-weight: bolder; font-size: large;">Mobile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in clients %}
+                    <tr>
+                        <th scope="row">{{x.id}}</th>
+                        <td>{{x.get_full_name}}</td>
+                        <td>{{x.address}}</td>
+                        <td>{{x.mobile}}</td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class="col-5">
+            <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
+                <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+                    
+                    <li class="nav-item">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+                            <h6 class="mt-n1 mb-0">Clients Checked Out<badge
+                                style="padding: 2px 5px; color: white; border-radius: 50%; background-color:rgb(18, 87, 18)">
+                                {{cbookedc}}</badge>
+                            </h6>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill"
+                            href="#tab-3">
+                            <h6 class="mt-n1 mb-0">On Board <badge
+                                    style="padding: 2px 5px; color: white; border-radius: 50%; background-color:brown">
+                                    {{bookedc}}</badge>
+                            </h6>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <!-- for tab 1 -->
+                    <div id="tab-1" class="tab-pane fade show p-0 active">
+                        {% for xx in cbooked %}
+                        <div class="job-item p-4 mb-4">
+                            <div class="row g-4">
+                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                    <div class="text-start ps-4">
+                                        <h5 class="mb-3">{{xx.client.get_full_name}}</h5>
+                                    
+                                        <span class="text-truncate me-3"><i
+                                                class="fa fa-phone-alt text-primary me-2"></i>
+                                            {{xx.client.mobile}}</span>
+                                        
+                                        
                                     </div>
                                 </div>
-                            </div>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                            alt="" style="width: 80px; height: 80px;">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">Room 104</h5>
-                                            <h5 class="mb-3">Elijah Acquah</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                            <span class="text-truncate me-3"><i
-                                                    class="far fa-clock text-primary me-2"></i>Full
-                                                Time</span>
-                                            <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                        </div>
+                                <div
+                                    class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                    <div class="d-flex mb-3">
+                                        <a class="btn btn-primary" href="">Call</a>
                                     </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Send an Email</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="Book_A_Client.html">Re-Book Client</a>
-                                        </div>
+                                    <div class="d-flex mb-3">
+                                        <a class="btn btn-primary" href="" onclick="copyAndNavigate('{{ xx.client.mobile }}', 'Book_A_Client')">Re-Book</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="tab-2" class="tab-pane fade show p-0">
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                            alt="" style="width: 80px; height: 80px;">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">Room 101</h5>
-                                            <h5 class="mb-3">Elijah Acquah</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                            <span class="text-truncate me-3"><i
-                                                    class="far fa-clock text-primary me-2"></i>Full
-                                                Time</span>
-                                            <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Send an Email</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Check Client Out</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                            alt="" style="width: 80px; height: 80px;">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">Room 101</h5>
-                                            <h5 class="mb-3">Elijah Acquah</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                            <span class="text-truncate me-3"><i
-                                                    class="far fa-clock text-primary me-2"></i>Full
-                                                Time</span>
-                                            <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Send an Email</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Check Client Out</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                            alt="" style="width: 80px; height: 80px;">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">Room 101</h5>
-                                            <h5 class="mb-3">Elijah Acquah</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                            <span class="text-truncate me-3"><i
-                                                    class="far fa-clock text-primary me-2"></i>Full
-                                                Time</span>
-                                            <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Send an Email</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="">Check Client Out</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        {% endfor %}
+                    </div>
 
-                            <div id="tab-3" class="tab-pane fade show p-0">
-                                <div class="job-item p-4 mb-4">
-                                    <div class="row g-4">
-                                        <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                            <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                                alt="" style="width: 80px; height: 80px;">
-                                            <div class="text-start ps-4">
-                                                <h5 class="mb-3">Room 101</h5>
-                                                <h5 class="mb-3">Elijah Acquah</h5>
-                                                <span class="text-truncate me-3"><i
-                                                        class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                                <span class="text-truncate me-3"><i
-                                                        class="far fa-clock text-primary me-2"></i>Full
-                                                    Time</span>
-                                                <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                            <div class="d-flex mb-3">
-                                                <a class="btn btn-primary" href="">Send an Email</a>
-                                            </div>
-                                            <div class="d-flex mb-3">
-                                                <a class="btn btn-primary" href="">Check Client Out</a>
-                                            </div>
+
+                        <!-- this for tab 3 -->
+                        <div id="tab-3" class="tab-pane fade show p-0">
+                            {% for x in booked %}
+                            <div class="job-item p-4 mb-4">
+                                <div class="row g-4">
+                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
+
+                                        <div class="text-start ps-4">
+                                            <h5 class="mb-3">{{x.client.get_full_name}}</h5>
+                                            <h5 class="mb-3">Room {{x.room}}</h5>
+                                            <span class="text-truncate me-3"><i
+                                                    class="fa fa-phone-alt text-primary me-2"></i>
+                                                {{x.client.mobile}}</span>
+
+                                            <small class="text-truncate"><i
+                                                    class="far fa-calendar-alt text-primary me-2"></i>Check-out
+                                                {{x.Check_out}} </small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="job-item p-4 mb-4">
-                                    <div class="row g-4">
-                                        <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                            <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                                alt="" style="width: 80px; height: 80px;">
-                                            <div class="text-start ps-4">
-                                                <h5 class="mb-3">Room 101</h5>
-                                                <h5 class="mb-3">Elijah Acquah</h5>
-                                                <span class="text-truncate me-3"><i
-                                                        class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                                <span class="text-truncate me-3"><i
-                                                        class="far fa-clock text-primary me-2"></i>Full
-                                                    Time</span>
-                                                <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                            </div>
+                                    <div
+                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                        <div class="d-flex mb-3">
+                                            <a class="btn btn-primary" href="{{x.client.mobile}}">call</a>
                                         </div>
-                                        <div
-                                            class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                            <div class="d-flex mb-3">
-                                                <a class="btn btn-primary" href="">Send an Email</a>
-                                            </div>
-                                            <div class="d-flex mb-3">
-                                                <a class="btn btn-primary" href="">Check Client Out</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="job-item p-4 mb-4">
-                                    <div class="row g-4">
-                                        <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                            <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg"
-                                                alt="" style="width: 80px; height: 80px;">
-                                            <div class="text-start ps-4">
-                                                <h5 class="mb-3">Room 101</h5>
-                                                <h5 class="mb-3">Elijah Acquah</h5>
-                                                <span class="text-truncate me-3"><i
-                                                        class="fa fa-phone-alt text-primary me-2"></i> 0541569972</span>
-                                                <span class="text-truncate me-3"><i
-                                                        class="far fa-clock text-primary me-2"></i>Full
-                                                    Time</span>
-                                                <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Check-out Date: 01 Jan, 2045</small>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                            <div class="d-flex mb-3">
-                                                <a class="btn btn-primary" href="">Send an Email</a>
-                                            </div>
-                                            <div class="d-flex mb-3">
-                                                <a class="btn btn-primary" href="">Check Client Out</a>
-                                            </div>
+                                        <div class="d-flex mb-3">
+                                            <a class="btn btn-primary" href="{% url 'checkout' idd=x.client.id %}">Check-Out</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Jobs End -->
+
+        </div>
+    </div>
+</div>
+<!-- Jobs End -->
 
 
 {% endblock %}
-
-</html>
+{% block js %}
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'js/buttons.print.min.js' %}"></script>
+<script src="{% static 'js/jszip.min.js' %}"></script>
+<script src="{% static 'js/pdfmake.min.js' %}"></script>
+<script src="{% static 'js/vfs_fonts.js' %}"></script>
+<script>
+    function copyAndNavigate(number, url) {
+        navigator.clipboard.writeText(number).then(function() {
+            window.location.href = url;
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#arrearTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-success'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-success'
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

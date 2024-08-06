@@ -9,10 +9,10 @@
 <div class="container">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <h2><a class="nav-link active" aria-current="page" href="">All Rooms</a></h2>
+            <p><a class="nav-link active" aria-current="page" href="">All Rooms</a></p>
         </li>
         <div class="nav-item dropdown">
-            <p class="nav-link dropdown-toggle" style="font-size: 30px;" data-bs-toggle="dropdown" type="button">Categories</p>
+            <p class="nav-link dropdown-toggle"  data-bs-toggle="dropdown" type="button">Categories</p>
             <div class="dropdown-menu rounded-0 m-0">
                 <form id="category-form" method="get">
                     {% for x in categories %}
@@ -21,7 +21,7 @@
                 </form>
             </div>
         </div>
-        <button type="button" class="btn btn-primary" style="font-size: 20px;" data-bs-toggle="modal" data-bs-target="#addnewroom">
+        <button type="button" class="btn btn-primary" style="height: 40px;" data-bs-toggle="modal" data-bs-target="#addnewroom">
             Add New Room
         </button>
     </ul>

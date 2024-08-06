@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from .forms import *
 from django.contrib.auth.decorators import login_required
@@ -107,7 +107,19 @@ def roomlist(request):
     return render(request, "room-list.html", context)
 
 def clientdetail (request):
-        return render(request, "client-detail.html")
+        clients = Client.objects.all()
+        booked = Booked.objects.filter(room__occupied=True)
+        bookedc = Booked.objects.filter(room__occupied=True).count()
+        cbooked = Booked.objects.filter(room__occupied=False)
+        cbookedc = Booked.objects.filter(room__occupied=False).count()
+        context ={
+             'clients': clients,
+             'booked' : booked,
+             'bookedc' : bookedc,
+             'cbooked' : cbooked,
+             'cbookedc' : cbookedc,
+        }
+        return render(request, "client-detail.html", context)
 
 
 def kitchen (request):
@@ -127,7 +139,7 @@ def bookclient(request):
         othernames = request.POST.get("othernames")
         address = request.POST.get("address")
         mobile = request.POST.get("mobile")
-        
+
         try:
             client = Client.objects.get(mobile=mobile)
         except Client.DoesNotExist:
@@ -137,6 +149,13 @@ def bookclient(request):
                 address=address,
                 mobile=mobile
             )
+
+        # Check if the client is already booked in any occupied room
+        booked_rooms = Booked.objects.filter(client=client, room__occupied=True)
+        if booked_rooms.exists():
+            return render(request, "bookclient.html", {
+                "error": True
+            })
 
         # Get booking data from request.POST
         room_id = request.POST.get("room")
@@ -162,6 +181,7 @@ def bookclient(request):
         )
         room.occupied = True
         room.save()
+
         # Create and save Payment
         payment = Payments.objects.create(
             mode=request.POST.get("payment_mode"),  
@@ -177,3 +197,18 @@ def bookclient(request):
         # Fetch available rooms
         rooms = Rooms.objects.filter(occupied=False)
         return render(request, "bookclient.html", {"rooms": rooms})
+
+def checkout(request, idd):
+    client = Client.objects.get(id=idd)
+    bookings = Booked.objects.filter(client=client, room__occupied=True)
+    
+    # Check if any related payments are fully paid
+    for booking in bookings:
+        payments = Payments.objects.filter(booked=booking)
+        for payment in payments:
+            if not payment.fully_paid:
+                return HttpResponse("Payment not fully completed. Cannot check out.")
+
+    # Proceed with checkout if all payments are fully paid
+    bookings.update(room__occupied=False)
+    return HttpResponse("Checked out successfully.")

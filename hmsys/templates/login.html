@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+
 <head>
     <meta charset="utf-8">
     <title>Hotel Management</title>
@@ -30,7 +31,15 @@
 
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
+    <style>
+        .logcard {
+            box-shadow: 0 0 3px darkgreen;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -49,7 +58,8 @@
             <a href="#" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
                 <h1 class="m-0 text-primary">Hotel Management</h1>
             </a>
-            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -60,23 +70,32 @@
         </nav>
         <!-- Navbar End -->
 
-        <div class="" style="height: 100vh;">
+        <div style="height: 100vh;">
             <br>
-            <center><h4 class="mb-4" style="margin-top: 7%;">Staff Log In</h4></center>
+            <center>
+                <h4 class="mb-4" style="margin-top: 7%;">Staff Log In</h4>
+            </center>
             <form method="post">
                 {% csrf_token %}
-                <div class="row g-3" style="display: flex;  margin-bottom: 60px; flex-direction: column; gap: 10px; justify-content: center; align-items: center;">
+                <div class="row g-3"
+                    style="display: flex;  margin-bottom: 60px; flex-direction: column; gap: 10px; justify-content: center; align-items: center;">
                     <div class="col-12 col-sm-6">
                         <input name="username" type="text" class="form-control" placeholder="Staff Username" required>
                     </div>
                     <div class="col-12 col-sm-6">
-                        <input name="password" type="password" class="form-control" placeholder="Staff Password" required>
+                        <input name="password" type="password" class="form-control" placeholder="Staff Password"
+                            required>
                     </div>
                     <div class="col-12">
-                       <center> <button class="btn btn-primary" style="width: 50%;" type="submit">Log In</button></center>
+                        <center> <button class="btn btn-primary" style="width: 50%;" type="submit">Log In</button>
+                        </center>
                     </div>
+
+
                 </div>
             </form>
+
+
 
 
             <!-- Back to Top -->
