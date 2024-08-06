@@ -9,6 +9,7 @@ from django.db.models import Sum, F
 from django.utils.dateparse import parse_date
 from django.http import JsonResponse
 from .forms import *
+from django.contrib import messages
 
 def check_user_exists(request):
     mobile = request.GET.get('mobile', None)
@@ -108,10 +109,17 @@ def roomlist(request):
 
 def clientdetail (request):
         clients = Client.objects.all()
-        booked = Booked.objects.filter(room__occupied=True)
-        bookedc = Booked.objects.filter(room__occupied=True).count()
-        cbooked = Booked.objects.filter(room__occupied=False)
-        cbookedc = Booked.objects.filter(room__occupied=False).count()
+        booked = Booked.objects.filter(room__occupied=True, out=False)
+        bookedc = booked.count()
+        
+
+        cdistinct_clients_ids = Booked.objects.filter(room__occupied=False).values_list('client', flat=True).distinct()
+    
+        # Get actual client objects
+        cbooked = Client.objects.filter(id__in=cdistinct_clients_ids)
+        cbookedc = cbooked.count()
+        
+
         context ={
              'clients': clients,
              'booked' : booked,
@@ -198,17 +206,24 @@ def bookclient(request):
         rooms = Rooms.objects.filter(occupied=False)
         return render(request, "bookclient.html", {"rooms": rooms})
 
+
 def checkout(request, idd):
     client = Client.objects.get(id=idd)
     bookings = Booked.objects.filter(client=client, room__occupied=True)
-    
-    # Check if any related payments are fully paid
+ 
     for booking in bookings:
         payments = Payments.objects.filter(booked=booking)
         for payment in payments:
             if not payment.fully_paid:
-                return HttpResponse("Payment not fully completed. Cannot check out.")
-
-    # Proceed with checkout if all payments are fully paid
-    bookings.update(room__occupied=False)
-    return HttpResponse("Checked out successfully.")
+                messages.error(request, "Payment not fully completed. Cannot check out.")
+                return redirect("client-detail")
+        else:
+            r = Rooms.objects.get(id=booking.room.id)
+            r.occupied= False
+            r.save()
+            rr = booking
+            rr.out = True
+            rr.save()
+            messages.success(request, "Checked out successfully.")
+            return redirect("client-detail")
+   
