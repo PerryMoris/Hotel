@@ -5,7 +5,7 @@ from .forms import *
 from django.contrib.auth.decorators import login_required
 from . models import *
 from datetime import datetime, timedelta, date
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Q
 from django.utils.dateparse import parse_date
 from django.http import JsonResponse
 from .forms import *
@@ -231,67 +231,42 @@ def checkout(request, idd):
    
 
 
+# @login_required(login_url="login/")
+# def manage_payments(request):
+#     clients = []
+#     arrears_payments = Payments.objects.filter(amount_due__gt=F('amount_paid'))
+#     for x in arrears_payments:
+#          clients.append(x.booked.client)
+#     context = {
+#         'clients': clients
+#     }
+#     return render(request, 'manage_payments.html', context)
+
 @login_required(login_url="login/")
 def manage_payments(request):
-    arrears_data = None
-    if request.method == 'POST':
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            client_id = form.cleaned_data['client']
-            amount_paid = form.cleaned_data['amount_paid']
-            payment_mode = form.cleaned_data['mode']
+    # Get clients with arrears
+    clients_with_arrears = Client.objects.annotate(
+        total_arrears=Sum(
+            F('booked__payments__amount_due') - F('booked__payments__amount_paid'),
+            filter=Q(booked__payments__fully_paid=False)
+        )
+    ).filter(total_arrears__gt=0).distinct()
 
-            client = Client.objects.get(id=client_id)
-            
-            # Create a new payment record
-            total_arrears = Payments.objects.filter(
-                booked__client=client,
+    selected_client = None
+    selected_client_arrears = 0
+
+    if 'client_id' in request.GET:
+        client_id = request.GET['client_id']
+        selected_client = Client.objects.filter(id=client_id).first()
+        if selected_client:
+            selected_client_arrears = Payments.objects.filter(
+                booked__client=selected_client,
                 fully_paid=False
-            ).aggregate(total_arrears=Sum('amount_due') - Sum('amount_paid'))['total_arrears'] or 0
-            
-            if total_arrears > 0:
-                payment = Payments(
-                    mode=payment_mode,
-                    booked=client.booked_set.latest('created_on'),
-                    amount_due=total_arrears,
-                    amount_paid=amount_paid,
-                    created_by=request.user
-                )
-                payment.save()
-                
-                # Update existing payment records
-                payments = Payments.objects.filter(booked__client=client, fully_paid=False)
-                for payment in payments:
-                    payment.amount_paid += amount_paid
-                    if payment.amount_due == payment.amount_paid:
-                        payment.fully_paid = True
-                    payment.save()
-
-            return redirect('manage_payments')
-    else:
-        form = PaymentForm()
-
-    # Fetch clients with arrears
-    clients_with_arrears = Client.objects.filter(
-        booked__payments__fully_paid=False
-    ).distinct()
-
-    # Handle selected client
-    selected_client_id = request.GET.get('client')
-    if selected_client_id:
-        selected_client = Client.objects.get(id=selected_client_id)
-        total_arrears = Payments.objects.filter(
-            booked__client=selected_client,
-            fully_paid=False
-        ).aggregate(total_arrears=Sum('amount_due') - Sum('amount_paid'))['total_arrears'] or 0
-        arrears_data = {
-            'client': selected_client,
-            'total_arrears': total_arrears
-        }
+            ).aggregate(total_arrears=Sum(F('amount_due') - F('amount_paid')))['total_arrears'] or 0
 
     context = {
-        'form': form,
-        'clients_data': clients_with_arrears,
-        'arrears_data': arrears_data
+        'clients': clients_with_arrears,
+        'selected_client': selected_client,
+        'selected_client_arrears': selected_client_arrears
     }
     return render(request, 'manage_payments.html', context)

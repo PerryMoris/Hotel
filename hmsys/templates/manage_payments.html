@@ -6,6 +6,7 @@
 <style>
     .payform{
         display: flex;
+        flex-direction: column;
         margin-top: 20px;
     }
 </style>
@@ -13,7 +14,28 @@
 
 {% block content %}
 <div class="container payform">
-<h1>Manage Payments</h1>
+    <h1>Manage Payments</h1>
+    <hr>
+    <form method="get" action="{% url 'managepayment' %}">
+        <div class="mb-3">
+            <label for="clientSelect" class="form-label">Select Client</label>
+            <select style="max-width: 500px;" name="client_id" id="clientSelect" class="form-select" aria-label="Default select example" onchange="this.form.submit()">
+                <option value="">Open this select menu</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}" {% if client.id == selected_client.id %}selected{% endif %}>
+                        {{ client.get_full_name }} - Arrears: {{ client.total_arrears }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    {% if selected_client %}
+        <h2>Selected Client: {{ selected_client.get_full_name }}</h2>
+        <p>Total Arrears: {{ selected_client_arrears }}</p>
+    {% else %}
+        <p>Select a client to view arrears.</p>
+    {% endif %}
 </div>
 
 {% endblock %}
