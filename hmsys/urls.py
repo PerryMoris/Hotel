@@ -14,6 +14,7 @@ urlpatterns = [
   path("bookclient", views.bookclient, name="Book_A_Client" ),
   path("security", views.security, name="security" ),
   path("dashboard", views.dashboard, name="dashboard" ),
+  path("managepayment", views.manage_payments, name="managepayment" ),
   path('checkout/<int:idd>/', views.checkout, name='checkout'),
 ]
 

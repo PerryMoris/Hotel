@@ -78,7 +78,7 @@ def dashboard(request):
     return render(request, 'dash2.html', context)
 
 
-
+@login_required(login_url="login/")
 def roomlist(request):
     category_id = request.GET.get('category')
     if category_id:
@@ -107,6 +107,7 @@ def roomlist(request):
     }
     return render(request, "room-list.html", context)
 
+@login_required(login_url="login/")
 def clientdetail (request):
         clients = Client.objects.all()
         booked = Booked.objects.filter(room__occupied=True, out=False)
@@ -140,7 +141,7 @@ def security (request):
         return render(request, "underconstruct.html")
 
 
-
+@login_required(login_url="login/")
 def bookclient(request):
     if request.method == "POST":
         surname = request.POST.get("surname")
@@ -207,6 +208,7 @@ def bookclient(request):
         return render(request, "bookclient.html", {"rooms": rooms})
 
 
+@login_required(login_url="login/")
 def checkout(request, idd):
     client = Client.objects.get(id=idd)
     bookings = Booked.objects.filter(client=client, room__occupied=True)
@@ -228,5 +230,68 @@ def checkout(request, idd):
             return redirect("client-detail")
    
 
-def account(request):
-     pass
+
+@login_required(login_url="login/")
+def manage_payments(request):
+    arrears_data = None
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            client_id = form.cleaned_data['client']
+            amount_paid = form.cleaned_data['amount_paid']
+            payment_mode = form.cleaned_data['mode']
+
+            client = Client.objects.get(id=client_id)
+            
+            # Create a new payment record
+            total_arrears = Payments.objects.filter(
+                booked__client=client,
+                fully_paid=False
+            ).aggregate(total_arrears=Sum('amount_due') - Sum('amount_paid'))['total_arrears'] or 0
+            
+            if total_arrears > 0:
+                payment = Payments(
+                    mode=payment_mode,
+                    booked=client.booked_set.latest('created_on'),
+                    amount_due=total_arrears,
+                    amount_paid=amount_paid,
+                    created_by=request.user
+                )
+                payment.save()
+                
+                # Update existing payment records
+                payments = Payments.objects.filter(booked__client=client, fully_paid=False)
+                for payment in payments:
+                    payment.amount_paid += amount_paid
+                    if payment.amount_due == payment.amount_paid:
+                        payment.fully_paid = True
+                    payment.save()
+
+            return redirect('manage_payments')
+    else:
+        form = PaymentForm()
+
+    # Fetch clients with arrears
+    clients_with_arrears = Client.objects.filter(
+        booked__payments__fully_paid=False
+    ).distinct()
+
+    # Handle selected client
+    selected_client_id = request.GET.get('client')
+    if selected_client_id:
+        selected_client = Client.objects.get(id=selected_client_id)
+        total_arrears = Payments.objects.filter(
+            booked__client=selected_client,
+            fully_paid=False
+        ).aggregate(total_arrears=Sum('amount_due') - Sum('amount_paid'))['total_arrears'] or 0
+        arrears_data = {
+            'client': selected_client,
+            'total_arrears': total_arrears
+        }
+
+    context = {
+        'form': form,
+        'clients_data': clients_with_arrears,
+        'arrears_data': arrears_data
+    }
+    return render(request, 'manage_payments.html', context)

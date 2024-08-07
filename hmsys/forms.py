@@ -15,3 +15,12 @@ class RoomForm(forms.ModelForm):
             # 'occupied': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payments
+        fields = ['client', 'amount_paid', 'mode']
+
+    client = forms.ModelChoiceField(queryset=Client.objects.all())
+    amount_paid = forms.IntegerField()
+    mode = forms.CharField(max_length=150)
