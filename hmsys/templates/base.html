@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
     {% load static %}
 
 <head>
@@ -40,7 +40,7 @@
     {% endblock %}
 </head>
 
-<body>
+<body >
     <div class="container-xxl bg-white p-0">
         <!-- Spinner Start -->
         <div id="spinner"
@@ -69,7 +69,13 @@
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="{% url 'room-list' %}" class="dropdown-item">Rooms</a>
                             <a href="{% url 'client-detail' %}" class="dropdown-item">Clients</a>
-                            <a href="#" class="dropdown-item">Account</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Account</a>
+                        <div class="dropdown-menu rounded-0 m-0">
+                            <a href="{% url 'kitchen' %}" class="dropdown-item">Accept Payments</a>
+                            <a href="{% url 'cleaners' %}" class="dropdown-item">Account Summary</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
@@ -83,6 +89,12 @@
                     </div>
                     <a href="#footer" class="nav-item nav-link">Complains</a>
                     <button style="border: none;" id="fullscreenButton"><i class="fas fa-expand"></i></button>
+                    <button class="theme-toggle" onclick="toggleTheme()">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
+                            <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                          </div>
+                      </button>
                 </div>
                 <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
                         class="fa fa-arrow-right ms-3"></i></a>
@@ -102,6 +114,19 @@
 <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
 <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    });
+</script>
 <script>
     document.getElementById('fullscreenButton').addEventListener('click', function() {
     if (!document.fullscreenElement) {
