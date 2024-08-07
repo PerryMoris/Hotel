@@ -196,7 +196,8 @@ def bookclient(request):
             mode=request.POST.get("payment_mode"),  
             booked=booked,
             amount_due=amount_due,
-            amount_paid=amount_paid
+            amount_paid=amount_paid,
+            created_by = request.user
         )
 
         # Redirect to a success page or render the same template with a success message
@@ -230,21 +231,9 @@ def checkout(request, idd):
             return redirect("client-detail")
    
 
-
-# @login_required(login_url="login/")
-# def manage_payments(request):
-#     clients = []
-#     arrears_payments = Payments.objects.filter(amount_due__gt=F('amount_paid'))
-#     for x in arrears_payments:
-#          clients.append(x.booked.client)
-#     context = {
-#         'clients': clients
-#     }
-#     return render(request, 'manage_payments.html', context)
-
 @login_required(login_url="login/")
 def manage_payments(request):
-    # Get clients with arrears
+    arrears_clients = Payments.objects.filter(fully_paid = False)
     clients_with_arrears = Client.objects.annotate(
         total_arrears=Sum(
             F('booked__payments__amount_due') - F('booked__payments__amount_paid'),
@@ -267,7 +256,8 @@ def manage_payments(request):
     context = {
         'clients': clients_with_arrears,
         'selected_client': selected_client,
-        'selected_client_arrears': selected_client_arrears
+        'selected_client_arrears': selected_client_arrears,
+        'arrears_clients': arrears_clients,
     }
     return render(request, 'manage_payments.html', context)
 
@@ -279,5 +269,5 @@ def clear_arrears(request):
         if client_id:
             client = Client.objects.filter(id=client_id).first()
             if client:
-                Payments.objects.filter(booked__client=client, fully_paid=False).update(amount_paid=F('amount_due'),fully_paid=True)
+                Payments.objects.filter(booked__client=client, fully_paid=False).update(updated_amount=(F('amount_due') - F('amount_paid')),amount_paid=F('amount_due'),fully_paid=True,updated_by=request.user)
     return redirect('managepayment')

@@ -46,6 +46,7 @@ class Booked (models.Model):
     def __str__(self):
         return f"{self.client.get_full_name()} - {self.room}"
 
+
 class Payments(models.Model):
     mode = models.CharField(max_length=150, null=True, blank=True)
     booked = models.ForeignKey(Booked, on_delete=models.CASCADE, null=True, blank=True)
@@ -54,12 +55,24 @@ class Payments(models.Model):
     fully_paid = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
+    updated_on = models.DateTimeField(auto_now=True)  # Automatically updates to current timestamp on save
+    updated_by = models.ForeignKey(User, related_name='payments_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_amount = models.PositiveIntegerField(null=True, blank=True)  # Store the updated amount if needed
 
     def save(self, *args, **kwargs):
+        # Track the updated amount
+        if self.pk:
+            original = Payments.objects.get(pk=self.pk)
+            self.updated_amount = self.amount_due - original.amount_paid
+        else:
+            self.updated_amount = self.amount_due - (self.amount_paid if self.amount_paid else 0)
+
+        # Determine if the payment is fully paid
         if self.amount_due == self.amount_paid:
             self.fully_paid = True
         else:
             self.fully_paid = False
+
         super().save(*args, **kwargs)
 
     def arrears(self):
