@@ -270,3 +270,14 @@ def manage_payments(request):
         'selected_client_arrears': selected_client_arrears
     }
     return render(request, 'manage_payments.html', context)
+
+
+@login_required(login_url="login/")
+def clear_arrears(request):
+    if request.method == "POST":
+        client_id = request.POST.get('client_id')
+        if client_id:
+            client = Client.objects.filter(id=client_id).first()
+            if client:
+                Payments.objects.filter(booked__client=client, fully_paid=False).update(amount_paid=F('amount_due'),fully_paid=True)
+    return redirect('managepayment')

@@ -15,6 +15,7 @@ urlpatterns = [
   path("security", views.security, name="security" ),
   path("dashboard", views.dashboard, name="dashboard" ),
   path("managepayment", views.manage_payments, name="managepayment" ),
+  path('clear-arrears/', views.clear_arrears, name='clear_arrears'),
   path('checkout/<int:idd>/', views.checkout, name='checkout'),
 ]
 

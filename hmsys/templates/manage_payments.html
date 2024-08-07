@@ -33,6 +33,14 @@
     {% if selected_client %}
         <h2>Selected Client: {{ selected_client.get_full_name }}</h2>
         <p>Total Arrears: {{ selected_client_arrears }}</p>
+        
+        <!-- Clear Arrears Form -->
+        <form method="post" action="{% url 'clear_arrears' %}">
+            {% csrf_token %}
+            <input type="hidden" name="client_id" value="{{ selected_client.id }}">
+            <button type="submit" class="btn btn-danger">Clear Arrears</button>
+        </form>
+        
     {% else %}
         <p>Select a client to view arrears.</p>
     {% endif %}
