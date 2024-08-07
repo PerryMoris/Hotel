@@ -34,13 +34,14 @@
     {% endfor %}
 </script>
 
-<div class="container">
+<div class="tainer">
     <div class="row" style="margin-top: 30px;">
         <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Booked Clients</h1>
-        <div><a href="{% url 'Book_A_Client' %}" class="btn btn-success">Book A Client</a>
+        <div><a href="{% url 'Book_A_Client' %}" class="btn btn-primary">Book A Client</a>
 </div><hr><br>
         <div class="col-6">
-            <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
+            <div class="table-responsive">
+            <table class="table table-bordered table-hover"  width="100%" cellspacing="0" style="margin: 15px 5px;" id="arrearTable">
                 <thead>
                     <tr>
                         <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
@@ -61,7 +62,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-
+</div>
 
         </div>
         <div class="col-6">
@@ -69,7 +70,7 @@
                 <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
                     
                     <li class="nav-item">
-                        <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-1">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" style="text-decoration: none;" data-bs-toggle="pill" href="#tab-1">
                             <h6 class="mt-n1 mb-0">Clients Checked Out <span
                                 class="badgee succ">
                                 {{cbookedc}}</span>
@@ -77,7 +78,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill"
+                        <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" style="text-decoration: none;" data-bs-toggle="pill"
                             href="#tab-3">
                             <h6 class="mt-n1 mb-0">On Board <badge
                                 class="badgee err">
@@ -90,7 +91,7 @@
                     <!-- for tab 1 -->
                     <div id="tab-1" class="tab-pane fade show p-0 active">
                         {% for xx in cbooked %}
-                        <div class="job-item p-4 mb-4">
+                        <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
                             <div class="row g-4">
                                 <div class="col-sm-12 col-md-8 d-flex align-items-center">
                                     <div class="text-start ps-4">
@@ -122,7 +123,7 @@
                         <!-- this for tab 3 -->
                         <div id="tab-3" class="tab-pane fade show p-0">
                             {% for x in booked %}
-                            <div class="job-item p-4 mb-4">
+                            <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
                                 <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
 
@@ -188,27 +189,27 @@
                 {
                     extend: 'copy',
                     text: 'Copy',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'csv',
                     text: 'CSV',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'excel',
                     text: 'Excel',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'pdf',
                     text: 'PDF',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'print',
                     text: 'Print',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 }
             ]
         });

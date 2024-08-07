@@ -41,7 +41,7 @@
 </head>
 
 <body >
-    <div class="container-xxl bg-white p-0">
+    <div class="tainer p-0">
         <!-- Spinner Start -->
         <div id="spinner"
             class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -53,7 +53,7 @@
 
 
         <!-- Navbar Start -->
-        <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+        <nav class="navbar navbar-expand-lg  navbar-light shadow sticky-top p-0">
             <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
                 <h1 class="m-0 text-primary">HMS</h1>
             </a>
@@ -88,13 +88,14 @@
                         </div>
                     </div>
                     <a href="#footer" class="nav-item nav-link">Complains</a>
-                    <button style="border: none;" id="fullscreenButton"><i class="fas fa-expand"></i></button>
                     <button class="theme-toggle" onclick="toggleTheme()">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
-                            <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                            <label class="form-check-label" id="themeid" for="flexSwitchCheckChecked">light</label>
                           </div>
                       </button>
+                    <button style="border: none; margin-left: 6px;" id="fullscreenButton"><i class="fas fa-expand"></i></button>
+                    
                 </div>
                 <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
                         class="fa fa-arrow-right ms-3"></i></a>
@@ -121,6 +122,8 @@
         const currentTheme = document.documentElement.getAttribute('data-bs-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-bs-theme', newTheme);
+        const lbl = document.getElementById("themeid")
+        lbl.textContent = newTheme + " "
         localStorage.setItem('theme', newTheme);
     }
 

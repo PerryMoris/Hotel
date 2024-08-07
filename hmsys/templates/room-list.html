@@ -6,7 +6,7 @@
 
 {% block content %}
 <br>
-<div class="container">
+<div class="tainer">
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <p><a class="nav-link active" aria-current="page" href="">All Rooms</a></p>
@@ -27,23 +27,23 @@
     </ul>
 </div>
 
-<div class="container-xxl py-5">
-    <div class="container">
+<div class="tainer py-5">
+    <div class="tainer">
         <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Rooms Listing</h1>
         <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
             <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
                 <li class="nav-item">
-                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
+                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" style="text-decoration: none;" data-bs-toggle="pill" href="#tab-1">
                         <h6 class="mt-n1 mb-0">All</h6>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+                    <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" style="text-decoration: none;" href="#tab-2">
                         <h6 class="mt-n1 mb-0">Booked</h6>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
+                    <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" style="text-decoration: none;" data-bs-toggle="pill" href="#tab-3">
                         <h6 class="mt-n1 mb-0">Available</h6>
                     </a>
                 </li>
@@ -52,7 +52,7 @@
             <div class="tab-content">
                 <div id="tab-1" class="tab-pane fade show p-0 active">
                     {% for x in allrooms %}
-                    <div class="job-item p-4 mb-4">
+                    <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
                         <div class="row g-4">
                             <div class="col-sm-12 col-md-8 d-flex align-items-center">
                                 {% if x.image %}
@@ -85,7 +85,7 @@
                 <div id="tab-2" class="tab-pane fade show p-0">
                     <div class="job-item p-4 mb-4">
                         {% for x in booked %}
-                        <div class="job-item p-4 mb-4">
+                        <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
                             <div class="row g-4">
                                 <div class="col-sm-12 col-md-8 d-flex align-items-center">
                                     {% if x.image %}
@@ -119,9 +119,9 @@
                 <div id="tab-3" class="tab-pane fade show p-0">
                     <div class="job-item p-4 mb-4">
                         {% for x in available %}
-                        <div class="job-item p-4 mb-4">
+                        <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
                             <div class="row g-4">
-                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                <div class="col-sm-12 col-md-8 d-flex align-items-center" >
                                     {% if x.image %}
                                     <img class="flex-shrink-0 img-fluid border rounded" src="{{ x.image.url }}" alt="" style="width: 80px; height: 80px;">
                                     {% else %}
