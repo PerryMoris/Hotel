@@ -227,3 +227,6 @@ def checkout(request, idd):
             messages.success(request, "Checked out successfully.")
             return redirect("client-detail")
    
+
+def account(request):
+     pass
