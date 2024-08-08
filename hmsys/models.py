@@ -39,7 +39,7 @@ class Booked (models.Model):
     room = models.ForeignKey(Rooms, on_delete=models.DO_NOTHING, verbose_name="rooms", null=True, blank=False)
     Check_in = models.DateTimeField(null=True, blank=False)
     Check_out = models.DateTimeField(null=True, blank=True)
-    aldults = models.IntegerField(null=True, blank=True)
+    adult = models.IntegerField(null=True, blank=True)
     children = models.IntegerField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     out = models.BooleanField(default=False)

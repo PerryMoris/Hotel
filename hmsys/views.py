@@ -148,6 +148,8 @@ def bookclient(request):
         othernames = request.POST.get("othernames")
         address = request.POST.get("address")
         mobile = request.POST.get("mobile")
+        adult = int(request.POST.get("adult"))
+        children = int(request.POST.get("children"))
 
         try:
             client = Client.objects.get(mobile=mobile)
@@ -186,7 +188,9 @@ def bookclient(request):
             client=client,
             room=room,
             Check_in=check_in,
-            Check_out=check_out
+            Check_out=check_out,
+            adult = adult,
+            children = children,
         )
         room.occupied = True
         room.save()

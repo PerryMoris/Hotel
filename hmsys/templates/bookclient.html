@@ -37,7 +37,7 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="mobile" class="form-label">Mobile</label>
-                        <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="Enter your mobile number">
+                        <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
                         <div id="message"></div>
                     </div>
                     <div class="mb-3">
@@ -82,6 +82,16 @@
                     <div class="mb-3">
                         <label for="checkout" class="form-label">Check-out</label>
                         <input type="date" class="form-control" id="checkout" name="checkout" onchange="calculateAmountDue()">
+                    </div>
+                    <div class="row">
+                    <div class="col-6">
+                        <label for="adult" class="form-label">Number of Adult</label>
+                        <input type="number" class="form-control" id="adult" name="adult" required>
+                    </div>
+                    <div class="col-6">
+                        <label for="children" class="form-label">Number of Kids</label>
+                        <input type="number" class="form-control" id="children" name="children" required>
+                    </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4">
