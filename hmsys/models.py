@@ -67,7 +67,7 @@ class Payments(models.Model):
             original = Payments.objects.get(pk=self.pk)
             self.updated_amount = self.amount_due - original.amount_paid
         else:
-            self.updated_amount = self.amount_due - (self.amount_paid if self.amount_paid else 0)
+            self.updated_amount = float(self.amount_due) - float(self.amount_paid if self.amount_paid else 0)
 
         # Determine if the payment is fully paid
         if self.amount_due == self.amount_paid:

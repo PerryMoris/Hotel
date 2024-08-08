@@ -10,6 +10,11 @@ from django.utils.dateparse import parse_date
 from django.http import JsonResponse
 from .forms import *
 from django.contrib import messages
+from decimal import Decimal
+from django.utils import timezone
+
+
+
 
 def check_user_exists(request):
     mobile = request.GET.get('mobile', None)
@@ -74,6 +79,9 @@ def dashboard(request):
     total_adults = total_adults if total_adults else 0
     total_children = total_children if total_children else 0
 
+    today = timezone.now().date()
+    clients_today = Booked.objects.filter(Check_out__date=today)
+
     context = {
         'number_of_clients': number_of_clients,
         'number_of_rooms': number_of_rooms,
@@ -82,6 +90,7 @@ def dashboard(request):
         'arrears_clients': arrears_clients,
         'total_adults': total_adults,
         'total_children': total_children,
+        'clients_today' : clients_today,
     }
     return render(request, 'dash2.html', context)
 
@@ -119,14 +128,14 @@ def roomlist(request):
 @login_required(login_url="login/")
 def clientdetail (request):
         clients = Client.objects.all()
-        booked = Booked.objects.filter(room__occupied=True, out=False)
+        booked = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
         bookedc = booked.count()
         
 
         cdistinct_clients_ids = Booked.objects.filter(room__occupied=False).values_list('client', flat=True).distinct()
     
         # Get actual client objects
-        cbooked = Client.objects.filter(id__in=cdistinct_clients_ids)
+        cbooked = Client.objects.filter(id__in=cdistinct_clients_ids).order_by('id')
         cbookedc = cbooked.count()
         
 
@@ -224,6 +233,8 @@ def bookclient(request):
 
 
 
+
+
 @login_required(login_url="login/")
 def extend_booking(request, booking_id):
     booking = get_object_or_404(Booked, id=booking_id)
@@ -232,15 +243,14 @@ def extend_booking(request, booking_id):
 
     if request.method == 'POST':
         days_to_add = int(request.POST.get('days_to_add'))
-        rate_per_day = float(request.POST.get('rate_per_day'))
 
         # Update the checked_out date
         booking.Check_out = booking.Check_out + timedelta(days=days_to_add)
         booking.save()
 
         # Update the amount_due
-        additional_amount = days_to_add * rate
-        payment.amount_due += float(additional_amount)
+        additional_amount = Decimal(days_to_add) * rate
+        payment.amount_due += additional_amount
         payment.save()
 
         return redirect('dashboard')  # Redirect to your desired page after processing
@@ -250,7 +260,6 @@ def extend_booking(request, booking_id):
         'payment': payment,
     }
     return render(request, 'extend_booking.html', context)
-
 
 
 @login_required(login_url="login/")

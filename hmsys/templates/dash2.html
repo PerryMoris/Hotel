@@ -98,7 +98,7 @@
     <div class="actcard2">
         <center style="margin-top: 30px; margin-bottom: auto;">
         <h3><i class="fas fa-bed"></i></h3>
-            <h3>Available Rooms</h3>
+            <h5>Available Rooms</h5>
             <h3>{{ available_rooms }}</h3>
         </center>
     </div>
@@ -137,9 +137,12 @@
 <a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
 <a href="{% url 'client-detail' %}" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
 </center>
-
+<br>
+<hr>
 <div class="tainer">
-    <h2>Arrears</h2>
+    <div class="row">
+        <div class="col-6">    
+            <h2>Arrears</h2>
     <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
         <thead>
             <tr>
@@ -147,6 +150,7 @@
                 <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
                 <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
                 <th scope="col" style=" font-weight: bolder; font-size: large;">Arrears</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -156,11 +160,46 @@
                 <td>{{x.booked.client.get_full_name}}</td>
                 <td>{{x.booked.room}}</td>
                 <td>{{x.arrears}}</td>
+                <td><a class="btn btn-primary" href="{% url 'managepayment' %}">Clear Arrears</a></td>
             </tr>
             
             {% endfor %}
         </tbody>
     </table>
+    </div>
+
+    <div class="col-6">    
+        <h2>Clients Due for Checkout</h2>
+<table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable2">
+    <thead>
+        <tr>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Check Out Date</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in clients_today %}
+        <tr>
+            <th scope="row">{{x.id}}</th>
+            <td>{{x.client.get_full_name}}</td>
+            <td>{{x.room}}</td>
+            <td>{{x.check_out}}</td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'extend_booking' x.id %}">Add Days</a>
+                <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}">Check Out</a>
+            </td>
+        </tr>
+        
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+
+    </div>
 </div>
 
 {% endblock %}
@@ -176,6 +215,41 @@
 <script>
     $(document).ready(function() {
         $('#arrearTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#arrearTable2').DataTable({
             dom: 'Bfrtip',
             buttons: [
                 {
