@@ -376,9 +376,10 @@ def summarypayment (request):
 
 def records(request):
     booked = Booked.objects.all().order_by('-id')
-
+    service = Service_Request.objects.all().order_by('-id')
     context ={
-        'booked': booked
+        'booked': booked,
+        'services': service
     }
 
     return render (request, 'records.html', context)
@@ -421,3 +422,11 @@ def service(request):
         'services': services,
     }
     return render(request, 'services.html', context)
+
+
+@login_required(login_url="login/")
+def delivered(request, idd):
+    request = Service_Request.objects.get(id=idd)
+    request.delivered = True
+    request.save()
+    return redirect('request_service')

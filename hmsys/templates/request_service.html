@@ -25,6 +25,7 @@
                             <th scope="col">Details</th>
                             <th scope="col">Delivered</th>
                             <th scope="col">Requested On</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,6 +42,11 @@
                                 {% endif %}
                             </td>
                             <td>{{ request.created_on|date:"M d, Y H:i" }}</td>
+                            <td>{% if request.delivered == False %} 
+                                <a href="{% url 'deliver' idd=request.id %}" class="btn btn-success">Deliver</a>
+                                {% endif %}
+                                
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
