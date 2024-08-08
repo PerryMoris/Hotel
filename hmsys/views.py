@@ -176,50 +176,81 @@ def bookclient(request):
             return render(request, "bookclient.html", {
                 "error": True
             })
+        else:
+            # Get booking data from request.POST
+            room_id = request.POST.get("room")
+            check_in = parse_date(request.POST.get("checkin"))
+            check_out = parse_date(request.POST.get("checkout"))
+            amount_paid = float(request.POST.get("amount_paid"))
 
-        # Get booking data from request.POST
-        room_id = request.POST.get("room")
-        check_in = parse_date(request.POST.get("checkin"))
-        check_out = parse_date(request.POST.get("checkout"))
-        amount_paid = int(request.POST.get("amount_paid"))
+            # Fetch the room
+            room = Rooms.objects.get(id=room_id)
 
-        # Fetch the room
-        room = Rooms.objects.get(id=room_id)
+            # Calculate the number of days
+            days = (check_out - check_in).days if check_out else 1
 
-        # Calculate the number of days
-        days = (check_out - check_in).days if check_out else 1
+            # Calculate the amount due
+            amount_due = days * room.amount
 
-        # Calculate the amount due
-        amount_due = days * room.amount
+            # Create and save Booked
+            booked = Booked.objects.create(
+                client=client,
+                room=room,
+                Check_in=check_in,
+                Check_out=check_out,
+                adult = adult,
+                children = children,
+                created_by = request.user,
+            )
+            room.occupied = True
+            room.save()
 
-        # Create and save Booked
-        booked = Booked.objects.create(
-            client=client,
-            room=room,
-            Check_in=check_in,
-            Check_out=check_out,
-            adult = adult,
-            children = children,
-        )
-        room.occupied = True
-        room.save()
+            # Create and save Payment
+            payment = Payments.objects.create(
+                mode=request.POST.get("payment_mode"),  
+                booked=booked,
+                amount_due=amount_due,
+                amount_paid=amount_paid,
+                created_by = request.user
+            )
 
-        # Create and save Payment
-        payment = Payments.objects.create(
-            mode=request.POST.get("payment_mode"),  
-            booked=booked,
-            amount_due=amount_due,
-            amount_paid=amount_paid,
-            created_by = request.user
-        )
-
-        # Redirect to a success page or render the same template with a success message
-        return render(request, "bookclient.html", {"success": True})
+            # Redirect to a success page or render the same template with a success message
+            return render(request, "bookclient.html", {"success": True})
 
     else:
         # Fetch available rooms
         rooms = Rooms.objects.filter(occupied=False)
         return render(request, "bookclient.html", {"rooms": rooms})
+
+
+
+@login_required(login_url="login/")
+def extend_booking(request, booking_id):
+    booking = get_object_or_404(Booked, id=booking_id)
+    payment = get_object_or_404(Payments, booked=booking)
+    rate = booking.room.amount
+
+    if request.method == 'POST':
+        days_to_add = int(request.POST.get('days_to_add'))
+        rate_per_day = float(request.POST.get('rate_per_day'))
+
+        # Update the checked_out date
+        booking.Check_out = booking.Check_out + timedelta(days=days_to_add)
+        booking.save()
+
+        # Update the amount_due
+        additional_amount = days_to_add * rate
+        payment.amount_due += float(additional_amount)
+        payment.save()
+
+        return redirect('dashboard')  # Redirect to your desired page after processing
+
+    context = {
+        'booking': booking,
+        'payment': payment,
+    }
+    return render(request, 'extend_booking.html', context)
+
 
 
 @login_required(login_url="login/")

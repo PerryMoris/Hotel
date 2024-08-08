@@ -27,7 +27,7 @@ class Rooms (models.Model):
     number = models.CharField(max_length=255, null=True, blank=False)
     lan_line = models.CharField(max_length=255, null=True, blank=True)
     properties = models.TextField(null=True, blank=True)
-    amount = models.PositiveIntegerField(null=True, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=False)
     occupied = models.BooleanField(default=False)
     image = models.ImageField(upload_to='room_images/', null=True, blank=True)
 
@@ -52,14 +52,14 @@ class Booked (models.Model):
 class Payments(models.Model):
     mode = models.CharField(max_length=150, null=True, blank=True)
     booked = models.ForeignKey(Booked, on_delete=models.CASCADE, null=True, blank=True)
-    amount_due = models.PositiveIntegerField(null=True, blank=True)
-    amount_paid = models.PositiveIntegerField(null=True, blank=True)
+    amount_due = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     fully_paid = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
     updated_on = models.DateTimeField(auto_now=True)  # Automatically updates to current timestamp on save
     updated_by = models.ForeignKey(User, related_name='payments_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_amount = models.PositiveIntegerField(null=True, blank=True)  # Store the updated amount if needed
+    updated_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Track the updated amount
