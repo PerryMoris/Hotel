@@ -14,6 +14,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    "admin_interface",
+    "colorfield",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,7 +28,15 @@ INSTALLED_APPS = [
     "hmsys",
     "django.contrib.humanize",
 ]
-
+ADMIN_INTERFACE = {
+    'ADMIN_SITE_TITLE': 'HRM',
+    'THEME': {
+        'primary_color': '#007bff',  # Example primary color
+        'secondary_color': '#6c757d',  # Example secondary color
+        'accent_color': '#f8f9fa',  # Example accent color
+        'text_color': '#212529',  # Example text color
+    },
+}
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
