@@ -86,6 +86,15 @@ class Payments(models.Model):
         return f"{self.booked} - {self.amount_paid}"
 
 
+class Kitchen_Items(models.Model):
+    image = models.ImageField(upload_to='room_images/', null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.name} - {self.amount}'
+
+
 class Service_Request(models.Model):
     booked = models.ForeignKey(Booked, on_delete=models.CASCADE)
     requested = models.TextField(null=True, blank=True)
