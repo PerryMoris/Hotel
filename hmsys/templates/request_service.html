@@ -43,7 +43,9 @@
                             </td>
                             <td>{{ request.created_on|date:"M d, Y H:i" }}</td>
                             <td>{% if request.delivered == False %} 
-                                <a href="{% url 'deliver' idd=request.id %}" class="btn btn-success">Deliver</a>
+                                <a href="{% url 'deliver' idd=request.id %}" class="btn btn-success" 
+                                onclick="return confirm('Are you sure this request has been delivered?');"
+                                >Deliver</a>
                                 {% endif %}
                                 
                             </td>
