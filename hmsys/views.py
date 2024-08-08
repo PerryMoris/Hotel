@@ -324,3 +324,38 @@ def clear_arrears(request):
             if client:
                 Payments.objects.filter(booked__client=client, fully_paid=False).update(updated_amount=(F('amount_due') - F('amount_paid')),amount_paid=F('amount_due'),fully_paid=True,updated_by=request.user)
     return redirect('managepayment')
+
+
+
+@login_required(login_url="login/")
+def mysales(request):
+    today = timezone.now().date()
+
+    # Filter payments by the user who created them
+    payments = Payments.objects.filter(created_by=request.user).order_by("-id")
+    payments_update = Payments.objects.filter(updated_by=request.user).order_by("-id")
+
+    # Filter payments created today by the user
+    today_payments = Payments.objects.filter(created_on__date=today, created_by=request.user).order_by("-id")
+    today_payments_update = Payments.objects.filter(updated_on__date=today, updated_by=request.user).order_by("-id")
+
+    # Calculate the totals for created payments and updated payments
+    total_created_payments = payments.aggregate(total=Sum('created_amount'))['total'] or 0
+    total_updated_payments = payments_update.aggregate(total=Sum('upadated_amount'))['total'] or 0
+
+    # Calculate the totals for today's created and updated payments
+    total_today_created_payments = today_payments.aggregate(total=Sum('created_amount'))['total'] or 0
+    total_today_updated_payments = today_payments_update.aggregate(total=Sum('updated_amount'))['total'] or 0
+
+    context = {
+        'payments': payments,
+        'payments_update': payments_update,
+        'today_payments': today_payments,
+        'today_payments_update': today_payments_update,
+        'total_created_payments': total_created_payments,
+        'total_updated_payments': total_updated_payments,
+        'total_today_created_payments': total_today_created_payments,
+        'total_today_updated_payments': total_today_updated_payments,
+    }
+
+    return render(request, 'mysales.html', context)

@@ -55,6 +55,7 @@ class Payments(models.Model):
     amount_due = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     fully_paid = models.BooleanField(default=False)
+    created_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
     updated_on = models.DateTimeField(auto_now=True)  # Automatically updates to current timestamp on save
