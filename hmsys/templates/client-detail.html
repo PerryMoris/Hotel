@@ -84,15 +84,6 @@
         <div class="col-6">
             <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
                 <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
-                    
-                    <li class="nav-item">
-                        <a class="d-flex align-items-center text-start mx-3 pb-3" style="text-decoration: none;" data-bs-toggle="pill" href="#tab-1">
-                            <h6 class="mt-n1 mb-0">Clients Checked Out <span
-                                class="badgee succ">
-                                {{cbookedc}}</span>
-                            </h6>
-                        </a>
-                    </li>
                     <li class="nav-item">
                         <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" style="text-decoration: none;" data-bs-toggle="pill"
                             href="#tab-3">
@@ -102,10 +93,52 @@
                             </h6>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="d-flex align-items-center text-start mx-3 pb-3" style="text-decoration: none;" data-bs-toggle="pill" href="#tab-1">
+                            <h6 class="mt-n1 mb-0">Clients Checked Out <span
+                                class="badgee succ">
+                                {{cbookedc}}</span>
+                            </h6>
+                        </a>
+                    </li>
+                    
                 </ul>
                 <div class="tab-content">
+                     <!-- this for tab 3 -->
+                     <div id="tab-3" class="tab-pane fade show p-0 active">
+                        {% for x in booked %}
+                        <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
+                            <div class="row g-4">
+                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
+
+                                    <div class="text-start ps-4">
+                                        <h5 class="mb-3">{{x.client.get_full_name}}</h5>
+                                        <h5 class="mb-3">Room {{x.room}}</h5>
+                                        <span class="text-truncate me-3"><i
+                                                class="fa fa-phone-alt text-primary me-2"></i>
+                                            {{x.client.mobile}}</span>
+
+                                        <small class="text-truncate"><i
+                                                class="far fa-calendar-alt text-primary me-2"></i>Check-out
+                                            {{x.Check_out}} </small>
+                                            <p>Adults = {% if x.adult == None %} 0 {% else %} {{x.adult}} {% endif %} | Chidren = {% if x.children == None %} 0 {% else %} {{x.children}} {% endif %}</p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                    <div class="d-flex mb-3">
+                                        <a class="btn btn-primary" href="{{x.client.mobile}}">call</a>
+                                    </div>
+                                    <div class="d-flex mb-3">
+                                        <a class="btn btn-primary" href="{% url 'checkout' idd=x.client.id %}">Check-Out</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                     <!-- for tab 1 -->
-                    <div id="tab-1" class="tab-pane fade show p-0 active">
+                    <div id="tab-1" class="tab-pane fade show p-0">
                         {% for xx in cbooked %}
                         <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
                             <div class="row g-4">
@@ -136,38 +169,7 @@
                     </div>
 
 
-                        <!-- this for tab 3 -->
-                        <div id="tab-3" class="tab-pane fade show p-0">
-                            {% for x in booked %}
-                            <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3">{{x.client.get_full_name}}</h5>
-                                            <h5 class="mb-3">Room {{x.room}}</h5>
-                                            <span class="text-truncate me-3"><i
-                                                    class="fa fa-phone-alt text-primary me-2"></i>
-                                                {{x.client.mobile}}</span>
-
-                                            <small class="text-truncate"><i
-                                                    class="far fa-calendar-alt text-primary me-2"></i>Check-out
-                                                {{x.Check_out}} </small>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="{{x.client.mobile}}">call</a>
-                                        </div>
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-primary" href="{% url 'checkout' idd=x.client.id %}">Check-Out</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
+                       
                     </div>
                 </div>
             </div>

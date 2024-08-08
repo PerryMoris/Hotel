@@ -61,21 +61,30 @@ def home(request):
 def dashboard(request):
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
-    available_rooms = Rooms.objects.filter(occupied = False).count()
-    arrears_clients = Payments.objects.filter(fully_paid = False)
+    available_rooms = Rooms.objects.filter(occupied=False).count()
+    arrears_clients = Payments.objects.filter(fully_paid=False)
     total_arrears = Payments.objects.aggregate(
         total_arrears=Sum(F('amount_due') - F('amount_paid'))
-        )['total_arrears']
+    )['total_arrears']
     total_arrears = total_arrears if total_arrears else 0
 
-    context ={
+    
+    total_adults = Booked.objects.aggregate(total_adults=Sum('adult'))['total_adults']
+    total_children = Booked.objects.aggregate(total_children=Sum('children'))['total_children']
+    total_adults = total_adults if total_adults else 0
+    total_children = total_children if total_children else 0
+
+    context = {
         'number_of_clients': number_of_clients,
         'number_of_rooms': number_of_rooms,
-        'available_rooms' : available_rooms,
+        'available_rooms': available_rooms,
         'total_arrears': total_arrears,
         'arrears_clients': arrears_clients,
+        'total_adults': total_adults,
+        'total_children': total_children,
     }
     return render(request, 'dash2.html', context)
+
 
 
 @login_required(login_url="login/")
