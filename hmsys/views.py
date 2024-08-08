@@ -210,6 +210,7 @@ def bookclient(request):
                 adult = adult,
                 children = children,
                 created_by = request.user,
+                created_amount = amount_paid,
             )
             room.occupied = True
             room.save()
@@ -359,3 +360,16 @@ def mysales(request):
     }
 
     return render(request, 'mysales.html', context)
+
+
+@login_required(login_url="login/")
+def summarypayment (request):
+    payments = Payments.objects.all().order_by('-id')
+    total_payments = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
+
+    context ={
+        'total': total_payments,
+        'payments' : payments,
+    }
+
+    return render (request, 'sumpayments.html', context)
