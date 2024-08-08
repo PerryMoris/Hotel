@@ -189,7 +189,7 @@
             <td>{{x.check_out}}</td>
             <td>
                 <a class="btn btn-primary" href="{% url 'extend_booking' x.id %}">Add Days</a>
-                <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}">Check Out</a>
+                <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}" onclick="return confirm('Are you sure you want to check out this client?');">Check Out</a>
             </td>
         </tr>
         
