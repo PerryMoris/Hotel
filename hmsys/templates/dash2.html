@@ -8,6 +8,22 @@
 <link rel="stylesheet" type="text/css" href="{% static 'fontawesome/css/all.css' %}">
 
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<style>
+    .payform {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .dataTables_filter {
+        float: right;
+    }
+    .dataTables_filter input {
+        margin-left: 0.5em;
+        width: 200px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
     <style>
         .sumcard{
             margin-top: 50px;
@@ -135,27 +151,27 @@
                 {
                     extend: 'copy',
                     text: 'Copy',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'csv',
                     text: 'CSV',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'excel',
                     text: 'Excel',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'pdf',
                     text: 'PDF',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'print',
                     text: 'Print',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 }
             ]
         });
