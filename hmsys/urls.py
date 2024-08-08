@@ -17,6 +17,7 @@ urlpatterns = [
   path("managepayment", views.manage_payments, name="managepayment" ),
   path('clear-arrears/', views.clear_arrears, name='clear_arrears'),
   path('mysales/', views.mysales, name='mysales'),
+  path('records/', views.records, name='record'),
   path('allpayments/', views.summarypayment, name='payments'),
   path('checkout/<int:idd>/', views.checkout, name='checkout'),
   path('extend-booking/<int:booking_id>/', views.extend_booking, name='extend_booking'),

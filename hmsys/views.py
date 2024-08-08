@@ -373,3 +373,12 @@ def summarypayment (request):
     }
 
     return render (request, 'sumpayments.html', context)
+
+def records(request):
+    booked = Booked.objects.all().order_by('-id')
+
+    context ={
+        'booked': booked
+    }
+
+    return render (request, 'records.html', context)

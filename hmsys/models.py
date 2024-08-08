@@ -100,7 +100,7 @@ class Service_Request(models.Model):
     requested = models.TextField(null=True, blank=True)
     delivered = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
-
+    created_by = models.ForeignKey(User, related_name='created_by', on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         return f"{self.booked.client} - {self.requested:[70]}"
     
