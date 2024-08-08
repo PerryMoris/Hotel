@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="tainer" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-4">
+            <h2>Register a Service 
+                <span><a class="btn btn-primary" href="{% url 'request_service' %}"><i class="fas fa-plus"></i> Request A Service</a></span>
+            </h2>
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                {{ form | crispy }}
+                <button type="submit" class="btn btn-success">Submit Request</button>
+            </form>
+        </div>
+
+        <div class="col-8">
+            <div class="container">
+                <h2>Service Requests</h2>
+                <table class="table table-bordered mt-4">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Amount</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in services %}
+                        <tr>
+                            <td>{{ request.name }}</td>
+                            <td>{{ request.amount }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

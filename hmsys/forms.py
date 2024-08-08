@@ -16,6 +16,16 @@ class RoomForm(forms.ModelForm):
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
+class RequestForm(forms.ModelForm):
+    class Meta:
+        model = Service_Request
+        fields = ['booked', 'service', 'requested']
+
+class ServicesForm(forms.ModelForm):
+    class Meta:
+        model = Services
+        fields = "__all__"
+
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payments

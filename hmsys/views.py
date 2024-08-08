@@ -382,3 +382,42 @@ def records(request):
     }
 
     return render (request, 'records.html', context)
+
+
+@login_required(login_url="login/")
+def request_service(request):
+    requests = Service_Request.objects.all().order_by('-created_on')
+    if request.method == 'POST':
+        form = RequestForm(request.POST)
+        if form.is_valid():
+            service_request = form.save(commit=False)
+            service_request.created_by = request.user
+            service_request.save()
+            return redirect('request_service') 
+    else:
+        form = RequestForm()
+
+    context = {
+        'form': form,
+        'requests': requests,
+    }
+    return render(request, 'request_service.html', context)
+
+
+@login_required(login_url="login/")
+def service(request):
+    services = Services.objects.all()
+    if request.method == 'POST':
+        form = ServicesForm(request.POST)
+        if form.is_valid():
+            service_request = form.save(commit=False)
+            service_request.save()
+            return redirect('services') 
+    else:
+        form = ServicesForm()
+
+    context = {
+        'form': form,
+        'services': services,
+    }
+    return render(request, 'services.html', context)

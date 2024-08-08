@@ -19,6 +19,8 @@ urlpatterns = [
   path('mysales/', views.mysales, name='mysales'),
   path('records/', views.records, name='record'),
   path('allpayments/', views.summarypayment, name='payments'),
+  path('request-service/', views.request_service, name='request_service'),
+  path('services/', views.service, name='services'),
   path('checkout/<int:idd>/', views.checkout, name='checkout'),
   path('extend-booking/<int:booking_id>/', views.extend_booking, name='extend_booking'),
 ]
