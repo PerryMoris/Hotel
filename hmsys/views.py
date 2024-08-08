@@ -341,7 +341,7 @@ def mysales(request):
 
     # Calculate the totals for created payments and updated payments
     total_created_payments = payments.aggregate(total=Sum('created_amount'))['total'] or 0
-    total_updated_payments = payments_update.aggregate(total=Sum('upadated_amount'))['total'] or 0
+    total_updated_payments = payments_update.aggregate(total=Sum('updated_amount'))['total'] or 0
 
     # Calculate the totals for today's created and updated payments
     total_today_created_payments = today_payments.aggregate(total=Sum('created_amount'))['total'] or 0
