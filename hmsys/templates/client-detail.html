@@ -40,15 +40,17 @@
 {% block content %}
 <!-- Jobs Start -->
 
-<script>
+
     {% for message in messages %}
+    <script>
         Swal.fire({
             icon: '{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}',
             title: '{% if message.tags == "error" %}Error{% else %}Success{% endif %}',
             text: '{{ message }}'
         });
+    </script>
     {% endfor %}
-</script>
+
 
 <div class="tainer">
     <div class="row" style="margin-top: 30px;">

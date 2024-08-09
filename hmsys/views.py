@@ -80,7 +80,7 @@ def dashboard(request):
     total_children = total_children if total_children else 0
 
     today = timezone.now().date()
-    clients_today = Booked.objects.filter(Check_out__date=today)
+    clients_today = Booked.objects.filter(Check_out__date__lt=today, out=False)
 
     context = {
         'number_of_clients': number_of_clients,
@@ -278,12 +278,16 @@ def checkout(request, idd):
             r = Rooms.objects.get(id=booking.room.id)
             r.occupied= False
             r.save()
+
             rr = booking
             rr.out = True
             rr.save()
             messages.success(request, "Checked out successfully.")
             return redirect("client-detail")
    
+    messages.error(request, "No bookings found or something went wrong.")
+    return redirect("client-detail")
+
 
 @login_required(login_url="login/")
 def manage_payments(request):
