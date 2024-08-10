@@ -64,7 +64,7 @@ def login_view(request):
         now = timezone.now()
 
         if last_update:
-            if last_update.created_on < now:
+            if last_update.created_on > now:
                 return redirect('time_check_warning')
     except UpdateClient.DoesNotExist:
         pass
@@ -72,7 +72,6 @@ def login_view(request):
   
         
     if request.user.is_authenticated:
-        print("user logged in already")
         return redirect('home')
     if request.method == 'POST':
         username = request.POST['username']
@@ -84,6 +83,7 @@ def login_view(request):
             return redirect('home') 
         else:
             error_message = "Invalid login credentials. Please try again."
+            messages.error(request, "Invalid login credentials. Please try again.")
             return render(request, 'login.html', { 'error_message': error_message})
     
     return render(request, 'login.html')
