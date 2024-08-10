@@ -2,7 +2,11 @@ from typing import Any
 from django.db import models
 from django.contrib.auth.models import User
 
-
+class UpdateClient(models.Model):
+    updated = models.BooleanField(default=True)
+    date = models.DateField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    
 class Client (models.Model):
     surname = models.CharField(max_length=100, null=False, blank=True)
     othernames = models.CharField(max_length=100, null=False, blank=True)

@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "hmsys",
+    'django_crontab',
     "django.contrib.humanize",
 ]
 ADMIN_INTERFACE = {

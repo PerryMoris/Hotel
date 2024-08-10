@@ -15,6 +15,38 @@ from django.utils import timezone
 
 
 
+def check_and_charge():
+    today = timezone.now().date()
+    bookings = Booked.objects.filter(Check_out__lt=today, out=False, room__occupied=True)
+
+    try:
+        # Check if there is already an UpdateClient entry for today
+        updd = UpdateClient.objects.get(date=today)
+        if updd:
+            print("Already updated for today.")
+            return
+    except UpdateClient.DoesNotExist:
+        # Proceed with checking overdue bookings
+        for booking in bookings:
+            days_overdue = (today - booking.Check_out.date()).days
+            if days_overdue > 0:
+                room_price = booking.room.amount
+                extra_charge = room_price * days_overdue
+                payment = Payments.objects.get(booked=booking)
+                payment.amount_due += extra_charge
+                payment.save()
+
+        # Create an UpdateClient entry after processing all bookings
+        upd = UpdateClient(date=today, updated=True)
+        upd.save()
+        print("Updated and charged overdue bookings for today.")
+
+    if not bookings.exists():
+        print("No booking for update today.")
+ 
+
+def time_check_warning(request):
+    return render(request, 'time_check_warning.html')
 
 def check_user_exists(request):
     mobile = request.GET.get('mobile', None)
@@ -23,6 +55,22 @@ def check_user_exists(request):
 
 
 def login_view(request):
+    today = timezone.now().date()
+    if not UpdateClient.objects.filter(date=today).exists():
+        check_and_charge()
+    
+    try:
+        last_update = UpdateClient.objects.last()
+        now = timezone.now()
+
+        if last_update:
+            if last_update.created_on < now:
+                return redirect('time_check_warning')
+    except UpdateClient.DoesNotExist:
+        pass
+ 
+  
+        
     if request.user.is_authenticated:
         print("user logged in already")
         return redirect('home')
