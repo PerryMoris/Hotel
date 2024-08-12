@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block style %}
+<style>
+    .payform {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .dataTables_filter {
+        float: right;
+    }
+    .dataTables_filter input {
+        margin-left: 0.5em;
+        width: 200px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tainer payform">
+    <h1>Manage Payments</h1>
+    <hr>
+    <div class="row">
+        <div class="col-5">
+            <form method="get" action="{% url 'managepayment' %}">
+                <div class="mb-3">
+                    <label for="clientSelect" class="form-label">Select Client</label>
+                    <select style="max-width: 500px;" name="client_id" id="clientSelect" class="form-select"
+                        aria-label="Default select example" onchange="this.form.submit()">
+                        <option value="">Select Client with Arrears</option>
+                        {% for client in clients %}
+                        <option value="{{ client.id }}" {% if client.id == selected_client.id %}selected{% endif %}>
+                            {{ client.get_full_name }} - Arrears: {{ client.total_arrears }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+
+            {% if selected_client %}
+            <h2>Selected Client: {{ selected_client.get_full_name }}</h2>
+            <p>Total Arrears: {{ selected_client_arrears }}</p>
+
+            <!-- Clear Arrears Form -->
+            <form method="post" action="{% url 'clear_arrears' %}">
+                {% csrf_token %}
+                <input type="hidden" name="client_id" value="{{ selected_client.id }}">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure the client has paid his/her arrears? Note that this operation can not be reversed');">Clear Arrears</button>
+            </form>
+
+            {% else %}
+            <p>Select a client to view arrears.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-7">
+            <h2>Arrears</h2>
+            <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
+                <thead>
+                    <tr>
+                        <th scope="col" style="font-weight: bolder; font-size: large;">#</th>
+                        <th scope="col" style="font-weight: bolder; font-size: large;">Client</th>
+                        <th scope="col" style="font-weight: bolder; font-size: large;">Room</th>
+                        <th scope="col" style="font-weight: bolder; font-size: large;">Arrears</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for x in arrears_clients %}
+                    <tr>
+                        <th scope="row">{{ x.id }}</th>
+                        <td>{{ x.booked.client.get_full_name }}</td>
+                        <td>{{ x.booked.room }}</td>
+                        <td>{{ x.arrears }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'js/buttons.print.min.js' %}"></script>
+<script src="{% static 'js/jszip.min.js' %}"></script>
+<script src="{% static 'js/pdfmake.min.js' %}"></script>
+<script src="{% static 'js/vfs_fonts.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

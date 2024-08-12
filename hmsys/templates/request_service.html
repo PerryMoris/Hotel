@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="tainer" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-4">
+            <h2>Request a Service 
+                <span><a class="btn btn-primary" href="{% url 'services' %}"><i class="fas fa-plus"></i> Add Service</a></span>
+            </h2>
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                {{ form | crispy }}
+                <button type="submit" class="btn btn-success">Submit Request</button>
+            </form>
+        </div>
+
+        <div class="col-8">
+            <div class="container">
+                <h2>Service Requests</h2>
+                <table class="table table-bordered mt-4">
+                    <thead>
+                        <tr>
+                            <th scope="col">Service</th>
+                            <th scope="col">Request To</th>
+                            <th scope="col">Details</th>
+                            <th scope="col">Delivered</th>
+                            <th scope="col">Requested On</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                        <tr>
+                            <td>{{ request.service.name }}</td>
+                            <td>{{ request.booked }}</td>
+                            <td>{{ request.requested }}</td>
+                            <td>
+                                {% if request.delivered %}
+                                <span class="badge bg-success">Delivered</span>
+                                {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ request.created_on|date:"M d, Y H:i" }}</td>
+                            <td>{% if request.delivered == False %} 
+                                <a href="{% url 'deliver' idd=request.id %}" class="btn btn-success" 
+                                onclick="return confirm('Are you sure this request has been delivered?');"
+                                >Deliver</a>
+                                {% endif %}
+                                
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

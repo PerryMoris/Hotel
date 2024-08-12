@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+{% block style %}
+<style>
+    .payform {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+
+    .dataTables_filter {
+        float: right;
+    }
+
+    .dataTables_filter input {
+        margin-left: 0.5em;
+        width: 200px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="tainer">
+<h3>Payments</h3>
+<div class="tainer">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Payments</div>
+            <div class="card-body">
+                <h5 class="card-title">Ghc {{ total | intcomma }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+<h3>Today's Arrears Payments Received by You</h3>
+<div>
+    <table class="table table-striped table-bordered" id="arrearTable">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Booking</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Amount Paid</th>
+                <th>Initial Payment</th>
+                <th>Initial Date</th>
+                <th>Initial Received By</th>
+                <th>Arrears Payment</th>
+                <th>Arrears Date</th>
+                <th>Arrears Received By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td>{{ payment.id }}</td>
+                <td>{{ payment.booked }}</td>
+                <td>{{ payment.booked.Check_in }}</td>
+                <td>{{ payment.booked.Check_out }}</td>
+                <td>Ghc {{ payment.amount_paid | intcomma }}</td>
+                <td>Ghc {{ payment.created_amount | intcomma }}</td>
+                <td>{{ payment.created_on}}</td>
+                <td>{{ payment.created_by}}</td>
+                <td>Ghc {{ payment.updated_amount | intcomma }}</td>
+                <td>{{ payment.updated_on}}</td>
+                <td>{{ payment.updated_by}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'js/buttons.print.min.js' %}"></script>
+<script src="{% static 'js/jszip.min.js' %}"></script>
+<script src="{% static 'js/pdfmake.min.js' %}"></script>
+<script src="{% static 'js/vfs_fonts.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('#arrearTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+
+{% endblock %}

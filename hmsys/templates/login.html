@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 {% load static %}
 
 <head>
@@ -31,6 +31,7 @@
 
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .logcard {
             box-shadow: 0 0 3px darkgreen;
@@ -43,7 +44,16 @@
 </head>
 
 <body>
-    <div class="container-xxl bg-white p-0">
+    {% for message in messages %}
+    <script>
+        Swal.fire({
+            icon: '{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}',
+            title: '{% if message.tags == "error" %}Error{% else %}Success{% endif %}',
+            text: '{{ message }}'
+        });
+    </script>
+    {% endfor %}
+    <div class="tainer bg-white p-0">
         <!-- Spinner Start -->
         <div id="spinner"
             class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">

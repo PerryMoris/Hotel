@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+{% block style %}
+<style>
+    .payform {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .dataTables_filter {
+        float: right;
+    }
+    .dataTables_filter input {
+        margin-left: 0.5em;
+        width: 200px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="tainer my-4">
+    <h1>My Sales</h1>
+
+    <!-- Cards for Totals -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Total Created Payments</div>
+                <div class="card-body">
+                    <h5 class="card-title">Ghc {{ total_created_payments | intcomma }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-header">Total Arrears Payments</div>
+                <div class="card-body">
+                    <h5 class="card-title">Ghc {{ total_updated_payments | intcomma }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Today's Created Payments</div>
+                <div class="card-body">
+                    <h5 class="card-title">Ghc {{ total_today_created_payments | intcomma }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Today's Arrears Payments</div>
+                <div class="card-body">
+                    <h5 class="card-title">Ghc {{ total_today_updated_payments | intcomma }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+
+
+    <!-- Today's Payments Created by User -->
+    <div class="row">
+        <div class="col-6">
+            <div class="mb-4">
+                <h2>Today's Payments Received by You</h2>
+                <table class="table table-striped table-bordered" id="arrearTable1">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Booking</th>
+                            <th>Amount Paid</th>
+                            <th>Date Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in today_payments %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.booked }}</td>
+                            <td>Ghc {{ payment.amount_paid | intcomma }}</td>
+                            <td>{{ payment.created_on }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="border-left: 2px solid black; height: 100%;"></div>
+            </div>
+
+        </div>
+
+
+        <div class="col-6">
+            <!-- Today's Payments Updated by User -->
+            <div>
+                <h3>Today's Arrears Payments Received by You</h3>
+                <table class="table table-striped table-bordered" id="arrearTable2">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Booking</th>
+                            <th>Amount Paid</th>
+                            <th>Date Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in today_payments_update %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.booked }}</td>
+                            <td>Ghc {{ payment.amount_paid | intcomma }}</td>
+                            <td>{{ payment.updated_on }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <hr>
+    <hr>
+    <hr>
+    <hr style="height: 10px;">
+
+
+    <div class="row">
+        <div class="col-6">
+            <!-- Payments Created by User -->
+            <div class="mb-4">
+                <h2>Payments Received by You</h2>
+                <table class="table table-striped table-bordered" id="arrearTable3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Booking</th>
+                            <th>Amount Paid</th>
+                            <th>Date Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.booked }}</td>
+                            <td>Ghc {{ payment.amount_paid | intcomma }}</td>
+                            <td>{{ payment.created_on }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="col-6">
+            <!-- Payments Updated by User -->
+            <div class="mb-4">
+                <h2>Arrears Payments Recieved by You</h2>
+                <table class="table table-striped table-bordered" id="arrearTable4">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Booking</th>
+                            <th>Amount Paid</th>
+                            <th>Date Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments_update %}
+                        <tr>
+                            <td>{{ payment.id }}</td>
+                            <td>{{ payment.booked }}</td>
+                            <td>Ghc {{ payment.amount_paid | intcomma }}</td>
+                            <td>{{ payment.updated_on }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <hr>
+
+
+
+
+
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'js/buttons.print.min.js' %}"></script>
+<script src="{% static 'js/jszip.min.js' %}"></script>
+<script src="{% static 'js/pdfmake.min.js' %}"></script>
+<script src="{% static 'js/vfs_fonts.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable1').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable2').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable3').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable4').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+
+{% endblock %}

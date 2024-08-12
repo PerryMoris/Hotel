@@ -1,10 +1,64 @@
-/********** Template CSS **********/
-:root {
+
+
+/* THEME SWITCH */
+.theme-toggle {
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    background: transparent;
+    vertical-align: middle;
+    margin-inline-start: 5px;
+    margin-top: -1px;
+}
+
+.theme-toggle svg {
+    vertical-align: middle;
+    height: 1rem;
+    width: 1rem;
+    display: none;
+}
+
+.theme-toggle .visually-hidden {
+    display: none;
+}
+
+html[data-theme="auto"] .theme-toggle .theme-label-when-auto {
+    display: block;
+}
+
+html[data-theme="dark"] .theme-toggle .theme-label-when-dark {
+    display: block;
+}
+
+html[data-theme="light"] .theme-toggle .theme-label-when-light {
+    display: block;
+}
+
+.theme-toggle svg.theme-icon-when-auto,
+.theme-toggle svg.theme-icon-when-dark,
+.theme-toggle svg.theme-icon-when-light {
+    fill: var(--header-link-color);
+    color: var(--header-bg);
+}
+
+html[data-theme="auto"] .theme-toggle svg.theme-icon-when-auto {
+    display: block;
+}
+
+html[data-theme="dark"] .theme-toggle svg.theme-icon-when-dark {
+    display: block;
+}
+
+html[data-theme="light"] .theme-toggle svg.theme-icon-when-light {
+    display: block;
+}
+
+/* :root {
     --primary: #00B074;
     --secondary: #2B9BFF;
     --light: #EFFDF5;
     --dark: #2B3940;
-}
+} */
 
 .back-to-top {
     position: fixed;

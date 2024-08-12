@@ -8,6 +8,22 @@
 <link rel="stylesheet" type="text/css" href="{% static 'fontawesome/css/all.css' %}">
 
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<style>
+    .payform {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .dataTables_filter {
+        float: right;
+    }
+    .dataTables_filter input {
+        margin-left: 0.5em;
+        width: 200px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+</style>
     <style>
         .sumcard{
             margin-top: 50px;
@@ -22,7 +38,7 @@
         .actcard1{
             border-radius: 10px;
             box-shadow: 0 0 3px gray;
-            border-bottom: 5px solid darkgreen;
+            border-bottom: 8px solid darkgreen;
             width: 250px;
             height: 190px;
             background-color: aliceblue;
@@ -30,7 +46,7 @@
         .actcard2{
             border-radius: 10px;
             box-shadow: 0 0 3px gray;
-            border-bottom: 5px solid rgb(100, 0, 67);
+            border-bottom: 8px solid rgb(100, 0, 67);
             width: 250px;
             height: 190px;
             background-color: aliceblue;
@@ -38,7 +54,7 @@
         .actcard3{
             border-radius: 10px;
             box-shadow: 0 0 3px gray;
-            border-bottom: 5px solid rgb(158, 50, 0);
+            border-bottom: 8px solid rgb(158, 50, 0);
             width: 250px;
             height: 190px;
             background-color: aliceblue;
@@ -46,7 +62,23 @@
         .actcard4{
             border-radius: 10px;
             box-shadow: 0 0 3px gray;
-            border-bottom: 5px solid rgb(0, 150, 155);
+            border-bottom: 8px solid rgb(0, 150, 155);
+            width: 250px;
+            height: 190px;
+            background-color: aliceblue;
+        }
+        .actcard5{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 8px solid rgb(81, 99, 2);
+            width: 250px;
+            height: 190px;
+            background-color: aliceblue;
+        }
+        .actcard6{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 8px solid rgb(102, 29, 0);
             width: 250px;
             height: 190px;
             background-color: aliceblue;
@@ -55,33 +87,50 @@
 {% endblock %}
 
 {% block content %}
+<script>
+   
+</script>
 <div class="sumcard">
     <div class="actcard1">
-        <center style="margin-top: 30px; margin-bottom: auto;">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
             <h3><i class="fas fa-door-open"></i></h3>
             <h3>No. Of Rooms</h3>
             <h3>{{ number_of_rooms }}</h3>
         </center>
     </div>
     <div class="actcard2">
-        <center style="margin-top: 30px; margin-bottom: auto;">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
         <h3><i class="fas fa-bed"></i></h3>
-            <h3>Available Rooms</h3>
+            <h5>Available Rooms</h5>
             <h3>{{ available_rooms }}</h3>
         </center>
     </div>
     <div class="actcard3">
-        <center style="margin-top: 30px; margin-bottom: auto;">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
         <h3> <i class="fas fa-users"></i> </h3>
             <h3>No. Of Clients</h3>
             <h3>{{ number_of_clients }}</h3>
         </center>
     </div>
     <div class="actcard4">
-        <center style="margin-top: 30px; margin-bottom: auto;">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
         <h3> <i class="fas fa-money-bill-wave"></i></h3> 
             <h3>Total Arrears</h3>
             <h3>{{ total_arrears }}</h3>
+        </center>
+    </div>
+    <div class="actcard5">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
+        <h3> <i class="fas fa-user-tie"></i></h3> 
+            <h3>Adult on Board</h3>
+            <h3>{{ total_adults }}</h3>
+        </center>
+    </div>
+    <div class="actcard6">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
+        <h3> <i class="fas fa-baby"></i></i></h3> 
+            <h5>Children on Board</5>
+            <h3>{{ total_children }}</h3>
         </center>
     </div>
 </div>
@@ -91,9 +140,12 @@
 <a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
 <a href="{% url 'client-detail' %}" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
 </center>
-
-<div class="container">
-    <h2>Arrears</h2>
+<br>
+<hr>
+<div class="tainer">
+    <div class="row">
+        <div class="col-6">    
+            <h2>Arrears</h2>
     <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
         <thead>
             <tr>
@@ -101,6 +153,7 @@
                 <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
                 <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
                 <th scope="col" style=" font-weight: bolder; font-size: large;">Arrears</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -110,11 +163,46 @@
                 <td>{{x.booked.client.get_full_name}}</td>
                 <td>{{x.booked.room}}</td>
                 <td>{{x.arrears}}</td>
+                <td><a class="btn btn-primary" href="{% url 'managepayment' %}">Clear Arrears</a></td>
             </tr>
             
             {% endfor %}
         </tbody>
     </table>
+    </div>
+
+    <div class="col-6">    
+        <h2>Clients Due for Checkout</h2>
+<table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable2">
+    <thead>
+        <tr>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Check Out Date</th>
+            <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in clients_today %}
+        <tr>
+            <th scope="row">{{x.id}}</th>
+            <td>{{x.client.get_full_name}}</td>
+            <td>{{x.room}}</td>
+            <td>{{x.Check_out}}</td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'extend_booking' x.id %}">Add Days</a>
+                <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}" onclick="return confirm('Are you sure you want to check out this client?');">Check Out</a>
+            </td>
+        </tr>
+        
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+
+    </div>
 </div>
 
 {% endblock %}
@@ -135,27 +223,62 @@
                 {
                     extend: 'copy',
                     text: 'Copy',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'csv',
                     text: 'CSV',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'excel',
                     text: 'Excel',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'pdf',
                     text: 'PDF',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
                 },
                 {
                     extend: 'print',
                     text: 'Print',
-                    className: 'btn btn-success'
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#arrearTable2').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
                 }
             ]
         });

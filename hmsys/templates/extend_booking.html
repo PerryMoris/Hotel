@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="tainer">
+    
+    <div style=" display: flex; flex-direction: column; align-items: center;">
+    <h1>Extend Booking for {{ booking.client.get_full_name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="days_to_add" class="form-label">Number of Days to Add</label>
+            <input type="number" style="width: 600px;" name="days_to_add" id="days_to_add" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Extend Booking</button>
+    </form>
+    </div>
+    
+</div>
+{% endblock %}
