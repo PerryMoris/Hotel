@@ -190,23 +190,23 @@ def roomlist(request):
 
 @login_required(login_url="login/")
 def clientdetail(request):
-    # Get all clients
     clients = Client.objects.all()
-    
-    # Get all booked rooms that are occupied and not checked out
-    booked = Booked.objects.filter(room__occupied=True, out=False).order_by('-id').distinct()
-    bookedc = booked.count()
+    booked_entries = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
 
-    # Get distinct client IDs who have reservations but are not occupying a room
-    distinct_client_ids = Booked.objects.filter(room__occupied=False).values_list('client', flat=True).distinct()
+    unique_bookings = {}
+    for booking in booked_entries:
+        if booking.client.id not in unique_bookings:
+            unique_bookings[booking.client.id] = booking
 
-    # Get actual client objects based on the distinct client IDs
-    cbooked = Client.objects.filter(id__in=distinct_client_ids).order_by('id').distinct()
-    cbookedc = cbooked.count()
+    unique_booked_entries = list(unique_bookings.values())
+    bookedc = len(unique_booked_entries)  # Count of distinct booked clients
+    distinct_client_ids = list(set(Booked.objects.filter(room__occupied=False).values_list('client', flat=True)))
+    cbooked = Client.objects.filter(id__in=distinct_client_ids).order_by('id')
+    cbookedc = cbooked.count()  # Count of distinct clients not occupying rooms
 
     context = {
         'clients': clients,
-        'booked': booked,
+        'booked': unique_booked_entries,
         'bookedc': bookedc,
         'cbooked': cbooked,
         'cbookedc': cbookedc,
@@ -214,7 +214,6 @@ def clientdetail(request):
     }
     
     return render(request, "client-detail.html", context)
-
 
 
 def kitchen (request):
