@@ -13,8 +13,9 @@ from django.contrib import messages
 from decimal import Decimal
 from django.utils import timezone
 
-
-hotelname = Info.objects.all().first()
+def hotelname ():
+    hotelnamee = Info.objects.all().first()
+    return f"{hotelnamee.name}"
 
 def check_and_charge():
     today = timezone.now().date()
@@ -108,7 +109,7 @@ def home(request):
         'number_of_rooms': number_of_rooms,
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, 'home.html', context)
 
@@ -150,7 +151,7 @@ def dashboard(request):
         'clients_today': clients_today,
         'reserved_rooms': reserved_rooms,  
         'reservation': reservations,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, 'dash2.html', context)
 
@@ -184,7 +185,7 @@ def roomlist(request):
         'reserved': reserved,
         'categories': categories,
         'form': form,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, "room-list.html", context)
 
@@ -210,7 +211,7 @@ def clientdetail(request):
         'bookedc': bookedc,
         'cbooked': cbooked,
         'cbookedc': cbookedc,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     
     return render(request, "client-detail.html", context)
@@ -312,7 +313,7 @@ def bookclient(request):
 
     else:
         rooms = Rooms.objects.filter(occupied=False, reserved=False)
-        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname.name,})
+        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname(),})
 
 
 @login_required(login_url="login/")
@@ -338,7 +339,7 @@ def extend_booking(request, booking_id):
     context = {
         'booking': booking,
         'payment': payment,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, 'extend_booking.html', context)
 
@@ -396,7 +397,7 @@ def manage_payments(request):
         'selected_client': selected_client,
         'selected_client_arrears': selected_client_arrears,
         'arrears_clients': arrears_clients,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, 'manage_payments.html', context)
 
@@ -442,7 +443,7 @@ def mysales(request):
         'total_updated_payments': total_updated_payments,
         'total_today_created_payments': total_today_created_payments,
         'total_today_updated_payments': total_today_updated_payments,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
 
     return render(request, 'mysales.html', context)
@@ -456,7 +457,7 @@ def summarypayment (request):
     context ={
         'total': total_payments,
         'payments' : payments,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
 
     return render (request, 'sumpayments.html', context)
@@ -478,7 +479,7 @@ def records(request):
         'booked': booked,
         'services': service,
         'reservation': reservations,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
 
     return render(request, 'records.html', context)
@@ -501,7 +502,7 @@ def request_service(request):
     context = {
         'form': form,
         'requests': requests,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, 'request_service.html', context)
 
@@ -521,7 +522,7 @@ def service(request):
     context = {
         'form': form,
         'services': services,
-        'hotelname': hotelname.name,
+        'hotelname': hotelname(),
     }
     return render(request, 'services.html', context)
 
