@@ -25,5 +25,7 @@ urlpatterns = [
   path('checkout/<int:idd>/', views.checkout, name='checkout'),
   path('delivered/<int:idd>/', views.delivered, name='deliver'),
   path('extend-booking/<int:booking_id>/', views.extend_booking, name='extend_booking'),
+  path('mark-client-in/<int:reservation_id>/', views.mark_client_in, name='mark_client_in'),
+  path('cancel-reservation/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
 ]
 

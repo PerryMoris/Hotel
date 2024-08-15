@@ -95,9 +95,14 @@
 {% endblock %}
 
 {% block content %}
-<script>
-   
-</script>
+{% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <div class="sumcard">
     <div class="actcard1">
         <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
@@ -243,9 +248,8 @@
                 <td>{{x.room}}</td>
                 <td>{{x.Check_out}}</td>
                 <td>
-                    
-                    <a class="btn btn-primary" href="" onclick="return confirm('Are you sure this client has appeared?');">Client is In</a>
-                    <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');">Cancel</a>
+                    <a class="btn btn-primary" href="{% url 'mark_client_in' x.id %}" onclick="return confirm('Are you sure this client has appeared?');">Client is In</a>
+                    <a class="btn btn-danger" href="{% url 'cancel_reservation' x.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');">Cancel</a>
                 </td>
             </tr>
             

@@ -14,6 +14,7 @@ from decimal import Decimal
 from django.utils import timezone
 
 
+hotelname = Info.objects.all().first()
 
 def check_and_charge():
     today = timezone.now().date()
@@ -107,6 +108,7 @@ def home(request):
         'number_of_rooms': number_of_rooms,
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
+        'hotelname': hotelname.name,
     }
     return render(request, 'home.html', context)
 
@@ -131,10 +133,11 @@ def dashboard(request):
     today = timezone.now().date()  # Get today's date
     reservations = Reservation.objects.filter(
         Check_in__date=today, 
-        room__reserved=True
+        room__reserved=True,
+        comply=False
     )
 
-    reserved_rooms = Reservation.objects.filter(room__occupied=False).count()
+    reserved_rooms = Reservation.objects.filter(room__occupied=False,comply=False).count()
 
     context = {
         'number_of_clients': number_of_clients,
@@ -147,6 +150,7 @@ def dashboard(request):
         'clients_today': clients_today,
         'reserved_rooms': reserved_rooms,  
         'reservation': reservations,
+        'hotelname': hotelname.name,
     }
     return render(request, 'dash2.html', context)
 
@@ -180,6 +184,7 @@ def roomlist(request):
         'reserved': reserved,
         'categories': categories,
         'form': form,
+        'hotelname': hotelname.name,
     }
     return render(request, "room-list.html", context)
 
@@ -203,6 +208,7 @@ def clientdetail (request):
              'bookedc' : bookedc,
              'cbooked' : cbooked,
              'cbookedc' : cbookedc,
+             'hotelname': hotelname.name,
         }
         return render(request, "client-detail.html", context)
 
@@ -303,7 +309,7 @@ def bookclient(request):
 
     else:
         rooms = Rooms.objects.filter(occupied=False, reserved=False)
-        return render(request, "bookclient.html", {"rooms": rooms})
+        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname.name,})
 
 
 @login_required(login_url="login/")
@@ -329,6 +335,7 @@ def extend_booking(request, booking_id):
     context = {
         'booking': booking,
         'payment': payment,
+        'hotelname': hotelname.name,
     }
     return render(request, 'extend_booking.html', context)
 
@@ -386,6 +393,7 @@ def manage_payments(request):
         'selected_client': selected_client,
         'selected_client_arrears': selected_client_arrears,
         'arrears_clients': arrears_clients,
+        'hotelname': hotelname.name,
     }
     return render(request, 'manage_payments.html', context)
 
@@ -431,6 +439,7 @@ def mysales(request):
         'total_updated_payments': total_updated_payments,
         'total_today_created_payments': total_today_created_payments,
         'total_today_updated_payments': total_today_updated_payments,
+        'hotelname': hotelname.name,
     }
 
     return render(request, 'mysales.html', context)
@@ -444,6 +453,7 @@ def summarypayment (request):
     context ={
         'total': total_payments,
         'payments' : payments,
+        'hotelname': hotelname.name,
     }
 
     return render (request, 'sumpayments.html', context)
@@ -453,7 +463,8 @@ def records(request):
     service = Service_Request.objects.all().order_by('-id')
     context ={
         'booked': booked,
-        'services': service
+        'services': service,
+        'hotelname': hotelname.name,
     }
 
     return render (request, 'records.html', context)
@@ -475,6 +486,7 @@ def request_service(request):
     context = {
         'form': form,
         'requests': requests,
+        'hotelname': hotelname.name,
     }
     return render(request, 'request_service.html', context)
 
@@ -494,6 +506,7 @@ def service(request):
     context = {
         'form': form,
         'services': services,
+        'hotelname': hotelname.name,
     }
     return render(request, 'services.html', context)
 
@@ -504,3 +517,61 @@ def delivered(request, idd):
     request.delivered = True
     request.save()
     return redirect('request_service')
+
+
+@login_required(login_url="login/")
+def mark_client_in(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    if not reservation.comply:
+       
+        reservation.comply = True
+        reservation.save()
+        
+       
+        reservation_payments = ReservationPayments.objects.filter(reservation=reservation)
+        for payment in reservation_payments:
+            Payments.objects.create(
+                mode=payment.mode,
+                booked=Booked.objects.create(
+                    client=reservation.client,
+                    room=reservation.room,
+                    Check_in=reservation.Check_in,
+                    Check_out=reservation.Check_out,
+                    adult=1,  
+                    children=0,  
+                    created_by=request.user,
+                ),
+                amount_due=payment.amount_due,
+                amount_paid=payment.amount_paid,
+                created_by=request.user,
+                created_amount=payment.created_amount,
+            )
+        
+      
+        room = reservation.room
+        room.occupied = True
+        room.reserved = False
+        room.save()
+
+        messages.success(request, 'Client marked as in, and reservation updated.')
+    else:
+        messages.warning(request, 'Reservation is already marked as compliant.')
+    
+    return redirect('dashboard')  
+
+@login_required(login_url="login/")
+def cancel_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+   
+    reservation.delete()
+    
+    
+    room = reservation.room
+    room.reserved = False
+    room.save()
+
+    messages.success(request, 'Reservation has been canceled.')
+    
+    return redirect('dashboard')  
