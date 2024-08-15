@@ -189,28 +189,32 @@ def roomlist(request):
     return render(request, "room-list.html", context)
 
 @login_required(login_url="login/")
-def clientdetail (request):
-        clients = Client.objects.all()
-        booked = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
-        bookedc = booked.count()
-        
-
-        cdistinct_clients_ids = Booked.objects.filter(room__occupied=False).values_list('client', flat=True).distinct()
+def clientdetail(request):
+    # Get all clients
+    clients = Client.objects.all()
     
-        # Get actual client objects
-        cbooked = Client.objects.filter(id__in=cdistinct_clients_ids).order_by('id')
-        cbookedc = cbooked.count()
-        
+    # Get all booked rooms that are occupied and not checked out
+    booked = Booked.objects.filter(room__occupied=True, out=False).order_by('-id').distinct()
+    bookedc = booked.count()
 
-        context ={
-             'clients': clients,
-             'booked' : booked,
-             'bookedc' : bookedc,
-             'cbooked' : cbooked,
-             'cbookedc' : cbookedc,
-             'hotelname': hotelname.name,
-        }
-        return render(request, "client-detail.html", context)
+    # Get distinct client IDs who have reservations but are not occupying a room
+    distinct_client_ids = Booked.objects.filter(room__occupied=False).values_list('client', flat=True).distinct()
+
+    # Get actual client objects based on the distinct client IDs
+    cbooked = Client.objects.filter(id__in=distinct_client_ids).order_by('id').distinct()
+    cbookedc = cbooked.count()
+
+    context = {
+        'clients': clients,
+        'booked': booked,
+        'bookedc': bookedc,
+        'cbooked': cbooked,
+        'cbookedc': cbookedc,
+        'hotelname': hotelname.name,
+    }
+    
+    return render(request, "client-detail.html", context)
+
 
 
 def kitchen (request):
@@ -542,10 +546,12 @@ def mark_client_in(request, reservation_id):
                     children=0,  
                     created_by=request.user,
                 ),
+                
                 amount_due=payment.amount_due,
                 amount_paid=payment.amount_paid,
+
                 created_by=request.user,
-                created_amount=payment.created_amount,
+                created_amount=payment.amount_paid,
             )
         
       
