@@ -82,7 +82,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             print("login successful")
-            return redirect('home') 
+            return redirect('dashboard') 
         else:
             error_message = "Invalid login credentials. Please try again."
             messages.error(request, "Invalid login credentials. Please try again.")
@@ -94,7 +94,7 @@ def logout_view(request):
     logout(request)
     return redirect('login') 
 
-@login_required(login_url="login/")
+
 def home(request):
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
@@ -103,15 +103,16 @@ def home(request):
         total_arrears=Sum(F('amount_due') - F('amount_paid'))
         )['total_arrears']
     total_arrears = total_arrears if total_arrears else 0
-
+    hotel = Info.objects.all().first()
     context ={
         'number_of_clients': number_of_clients,
         'number_of_rooms': number_of_rooms,
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
         'hotelname': hotelname(),
+        'hotel':hotel,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'home2.html', context)
 
 @login_required(login_url="login/")
 def dashboard(request):
