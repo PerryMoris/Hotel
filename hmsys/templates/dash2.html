@@ -219,6 +219,41 @@
 
 
     </div>
+    <hr style="height:5px">
+    <div class="row">
+        <div class="col-8">    
+            <h2>Reservations</h2>
+    <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable3">
+        <thead>
+            <tr>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Mobile</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Room Reserved</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Check Out Date</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in reservation %}
+            <tr>
+                <th scope="row">{{x.id}}</th>
+                <td>{{x.client.get_full_name}}</td>
+                <td>{{x.client.mobile}}</td>
+                <td>{{x.room}}</td>
+                <td>{{x.Check_out}}</td>
+                <td>
+                    
+                    <a class="btn btn-primary" href="" onclick="return confirm('Are you sure this client has appeared?');">Client is In</a>
+                    <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');">Cancel</a>
+                </td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    </div>
 </div>
 
 {% endblock %}
@@ -269,6 +304,40 @@
 <script>
     $(document).ready(function() {
         $('#arrearTable2').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable3').DataTable({
             dom: 'Bfrtip',
             buttons: [
                 {
