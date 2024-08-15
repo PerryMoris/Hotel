@@ -121,7 +121,6 @@ def dashboard(request):
     )['total_arrears']
     total_arrears = total_arrears if total_arrears else 0
 
-    
     total_adults = Booked.objects.aggregate(total_adults=Sum('adult'))['total_adults']
     total_children = Booked.objects.aggregate(total_children=Sum('children'))['total_children']
     total_adults = total_adults if total_adults else 0
@@ -129,6 +128,9 @@ def dashboard(request):
 
     today = timezone.now().date()
     clients_today = Booked.objects.filter(Check_out__date__lt=today, out=False)
+
+    # Get the number of rooms on reserve
+    reserved_rooms = Reservation.objects.filter(room__occupied=False).count()
 
     context = {
         'number_of_clients': number_of_clients,
@@ -138,7 +140,8 @@ def dashboard(request):
         'arrears_clients': arrears_clients,
         'total_adults': total_adults,
         'total_children': total_children,
-        'clients_today' : clients_today,
+        'clients_today': clients_today,
+        'reserved_rooms': reserved_rooms,  
     }
     return render(request, 'dash2.html', context)
 
@@ -154,6 +157,7 @@ def roomlist(request):
     
     booked = allrooms.filter(occupied=True)
     available = allrooms.filter(occupied=False)
+    reserved = allrooms.filter(reserved=True)
     categories = Category.objects.all()
 
     if request.method == 'POST':
@@ -168,6 +172,7 @@ def roomlist(request):
         'allrooms': allrooms,
         'booked': booked,
         'available': available,
+        'reserved': reserved,
         'categories': categories,
         'form': form,
     }
@@ -216,6 +221,7 @@ def bookclient(request):
         mobile = request.POST.get("mobile")
         adult = int(request.POST.get("adult"))
         children = int(request.POST.get("children"))
+        for_reservation = request.POST.get("for_reservation") == "on"  # Check if the toggle is on
 
         try:
             client = Client.objects.get(mobile=mobile)
@@ -234,7 +240,7 @@ def bookclient(request):
                 "error": True
             })
         else:
-            # Get booking data from request.POST
+            # Get common data from request.POST
             room_id = request.POST.get("room")
             check_in = parse_date(request.POST.get("checkin"))
             check_out = parse_date(request.POST.get("checkout"))
@@ -246,41 +252,53 @@ def bookclient(request):
             # Calculate the number of days
             days = (check_out - check_in).days if check_out else 1
 
-            # Calculate the amount due
-            amount_due = days * room.amount
+            if for_reservation:
+                # Handle Reservation Logic
+                reservation = Reservation.objects.create(
+                    client=client,
+                    room=room,
+                    Check_in=check_in,
+                    Check_out=check_out,
+                    comply=False,  # Set based on your logic
+                )
+                ReservationPayments.objects.create(
+                    mode=request.POST.get("payment_mode"),
+                    reservation=reservation,
+                    amount_due=days * room.amount,
+                    amount_paid=amount_paid,
+                    created_by=request.user
+                )
+            else:
+                # Handle Booking Logic
+                amount_due = days * room.amount
+                booked = Booked.objects.create(
+                    client=client,
+                    room=room,
+                    Check_in=check_in,
+                    Check_out=check_out,
+                    adult=adult,
+                    children=children,
+                    created_by=request.user,
+                    created_amount=amount_paid,
+                )
+                room.occupied = True
+                room.save()
 
-            # Create and save Booked
-            booked = Booked.objects.create(
-                client=client,
-                room=room,
-                Check_in=check_in,
-                Check_out=check_out,
-                adult = adult,
-                children = children,
-                created_by = request.user,
-                created_amount = amount_paid,
-            )
-            room.occupied = True
-            room.save()
-
-            # Create and save Payment
-            payment = Payments.objects.create(
-                mode=request.POST.get("payment_mode"),  
-                booked=booked,
-                amount_due=amount_due,
-                amount_paid=amount_paid,
-                created_by = request.user
-            )
+                Payments.objects.create(
+                    mode=request.POST.get("payment_mode"),
+                    booked=booked,
+                    amount_due=amount_due,
+                    amount_paid=amount_paid,
+                    created_by=request.user
+                )
 
             # Redirect to a success page or render the same template with a success message
             return render(request, "bookclient.html", {"success": True})
 
     else:
         # Fetch available rooms
-        rooms = Rooms.objects.filter(occupied=False)
+        rooms = Rooms.objects.filter(occupied=False, reserved=False)
         return render(request, "bookclient.html", {"rooms": rooms})
-
-
 
 
 

@@ -2,6 +2,15 @@ from typing import Any
 from django.db import models
 from django.contrib.auth.models import User
 
+class Info (models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    mobile = models.CharField(max_length=150, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    logo = models.ImageField(upload_to='imgs/', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
 class UpdateClient(models.Model):
     updated = models.BooleanField(default=True)
     date = models.DateField(auto_now_add=True)
@@ -33,6 +42,7 @@ class Rooms (models.Model):
     properties = models.TextField(null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=False)
     occupied = models.BooleanField(default=False)
+    reserved = models.BooleanField(default=False)
     image = models.ImageField(upload_to='room_images/', null=True, blank=True)
 
     def __str__(self):
@@ -52,6 +62,30 @@ class Booked (models.Model):
     def __str__(self):
         return f"{self.client.get_full_name()} - {self.room}"
 
+class Reservation(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, verbose_name="client", null=True, blank=False)
+    room = models.ForeignKey(Rooms, on_delete=models.DO_NOTHING, verbose_name="rooms", null=True, blank=False)
+    Check_in = models.DateTimeField(null=True, blank=False)
+    Check_out = models.DateTimeField(null=True, blank=True)
+    comply = models.BooleanField(default=False)
+    created_on = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.client.get_full_name()} - {self.room}"
+
+class ReservationPayments(models.Model):
+    mode = models.CharField(max_length=150, null=True, blank=True)
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE, null=True, blank=True)
+    amount_due = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    fully_paid = models.BooleanField(default=False)
+    created_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.booked} - {self.amount_paid}"
+    
 
 class Payments(models.Model):
     mode = models.CharField(max_length=150, null=True, blank=True)
@@ -65,7 +99,7 @@ class Payments(models.Model):
     updated_on = models.DateTimeField(auto_now=True)  # Automatically updates to current timestamp on save
     updated_by = models.ForeignKey(User, related_name='payments_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-
+    
     def save(self, *args, **kwargs):
         # Track the updated amount
         if self.pk:
