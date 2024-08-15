@@ -76,7 +76,7 @@
                                 <div class="d-flex mb-3">
                                     {% if x.occupied %}
                                         <a class="btn btn-secondary disabled" href="#" disabled>Unavailable</a>
-                                        {% elseif x.reserved %}
+                                        {% elif x.reserved %}
                                         <a class="btn btn-secondary disabled" href="#" disabled>Reserved</a>
                                         {% else %}
                                     <a class="btn btn-primary " href="{% url 'Book_A_Client' %}">Book Now</a>

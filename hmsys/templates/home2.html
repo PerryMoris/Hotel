@@ -49,6 +49,7 @@
 
         .service-box:hover {
             transform: translateY(-10px);
+            box-shadow: 0 4px 8px rgba(8, 2, 181, 0.81);
         }
 
         .animate-fade-in {
@@ -56,7 +57,7 @@
         }
 
         .contact-details {
-            background-color:  #f4f4f4;
+            background-color: #f4f4f4;
         }
 
         .contact-details i {
@@ -77,6 +78,19 @@
 
         .contact-details h5:hover {
             color: #0056b3;
+        }
+
+        .room-carousel .carousel-item img {
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .room-carousel .carousel-caption {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 10px;
         }
 
         @keyframes fadeIn {
@@ -161,38 +175,68 @@
     </div>
 
     <!-- Services Section -->
-     <center>
-    <div class="container services">
-        <div class="row text-center">
-            <div class="col-md-4 animate-fade-in">
-                <div class="service-box">
-                    <h3>Luxury Rooms</h3>
-                    <p>Our rooms are designed to provide you with the ultimate comfort and luxury, with stunning
-                        views and modern amenities.</p>
+    <center>
+        <div class="container services">
+            <div class="row text-center">
+                <div class="col-md-4 animate-fade-in">
+                    <div class="service-box">
+                        <i class="bi bi-door-closed-fill fs-1 mb-3"></i>
+                        <h3>Luxury Rooms</h3>
+                        <p>Our rooms are designed to provide you with the ultimate comfort and luxury, with stunning views and modern amenities.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4 animate-fade-in">
-                <div class="service-box">
-                    <h3>Fine Dining</h3>
-                    <p>Indulge in gourmet dining experiences with our curated menus featuring international and
-                        local cuisines.</p>
+                <div class="col-md-4 animate-fade-in">
+                    <div class="service-box">
+                        <i class="bi bi-egg-fried fs-1 mb-3"></i>
+                        <h3>Fine Dining</h3>
+                        <p>Indulge in gourmet dining experiences with our curated menus featuring international and local cuisines.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4 animate-fade-in">
-                <div class="service-box">
-                    <h3>Spa & Wellness</h3>
-                    <p>Relax and rejuvenate with our spa and wellness services, offering a range of treatments and
-                        therapies.</p>
+                <div class="col-md-4 animate-fade-in">
+                    <div class="service-box">
+                        <i class="bi bi-heart-pulse-fill fs-1 mb-3"></i>
+                        <h3>Spa & Wellness</h3>
+                        <p>Relax and rejuvenate with our spa and wellness services, offering a range of treatments and therapies.</p>
+                    </div>
                 </div>
             </div>
         </div>
+        
+    </center>
+
+    <!-- Available Rooms Carousel -->
+    <div class="container mt-5 animate-fade-in">
+        <h2 class="text-center mb-4">Available Rooms</h2>
+        <div id="roomCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner room-carousel">
+                {% for room in available_rooms %}
+                
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{% if room.image %}{{ room.image.url }}{% endif %}" class="d-block w-100" alt="{{ room.name }}">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>{{ room }}</h5>
+                        <p>{{ room.properties }}</p>
+                    </div>
+                </div>
+               
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#roomCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
     </div>
-</center>
+
     <!-- Contact Details -->
-    <div class="">
+    <div class="container mt-5 animate-fade-in">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="contact-details p-4 rounded ">
+                <div class="contact-details p-4 rounded">
                     <h3 class="text-center mb-4">Contact Us</h3>
                     <p class="text-center">We'd love to hear from you! Whether you have a question about our services,
                         pricing, or anything else, our team is ready to answer all your questions.</p>

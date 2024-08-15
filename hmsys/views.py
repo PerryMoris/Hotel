@@ -98,7 +98,7 @@ def logout_view(request):
 def home(request):
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
-    available_rooms = Rooms.objects.filter(occupied = False).count()
+    available_rooms = Rooms.objects.filter(occupied = False)
     total_arrears = Payments.objects.aggregate(
         total_arrears=Sum(F('amount_due') - F('amount_paid'))
         )['total_arrears']
