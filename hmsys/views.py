@@ -463,10 +463,12 @@ def summarypayment (request):
 
 def records(request):
     booked = Booked.objects.all().order_by('-id')
+    reservation = Reservation.objects.all().order_by('-id')
     service = Service_Request.objects.all().order_by('-id')
     context ={
         'booked': booked,
         'services': service,
+        'reservation': reservation,
         'hotelname': hotelname.name,
     }
 
