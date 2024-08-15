@@ -461,18 +461,28 @@ def summarypayment (request):
 
     return render (request, 'sumpayments.html', context)
 
+from django.db.models import Sum
+
 def records(request):
     booked = Booked.objects.all().order_by('-id')
     reservation = Reservation.objects.all().order_by('-id')
+    
+    # Prefetch related payments and calculate total_amount_paid
+    reservations = Reservation.objects.prefetch_related('reservationpayments_set').all()
+    for res in reservations:
+        total_amount_paid = res.reservationpayments_set.aggregate(Sum('amount_paid'))['amount_paid__sum']
+        res.total_amount_paid = total_amount_paid or 0
+    
     service = Service_Request.objects.all().order_by('-id')
-    context ={
+    context = {
         'booked': booked,
         'services': service,
-        'reservation': reservation,
+        'reservation': reservations,
         'hotelname': hotelname.name,
     }
 
-    return render (request, 'records.html', context)
+    return render(request, 'records.html', context)
+
 
 
 @login_required(login_url="login/")
