@@ -43,6 +43,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" style="text-decoration: none;" href="#tab-4">
+                        <h6 class="mt-n1 mb-0">Reserved</h6>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" style="text-decoration: none;" data-bs-toggle="pill" href="#tab-3">
                         <h6 class="mt-n1 mb-0">Available</h6>
                     </a>
@@ -71,6 +76,8 @@
                                 <div class="d-flex mb-3">
                                     {% if x.occupied %}
                                         <a class="btn btn-secondary disabled" href="#" disabled>Unavailable</a>
+                                        {% elif x.reserved %}
+                                        <a class="btn btn-secondary disabled" href="#" disabled>Reserved</a>
                                         {% else %}
                                     <a class="btn btn-primary " href="{% url 'Book_A_Client' %}">Book Now</a>
                                     {% endif %}
@@ -106,6 +113,41 @@
                                         <a class="btn btn-secondary disabled" href="#" disabled>Unavailable</a>
                                         {% else %}
                                     <a class="btn btn-primary" href="{% url 'Book_A_Client' %}">Book Now</a>
+                                    {% endif %}
+                                    </div>
+                                    <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Date Line: 01 Jan, 2045</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+                <div id="tab-4" class="tab-pane fade show p-0">
+                    <div class="job-item p-4 mb-4">
+                        {% for x in reserved %}
+                        <div class="job-item p-4 mb-4" style="box-shadow: 0 0 5px #0d6efd;">
+                            <div class="row g-4">
+                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                    {% if x.image %}
+                                    <img class="flex-shrink-0 img-fluid border rounded" src="{{ x.image.url }}" alt="" style="width: 80px; height: 80px;">
+                                    {% else %}
+                                    <img class="flex-shrink-0 img-fluid border rounded" src="" alt="" style="width: 80px; height: 80px;">
+                                    {% endif %}
+                                    <div class="text-start ps-4">
+                                        <h5 class="mb-3">Room {{x.number}}</h5>
+                                        <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i>Ghc{{x.amount|intcomma}} per Night</span><br>
+                                        <span class="text-truncate me-3"><i class="fa fa-bed text-primary me-2"></i>Single bed</span>
+                                        <span class="text-truncate me-3"><i class="material-icons"></i>{{x.properties}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                    <div class="d-flex mb-3">
+                                        {% if x.reserved %}
+                                        <a class="btn btn-secondary disabled" href="#" disabled>Reserved</a>
+                                        {% else %}
+                                    <a class="btn btn-primary" href="{% url 'Book_A_Client' %}">Client In</a>
                                     {% endif %}
                                     </div>
                                     <small class="text-truncate"><i class="far fa-calendar-alt text-primary me-2"></i>Date Line: 01 Jan, 2045</small>

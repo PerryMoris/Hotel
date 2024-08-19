@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load humanize %}
 {% block style %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'package/dist/sweetalert2.min.css' %}">
@@ -83,13 +83,26 @@
             height: 190px;
             background-color: aliceblue;
         }
+        .actcard7{
+            border-radius: 10px;
+            box-shadow: 0 0 3px gray;
+            border-bottom: 8px solid rgb(252, 38, 48);
+            width: 250px;
+            height: 190px;
+            background-color: aliceblue;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
-<script>
-   
-</script>
+{% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <div class="sumcard">
     <div class="actcard1">
         <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
@@ -105,6 +118,14 @@
             <h3>{{ available_rooms }}</h3>
         </center>
     </div>
+    
+    <div class="actcard7">
+        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
+        <h3><i class="fas fa-calendar-check"></i></h3>
+            <h5>Reserved Rooms</h5>
+            <h3>{{ reserved_rooms }}</h3>
+        </center>
+    </div>
     <div class="actcard3">
         <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
         <h3> <i class="fas fa-users"></i> </h3>
@@ -116,7 +137,7 @@
         <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
         <h3> <i class="fas fa-money-bill-wave"></i></h3> 
             <h3>Total Arrears</h3>
-            <h3>{{ total_arrears }}</h3>
+            <h3>{{ total_arrears | intcomma }}</h3>
         </center>
     </div>
     <div class="actcard5">
@@ -203,6 +224,40 @@
 
 
     </div>
+    <hr style="height:5px">
+    <div class="row">
+        <div class="col-8">    
+            <h2>Reservations</h2>
+    <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable3">
+        <thead>
+            <tr>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Mobile</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Room Reserved</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Check Out Date</th>
+                <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for x in reservation %}
+            <tr>
+                <th scope="row">{{x.id}}</th>
+                <td>{{x.client.get_full_name}}</td>
+                <td>{{x.client.mobile}}</td>
+                <td>{{x.room}}</td>
+                <td>{{x.Check_out}}</td>
+                <td>
+                    <a class="btn btn-primary" href="{% url 'mark_client_in' x.id %}" onclick="return confirm('Are you sure this client has appeared?');">Client is In</a>
+                    <a class="btn btn-danger" href="{% url 'cancel_reservation' x.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');">Cancel</a>
+                </td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    </div>
 </div>
 
 {% endblock %}
@@ -253,6 +308,40 @@
 <script>
     $(document).ready(function() {
         $('#arrearTable2').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csv',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excel',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdf',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'print',
+                    text: 'Print',
+                    className: 'btn btn-secondary'
+                }
+            ]
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#arrearTable3').DataTable({
             dom: 'Bfrtip',
             buttons: [
                 {

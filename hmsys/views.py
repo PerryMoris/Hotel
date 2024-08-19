@@ -13,7 +13,9 @@ from django.contrib import messages
 from decimal import Decimal
 from django.utils import timezone
 
-
+def hotelname ():
+    hotelnamee = Info.objects.all().first()
+    return f"{hotelnamee.name}"
 
 def check_and_charge():
     today = timezone.now().date()
@@ -80,7 +82,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             print("login successful")
-            return redirect('home') 
+            return redirect('dashboard') 
         else:
             error_message = "Invalid login credentials. Please try again."
             messages.error(request, "Invalid login credentials. Please try again.")
@@ -90,25 +92,27 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login') 
+    return redirect('home') 
 
-@login_required(login_url="login/")
+
 def home(request):
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
-    available_rooms = Rooms.objects.filter(occupied = False).count()
+    available_rooms = Rooms.objects.filter(occupied = False)
     total_arrears = Payments.objects.aggregate(
         total_arrears=Sum(F('amount_due') - F('amount_paid'))
         )['total_arrears']
     total_arrears = total_arrears if total_arrears else 0
-
+    hotel = Info.objects.all().first()
     context ={
         'number_of_clients': number_of_clients,
         'number_of_rooms': number_of_rooms,
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
+        'hotelname': hotelname(),
+        'hotel':hotel,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'home2.html', context)
 
 @login_required(login_url="login/")
 def dashboard(request):
@@ -121,7 +125,6 @@ def dashboard(request):
     )['total_arrears']
     total_arrears = total_arrears if total_arrears else 0
 
-    
     total_adults = Booked.objects.aggregate(total_adults=Sum('adult'))['total_adults']
     total_children = Booked.objects.aggregate(total_children=Sum('children'))['total_children']
     total_adults = total_adults if total_adults else 0
@@ -129,6 +132,14 @@ def dashboard(request):
 
     today = timezone.now().date()
     clients_today = Booked.objects.filter(Check_out__date__lt=today, out=False)
+    today = timezone.now().date()  # Get today's date
+    reservations = Reservation.objects.filter(
+        Check_in__date=today, 
+        room__reserved=True,
+        comply=False
+    )
+
+    reserved_rooms = Reservation.objects.filter(room__occupied=False,comply=False).count()
 
     context = {
         'number_of_clients': number_of_clients,
@@ -138,7 +149,10 @@ def dashboard(request):
         'arrears_clients': arrears_clients,
         'total_adults': total_adults,
         'total_children': total_children,
-        'clients_today' : clients_today,
+        'clients_today': clients_today,
+        'reserved_rooms': reserved_rooms,  
+        'reservation': reservations,
+        'hotelname': hotelname(),
     }
     return render(request, 'dash2.html', context)
 
@@ -154,6 +168,7 @@ def roomlist(request):
     
     booked = allrooms.filter(occupied=True)
     available = allrooms.filter(occupied=False)
+    reserved = allrooms.filter(reserved=True)
     categories = Category.objects.all()
 
     if request.method == 'POST':
@@ -168,33 +183,39 @@ def roomlist(request):
         'allrooms': allrooms,
         'booked': booked,
         'available': available,
+        'reserved': reserved,
         'categories': categories,
         'form': form,
+        'hotelname': hotelname(),
     }
     return render(request, "room-list.html", context)
 
 @login_required(login_url="login/")
-def clientdetail (request):
-        clients = Client.objects.all()
-        booked = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
-        bookedc = booked.count()
-        
+def clientdetail(request):
+    clients = Client.objects.all()
+    booked_entries = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
 
-        cdistinct_clients_ids = Booked.objects.filter(room__occupied=False).values_list('client', flat=True).distinct()
+    unique_bookings = {}
+    for booking in booked_entries:
+        if booking.client.id not in unique_bookings:
+            unique_bookings[booking.client.id] = booking
+
+    unique_booked_entries = list(unique_bookings.values())
+    bookedc = len(unique_booked_entries)  # Count of distinct booked clients
+    distinct_client_ids = list(set(Booked.objects.filter(room__occupied=False).values_list('client', flat=True)))
+    cbooked = Client.objects.filter(id__in=distinct_client_ids).order_by('id')
+    cbookedc = cbooked.count()  # Count of distinct clients not occupying rooms
+
+    context = {
+        'clients': clients,
+        'booked': unique_booked_entries,
+        'bookedc': bookedc,
+        'cbooked': cbooked,
+        'cbookedc': cbookedc,
+        'hotelname': hotelname(),
+    }
     
-        # Get actual client objects
-        cbooked = Client.objects.filter(id__in=cdistinct_clients_ids).order_by('id')
-        cbookedc = cbooked.count()
-        
-
-        context ={
-             'clients': clients,
-             'booked' : booked,
-             'bookedc' : bookedc,
-             'cbooked' : cbooked,
-             'cbookedc' : cbookedc,
-        }
-        return render(request, "client-detail.html", context)
+    return render(request, "client-detail.html", context)
 
 
 def kitchen (request):
@@ -216,7 +237,8 @@ def bookclient(request):
         mobile = request.POST.get("mobile")
         adult = int(request.POST.get("adult"))
         children = int(request.POST.get("children"))
-
+        for_reservation = request.POST.get("for_reservation") == "on" 
+        print(request.POST)
         try:
             client = Client.objects.get(mobile=mobile)
         except Client.DoesNotExist:
@@ -234,54 +256,65 @@ def bookclient(request):
                 "error": True
             })
         else:
-            # Get booking data from request.POST
             room_id = request.POST.get("room")
             check_in = parse_date(request.POST.get("checkin"))
             check_out = parse_date(request.POST.get("checkout"))
-            amount_paid = float(request.POST.get("amount_paid"))
+            amount_paid = request.POST.get("amount_paid")
+            amount_paid = float(amount_paid) if amount_paid else 0.0
 
             # Fetch the room
             room = Rooms.objects.get(id=room_id)
-
-            # Calculate the number of days
             days = (check_out - check_in).days if check_out else 1
 
-            # Calculate the amount due
-            amount_due = days * room.amount
+            if for_reservation:
+                # Handle Reservation Logic
+                reservation = Reservation.objects.create(
+                    client=client,
+                    room=room,
+                    Check_in=check_in,
+                    Check_out=check_out,
+                    comply=False,
+                    
+                )
+                room.reserved = True
+                room.save()
+                ReservationPayments.objects.create(
+                    mode=request.POST.get("payment_mode"),
+                    reservation=reservation,
+                    amount_due=days * room.amount,
+                    amount_paid=amount_paid,
+                    created_by=request.user
+                )
+            else:
+                # Handle Booking Logic
+                amount_due = days * room.amount
+                booked = Booked.objects.create(
+                    client=client,
+                    room=room,
+                    Check_in=check_in,
+                    Check_out=check_out,
+                    adult=adult,
+                    children=children,
+                    created_by=request.user,
+                )
+                room.occupied = True
+                room.save()
 
-            # Create and save Booked
-            booked = Booked.objects.create(
-                client=client,
-                room=room,
-                Check_in=check_in,
-                Check_out=check_out,
-                adult = adult,
-                children = children,
-                created_by = request.user,
-                created_amount = amount_paid,
-            )
-            room.occupied = True
-            room.save()
-
-            # Create and save Payment
-            payment = Payments.objects.create(
-                mode=request.POST.get("payment_mode"),  
-                booked=booked,
-                amount_due=amount_due,
-                amount_paid=amount_paid,
-                created_by = request.user
-            )
+                Payments.objects.create(
+                    mode=request.POST.get("payment_mode"),
+                    booked=booked,
+                    amount_due=amount_due,
+                    amount_paid=amount_paid,
+                    created_by=request.user,
+                    created_amount=amount_paid,
+                )
 
             # Redirect to a success page or render the same template with a success message
             return render(request, "bookclient.html", {"success": True})
 
     else:
-        # Fetch available rooms
-        rooms = Rooms.objects.filter(occupied=False)
-        return render(request, "bookclient.html", {"rooms": rooms})
-
-
-
+        rooms = Rooms.objects.filter(occupied=False, reserved=False)
+        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname(),})
 
 
 @login_required(login_url="login/")
@@ -307,6 +340,7 @@ def extend_booking(request, booking_id):
     context = {
         'booking': booking,
         'payment': payment,
+        'hotelname': hotelname(),
     }
     return render(request, 'extend_booking.html', context)
 
@@ -364,6 +398,7 @@ def manage_payments(request):
         'selected_client': selected_client,
         'selected_client_arrears': selected_client_arrears,
         'arrears_clients': arrears_clients,
+        'hotelname': hotelname(),
     }
     return render(request, 'manage_payments.html', context)
 
@@ -409,6 +444,7 @@ def mysales(request):
         'total_updated_payments': total_updated_payments,
         'total_today_created_payments': total_today_created_payments,
         'total_today_updated_payments': total_today_updated_payments,
+        'hotelname': hotelname(),
     }
 
     return render(request, 'mysales.html', context)
@@ -422,19 +458,33 @@ def summarypayment (request):
     context ={
         'total': total_payments,
         'payments' : payments,
+        'hotelname': hotelname(),
     }
 
     return render (request, 'sumpayments.html', context)
 
+from django.db.models import Sum
+
 def records(request):
     booked = Booked.objects.all().order_by('-id')
+    reservation = Reservation.objects.all().order_by('-id')
+    
+    # Prefetch related payments and calculate total_amount_paid
+    reservations = Reservation.objects.prefetch_related('reservationpayments_set').all()
+    for res in reservations:
+        total_amount_paid = res.reservationpayments_set.aggregate(Sum('amount_paid'))['amount_paid__sum']
+        res.total_amount_paid = total_amount_paid or 0
+    
     service = Service_Request.objects.all().order_by('-id')
-    context ={
+    context = {
         'booked': booked,
-        'services': service
+        'services': service,
+        'reservation': reservations,
+        'hotelname': hotelname(),
     }
 
-    return render (request, 'records.html', context)
+    return render(request, 'records.html', context)
+
 
 
 @login_required(login_url="login/")
@@ -453,6 +503,7 @@ def request_service(request):
     context = {
         'form': form,
         'requests': requests,
+        'hotelname': hotelname(),
     }
     return render(request, 'request_service.html', context)
 
@@ -472,6 +523,7 @@ def service(request):
     context = {
         'form': form,
         'services': services,
+        'hotelname': hotelname(),
     }
     return render(request, 'services.html', context)
 
@@ -482,3 +534,63 @@ def delivered(request, idd):
     request.delivered = True
     request.save()
     return redirect('request_service')
+
+
+@login_required(login_url="login/")
+def mark_client_in(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    if not reservation.comply:
+       
+        reservation.comply = True
+        reservation.save()
+        
+       
+        reservation_payments = ReservationPayments.objects.filter(reservation=reservation)
+        for payment in reservation_payments:
+            Payments.objects.create(
+                mode=payment.mode,
+                booked=Booked.objects.create(
+                    client=reservation.client,
+                    room=reservation.room,
+                    Check_in=reservation.Check_in,
+                    Check_out=reservation.Check_out,
+                    adult=1,  
+                    children=0,  
+                    created_by=request.user,
+                ),
+                
+                amount_due=payment.amount_due,
+                amount_paid=payment.amount_paid,
+
+                created_by=request.user,
+                created_amount=payment.amount_paid,
+            )
+        
+      
+        room = reservation.room
+        room.occupied = True
+        room.reserved = False
+        room.save()
+
+        messages.success(request, 'Client marked as in, and reservation updated.')
+    else:
+        messages.warning(request, 'Reservation is already marked as compliant.')
+    
+    return redirect('dashboard')  
+
+@login_required(login_url="login/")
+def cancel_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+   
+    reservation.delete()
+    
+    
+    room = reservation.room
+    room.reserved = False
+    room.save()
+
+    messages.success(request, 'Reservation has been canceled.')
+    
+    return redirect('dashboard')  
