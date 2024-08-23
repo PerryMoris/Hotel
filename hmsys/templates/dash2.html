@@ -163,10 +163,19 @@
 </center>
 <br>
 <hr>
+{% if 'Administrator' in request.user.permissions or 'Account' in request.user.permissions %}
+<div style="width: 100%; max-width: 800px; margin: auto;">
+    <h4>Payments received analysis for the year</h4>
+    <canvas id="paymentsChart"></canvas>
+</div>
+{% endif %}
+
+<hr>
 <div class="tainer">
     <div class="row">
         <div class="col-6">    
             <h2>Arrears</h2>
+            {%  if arrears_clients %}
     <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
         <thead>
             <tr>
@@ -190,10 +199,14 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <h5>No Clients with arrears</h5>
+    {% endif %}
     </div>
 
     <div class="col-6">    
         <h2>Clients Due for Checkout</h2>
+        {% if clients_today %}
 <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable2">
     <thead>
         <tr>
@@ -220,6 +233,9 @@
         {% endfor %}
     </tbody>
 </table>
+{% else %}
+    <h5>No Clients due for check-out </h5>
+    {% endif %}
 </div>
 
 
@@ -228,6 +244,7 @@
     <div class="row">
         <div class="col-8">    
             <h2>Reservations</h2>
+            {% if reservation %}
     <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable3">
         <thead>
             <tr>
@@ -256,6 +273,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <h5>No Reservations today</h5>
+    {% endif %}
     </div>
     </div>
 </div>
@@ -270,108 +290,74 @@
 <script src="{% static 'js/jszip.min.js' %}"></script>
 <script src="{% static 'js/pdfmake.min.js' %}"></script>
 <script src="{% static 'js/vfs_fonts.js' %}"></script>
+<script src="{% static 'js/decimal.min.js' %}"></script>
+
 <script>
+
     $(document).ready(function() {
-        $('#arrearTable').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'copy',
-                    text: 'Copy',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary'
+        const ctx = document.getElementById('paymentsChart').getContext('2d');
+        const paymentsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ months|safe }},
+                datasets: [{
+                    label: 'Payments',
+                    data: {{ monthly_amounts|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Blue color
+                    borderColor: 'rgba(54, 162, 235, 1)',        // Blue color
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
-            ]
+            }
         });
     });
 </script>
 
-<script>
-    $(document).ready(function() {
-        $('#arrearTable2').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'copy',
-                    text: 'Copy',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary'
-                }
-            ]
-        });
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        $('#arrearTable3').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                {
-                    extend: 'copy',
-                    text: 'Copy',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary'
-                }
-            ]
-        });
-    });
-</script>
 
+    <script>
+function initializeDataTable(tableId) {
+    $(tableId).DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'copy',
+                text: 'Copy',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'csv',
+                text: 'CSV',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'excel',
+                text: 'Excel',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                className: 'btn btn-secondary'
+            }
+        ]
+    });
+}
+
+$(document).ready(function() {
+    initializeDataTable('#arrearTable');
+    initializeDataTable('#arrearTable2');
+    initializeDataTable('#arrearTable3');
+});
+</script>
     {% endblock %}

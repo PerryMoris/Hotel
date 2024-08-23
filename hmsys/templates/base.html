@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
+{% load static %}
 
 <head>
     <meta charset="utf-8">
@@ -21,7 +21,8 @@
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
     <!-- Libraries Stylesheet -->
@@ -34,13 +35,36 @@
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'js/chart.js' %}"></script>
+    <style>
+        /* Floating Round User Picture Styling */
+        .floating-user-pic {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateY(-50%);
+        }
 
+        .user-pic {
+            width: 110px;
+            /* Adjust size as needed */
+            height: 110px;
+            /* Ensure the height matches the width to keep it round */
+            border-radius: 50%;
+            /* Makes the image round */
+            border: 3px solid #fff;
+            /* Optional: border to enhance visibility */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            /* Optional: adds shadow for better visibility */
+        }
+    </style>
     {% block style %}
 
     {% endblock %}
 </head>
 
-<body >
+<body>
     <div class="tainer p-0">
         <!-- Spinner Start -->
         <div id="spinner"
@@ -53,9 +77,11 @@
 
 
         <!-- Navbar Start -->
-        <nav class="navbar navbar-expand-lg  navbar-light shadow sticky-top p-0">
+        <nav class="navbar navbar-expand-lg  navbar-light shadow sticky-top p-0" style="margin-right: 90px;">
             <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-                <h1 class="m-0 text-primary">HMS <span style="font-size: large;align-content: center;justify-content: center;">({{hotelname}})</span></h1>
+                <h1 class="m-0 text-primary">HMS <span
+                        style="font-size: large;align-content: center;justify-content: center;">({{hotelname}})</span>
+                </h1>
             </a>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse"
                 data-bs-target="#navbarCollapse">
@@ -77,9 +103,12 @@
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="{% url 'managepayment' %}" class="dropdown-item">Accept Payments</a>
                             <a href="{% url 'mysales' %}" class="dropdown-item">My Sales</a>
+                            {% if 'Administrator' in request.user.permissions or 'Account' in request.user.permissions %}
                             <a href="{% url 'payments' %}" class="dropdown-item">Account Summary</a>
+                            {% endif %}
                         </div>
                     </div>
+                    {% if 'Administrator' in request.user.permissions %}
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Staff</a>
                         <div class="dropdown-menu rounded-0 m-0">
@@ -89,16 +118,23 @@
                             <a href="{% url 'admin:index' %}" class="dropdown-item" target="_blank">Admin Page</a>
                         </div>
                     </div>
+
                     <a href="{% url 'record' %}" class="nav-item nav-link">Records</a>
                     <a href="#" class="nav-item nav-link">Complains</a>
+                    {% endif %}
                     <button class="theme-toggle" onclick="toggleTheme()">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
                             <label class="form-check-label" id="themeid" for="flexSwitchCheckChecked">light</label>
-                          </div>
-                      </button>
-                    <button style="border: none; margin-left: 6px;" id="fullscreenButton"><i class="fas fa-expand"></i></button>
-                    
+                        </div>
+                    </button>
+                    <button style="border: none; margin-left: 6px;" id="fullscreenButton"><i
+                            class="fas fa-expand"></i></button>
+
+                </div>
+                <div class="floating-user-pic">
+                    <img src="{% if profile_pic %} {{profile_pic}} {% else %} {% static 'img/proimg.png' %}  {% endif %}"
+                        alt="User Picture" class="user-pic">
                 </div>
                 <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
                         class="fa fa-arrow-right ms-3"></i></a>
@@ -110,69 +146,69 @@
 
     {% endblock %}
 
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'lib/wow/wow.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'lib/easing/easing.min.js' %}"></script>
-<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-bs-theme', newTheme);
-        const lbl = document.getElementById("themeid")
-        lbl.textContent = newTheme + " "
-        localStorage.setItem('theme', newTheme);
-    }
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-bs-theme', savedTheme);
-    });
-</script>
-<script>
-    document.getElementById('fullscreenButton').addEventListener('click', function() {
-    if (!document.fullscreenElement) {
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) { // Firefox
-            document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, and Opera
-            document.documentElement.webkitRequestFullscreen();
-        } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
-            document.documentElement.msRequestFullscreen();
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            const lbl = document.getElementById("themeid")
+            lbl.textContent = newTheme + " "
+            localStorage.setItem('theme', newTheme);
         }
-        document.getElementById('fullscreenIcon').src = 'exit-fullscreen-icon.png'; // Change to exit fullscreen icon
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) { // Firefox
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) { // Chrome, Safari, and Opera
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { // IE/Edge
-            document.msExitFullscreen();
-        }
-        document.getElementById('fullscreenIcon').src = 'fullscreen-icon.png'; // Change back to fullscreen icon
-    }
-});
 
-document.addEventListener('fullscreenchange', function() {
-    if (!document.fullscreenElement) {
-        document.getElementById('fullscreenIcon').src = 'fullscreen-icon.png'; // Ensure icon changes back when exiting fullscreen
-    }
-});
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        });
+    </script>
+    <script>
+        document.getElementById('fullscreenButton').addEventListener('click', function () {
+            if (!document.fullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+                document.getElementById('fullscreenIcon').src = 'exit-fullscreen-icon.png'; // Change to exit fullscreen icon
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari, and Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+                document.getElementById('fullscreenIcon').src = 'fullscreen-icon.png'; // Change back to fullscreen icon
+            }
+        });
 
-</script>
-{% block js %}
-{% endblock %}
-<!-- Template Javascript -->
-<script src="{% static 'js/main.js' %}"></script>
+        document.addEventListener('fullscreenchange', function () {
+            if (!document.fullscreenElement) {
+                document.getElementById('fullscreenIcon').src = 'fullscreen-icon.png'; // Ensure icon changes back when exiting fullscreen
+            }
+        });
+
+    </script>
+    {% block js %}
+    {% endblock %}
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 
 </html>

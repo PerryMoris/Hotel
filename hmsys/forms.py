@@ -26,6 +26,11 @@ class ServicesForm(forms.ModelForm):
         model = Services
         fields = "__all__"
 
+class InfoForm(forms.ModelForm):
+    class Meta:
+        model = Info
+        fields = "__all__"
+
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payments

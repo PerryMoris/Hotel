@@ -1,6 +1,24 @@
 from typing import Any
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+from django.conf import settings
+from multiselectfield import MultiSelectField
+
+
+class CustomUser (AbstractUser):
+    perm = (
+        ('Administrator', 'Administrator'),
+        ('Account', 'Account'),
+        ('Receptionist', 'Receptionist'),
+        ('Auditor', 'Auditor'),
+    )
+    mobile = models.CharField(max_length=100, null=True, blank=True)
+    location = models.CharField(max_length=225, null=True, blank=True)
+    permissions = MultiSelectField(choices=perm, null=True, blank=True)
+    profile_pic = models.ImageField(upload_to='profile/', null=True, blank=True)
+
+    def __str__(self):
+        return self.username 
 
 class Info (models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -60,7 +78,7 @@ class Booked (models.Model):
     children = models.IntegerField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     out = models.BooleanField(default=False)
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self):
         return f"{self.client.get_full_name()} - {self.room}"
@@ -84,7 +102,7 @@ class ReservationPayments(models.Model):
     fully_paid = models.BooleanField(default=False)
     created_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True)
     
     def __str__(self):
         return f"{self.booked} - {self.amount_paid}"
@@ -98,9 +116,9 @@ class Payments(models.Model):
     fully_paid = models.BooleanField(default=False)
     created_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True)
     updated_on = models.DateTimeField(auto_now=True)  # Automatically updates to current timestamp on save
-    updated_by = models.ForeignKey(User, related_name='payments_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='payments_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     
     def save(self, *args, **kwargs):
@@ -148,12 +166,12 @@ class Service_Request(models.Model):
     requested = models.TextField('Request Details',null=True, blank=True)
     delivered = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_by', on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created_by', on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         return f"{self.booked.client} - {self.requested:[70]}"
     
 class Cleaning(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name='user')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, verbose_name='user')
     room = models.ForeignKey(Rooms, on_delete=models.CASCADE, null=True, blank=True)
     challenges = models.TextField(null=True, blank=True)
     time = models.DateTimeField(null=True, blank=True)

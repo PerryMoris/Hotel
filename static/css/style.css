@@ -10,6 +10,21 @@
     margin-inline-start: 5px;
     margin-top: -1px;
 }
+/* Floating Round User Picture Styling */
+.floating-user-pic {
+    position: fixed; /* Fixed position relative to the viewport */
+    bottom: 20px;    /* Adjust vertical position */
+    right: 20px;     /* Adjust horizontal position */
+    z-index: 1000;   /* Ensure it is above other elements */
+}
+
+.user-pic {
+    width: 80px; /* Adjust size as needed */
+    height: 80px; /* Ensure the height matches the width to keep it round */
+    border-radius: 50%; /* Makes the image round */
+    border: 3px solid #fff; /* Optional: border to enhance visibility */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional: adds shadow for better visibility */
+}
 
 .theme-toggle svg {
     vertical-align: middle;
