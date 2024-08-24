@@ -20,6 +20,24 @@ def hotelname ():
     hotelnamee = Info.objects.all().first()
     return f"{hotelnamee.name}"
 
+from django.utils import timezone
+
+def deletereserve():
+    today = timezone.now().date()
+    try:
+        reservations = Reservation.objects.filter(
+            Check_in__lt=today,  # Use correct field name
+            room__reserved=True,
+            comply=False
+        )
+        for reservation in reservations:
+            reservation.room.reserved = False
+            reservation.room.save()  # Save the room instance
+            reservation.save()  # Save the reservation instance if necessary
+            
+    except Reservation.DoesNotExist:
+        pass
+
 
 
 def check_and_charge():
@@ -63,6 +81,7 @@ def check_user_exists(request):
 
 def login_view(request):
     today = timezone.now().date()
+    deletereserve()
     if not UpdateClient.objects.filter(date=today).exists():
         check_and_charge()
     
@@ -101,6 +120,7 @@ def logout_view(request):
 
 
 def home(request):
+    deletereserve()
     hotelnamee = Info.objects.all().first()
     if not hotelnamee or not hotelnamee.name:
         return redirect('info') 
@@ -125,6 +145,8 @@ def home(request):
 
 @login_required(login_url="login/")
 def dashboard(request):
+    deletereserve()
+    check_and_charge()
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
     available_rooms = Rooms.objects.filter(occupied=False).count()
@@ -140,14 +162,14 @@ def dashboard(request):
     total_children = total_children if total_children else 0
 
     today = timezone.now().date()
-    clients_today = Booked.objects.filter(Check_out__date__lt=today, out=False)
+    clients_today = Booked.objects.filter(Check_out__date__lte=today, out=False)
     reservations = Reservation.objects.filter(
         Check_in__date=today, 
         room__reserved=True,
         comply=False
     )
 
-    reserved_rooms = Reservation.objects.filter(room__occupied=False,comply=False).count()
+    reserved_rooms = Reservation.objects.filter(room__reserved=True,room__occupied=False,comply=False).count()
     current_user = request.user
     profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
     current_year = today.year
@@ -189,6 +211,7 @@ def dashboard(request):
 
 @login_required(login_url="login/")
 def roomlist(request):
+    deletereserve()
     category_id = request.GET.get('category')
     if category_id:
         allrooms = Rooms.objects.filter(category_id=category_id)
@@ -196,7 +219,7 @@ def roomlist(request):
         allrooms = Rooms.objects.all()
     
     booked = allrooms.filter(occupied=True)
-    available = allrooms.filter(occupied=False)
+    available = allrooms.filter(occupied=False,reserved=False)
     reserved = allrooms.filter(reserved=True)
     categories = Category.objects.all()
 
