@@ -45,6 +45,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 SESSION_COOKIE_AGE = 14400
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
+AUTH_USER_MODEL = 'hmsys.CustomUser'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

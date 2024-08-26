@@ -12,10 +12,33 @@ from .forms import *
 from django.contrib import messages
 from decimal import Decimal
 from django.utils import timezone
+import calendar
+
+
 
 def hotelname ():
     hotelnamee = Info.objects.all().first()
     return f"{hotelnamee.name}"
+
+from django.utils import timezone
+
+def deletereserve():
+    today = timezone.now().date()
+    try:
+        reservations = Reservation.objects.filter(
+            Check_in__lt=today,  # Use correct field name
+            room__reserved=True,
+            comply=False
+        )
+        for reservation in reservations:
+            reservation.room.reserved = False
+            reservation.room.save()  # Save the room instance
+            reservation.save()  # Save the reservation instance if necessary
+            
+    except Reservation.DoesNotExist:
+        pass
+
+
 
 def check_and_charge():
     today = timezone.now().date()
@@ -58,6 +81,7 @@ def check_user_exists(request):
 
 def login_view(request):
     today = timezone.now().date()
+    deletereserve()
     if not UpdateClient.objects.filter(date=today).exists():
         check_and_charge()
     
@@ -96,6 +120,10 @@ def logout_view(request):
 
 
 def home(request):
+    deletereserve()
+    hotelnamee = Info.objects.all().first()
+    if not hotelnamee or not hotelnamee.name:
+        return redirect('info') 
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
     available_rooms = Rooms.objects.filter(occupied = False)
@@ -106,6 +134,7 @@ def home(request):
     hotel = Info.objects.all().first()
     context ={
         'number_of_clients': number_of_clients,
+        
         'number_of_rooms': number_of_rooms,
         'available_rooms' : available_rooms,
         'total_arrears': total_arrears,
@@ -116,6 +145,8 @@ def home(request):
 
 @login_required(login_url="login/")
 def dashboard(request):
+    deletereserve()
+    check_and_charge()
     number_of_clients = Client.objects.all().count()
     number_of_rooms = Rooms.objects.all().count()
     available_rooms = Rooms.objects.filter(occupied=False).count()
@@ -131,17 +162,37 @@ def dashboard(request):
     total_children = total_children if total_children else 0
 
     today = timezone.now().date()
-    clients_today = Booked.objects.filter(Check_out__date__lt=today, out=False)
-    today = timezone.now().date()  # Get today's date
+    clients_today = Booked.objects.filter(Check_out__date__lte=today, out=False)
     reservations = Reservation.objects.filter(
         Check_in__date=today, 
         room__reserved=True,
         comply=False
     )
 
-    reserved_rooms = Reservation.objects.filter(room__occupied=False,comply=False).count()
+    reserved_rooms = Reservation.objects.filter(room__reserved=True,room__occupied=False,comply=False).count()
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+    current_year = today.year
+
+    # Aggregating payments by month for the current year
+    payments_by_month = Payments.objects.filter(
+        created_on__year=current_year
+    ).values('created_on__month').annotate(
+        total_amount=Sum('amount_paid')
+    ).order_by('created_on__month')
+
+    # Prepare data for the chart
+    months = [calendar.month_name[i] for i in range(1, 13)]  # List of month names
+    monthly_amounts = [0] * 12  # Initialize with zero
+
+    for payment in payments_by_month:
+        month = payment['created_on__month'] - 1
+        monthly_amounts[month] = payment['total_amount']
 
     context = {
+        'profile_pic': profile_pic_url,
+        'months': months,
+        'monthly_amounts': monthly_amounts,
         'number_of_clients': number_of_clients,
         'number_of_rooms': number_of_rooms,
         'available_rooms': available_rooms,
@@ -160,6 +211,7 @@ def dashboard(request):
 
 @login_required(login_url="login/")
 def roomlist(request):
+    deletereserve()
     category_id = request.GET.get('category')
     if category_id:
         allrooms = Rooms.objects.filter(category_id=category_id)
@@ -167,7 +219,7 @@ def roomlist(request):
         allrooms = Rooms.objects.all()
     
     booked = allrooms.filter(occupied=True)
-    available = allrooms.filter(occupied=False)
+    available = allrooms.filter(occupied=False,reserved=False)
     reserved = allrooms.filter(reserved=True)
     categories = Category.objects.all()
 
@@ -179,7 +231,11 @@ def roomlist(request):
     else:
         form = RoomForm()
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'allrooms': allrooms,
         'booked': booked,
         'available': available,
@@ -206,7 +262,11 @@ def clientdetail(request):
     cbooked = Client.objects.filter(id__in=distinct_client_ids).order_by('id')
     cbookedc = cbooked.count()  # Count of distinct clients not occupying rooms
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'clients': clients,
         'booked': unique_booked_entries,
         'bookedc': bookedc,
@@ -230,6 +290,10 @@ def security (request):
 
 @login_required(login_url="login/")
 def bookclient(request):
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
+ 
     if request.method == "POST":
         surname = request.POST.get("surname")
         othernames = request.POST.get("othernames")
@@ -311,10 +375,10 @@ def bookclient(request):
 
             # Redirect to a success page or render the same template with a success message
             return render(request, "bookclient.html", {"success": True})
-
+    
     else:
         rooms = Rooms.objects.filter(occupied=False, reserved=False)
-        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname(),})
+        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname(),'profile_pic': profile_pic_url,})
 
 
 @login_required(login_url="login/")
@@ -337,7 +401,11 @@ def extend_booking(request, booking_id):
 
         return redirect('dashboard')  # Redirect to your desired page after processing
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'booking': booking,
         'payment': payment,
         'hotelname': hotelname(),
@@ -393,7 +461,11 @@ def manage_payments(request):
                 fully_paid=False
             ).aggregate(total_arrears=Sum(F('amount_due') - F('amount_paid')))['total_arrears'] or 0
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'clients': clients_with_arrears,
         'selected_client': selected_client,
         'selected_client_arrears': selected_client_arrears,
@@ -435,7 +507,11 @@ def mysales(request):
     total_today_created_payments = today_payments.aggregate(total=Sum('created_amount'))['total'] or 0
     total_today_updated_payments = today_payments_update.aggregate(total=Sum('updated_amount'))['total'] or 0
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'payments': payments,
         'payments_update': payments_update,
         'today_payments': today_payments,
@@ -455,7 +531,11 @@ def summarypayment (request):
     payments = Payments.objects.all().order_by('-id')
     total_payments = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
 
-    context ={
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
+    context = {
+        'profile_pic': profile_pic_url,
         'total': total_payments,
         'payments' : payments,
         'hotelname': hotelname(),
@@ -476,7 +556,11 @@ def records(request):
         res.total_amount_paid = total_amount_paid or 0
     
     service = Service_Request.objects.all().order_by('-id')
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'booked': booked,
         'services': service,
         'reservation': reservations,
@@ -500,7 +584,11 @@ def request_service(request):
     else:
         form = RequestForm()
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'form': form,
         'requests': requests,
         'hotelname': hotelname(),
@@ -520,12 +608,30 @@ def service(request):
     else:
         form = ServicesForm()
 
+    current_user = request.user
+    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
+
     context = {
+        'profile_pic': profile_pic_url,
         'form': form,
         'services': services,
         'hotelname': hotelname(),
     }
     return render(request, 'services.html', context)
+
+def info(request):
+    if request.method == 'POST':
+        form = InfoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home') 
+    else:
+        form = InfoForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'info.html', context)
 
 
 @login_required(login_url="login/")

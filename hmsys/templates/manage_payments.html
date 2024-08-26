@@ -50,7 +50,7 @@
             <form method="post" action="{% url 'clear_arrears' %}">
                 {% csrf_token %}
                 <input type="hidden" name="client_id" value="{{ selected_client.id }}">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure the client has paid his/her arrears? Note that this operation can not be reversed');">Clear Arrears</button>
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure the client has paid his/her arrears? Note that this operation can not be reversed');">Received Arrears</button>
             </form>
 
             {% else %}
