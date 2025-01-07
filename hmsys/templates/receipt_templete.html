@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load humanize %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt</title>
+    <style>
+        @page {
+            size: 75mm 150mm;
+            margin: 6px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 75mm;
+        }
+        .receipt {
+            text-align: center;
+            margin: 10px;
+        }
+        .store-info {
+            margin-top: 0;
+            padding: 0;
+        }
+        .receipt-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 0 !important;
+        }
+        .receipt-details {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .item-table th,
+        .item-table td {
+            border: 1px solid black;
+            padding: 4px;
+        }
+        .item-table th {
+            background-color: #f2f2f2;
+        }
+        .receipt-total {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="store-info">
+            <p class="receipt-header">{{ info.name }}</p>
+            <p style="margin: 0;">{{ info.address }}</p>
+            <p style="margin: 0;">Phone: {{ info.mobile }}</p>
+        </div>
+        
+        <div class="receipt-details">
+            <p style="margin: 1px;"><strong>Date: </strong> {{ payment.created_on|date:"Y-m-d H:i" }}</p>
+            <p style="margin: 1px;"><strong>Receipt #: </strong> {{ payment.id }}</p>
+            <p style="margin: 1px;"><strong>Cashier (Initial Payment): </strong> {{ payment.created_by.username }}</p>
+            {% if payment.updated_by %}
+            <p style="margin: 1px;"><stong>Cashier (Updated Payment): </stong> {{ payment.updated_by.username }}</p>
+            {% endif %}
+            <p style="margin: 1px;"><strong>Client: </strong> {{ payment.booked.client.get_full_name }}</p>
+        </div>
+        
+        <hr>
+        <div class="receipt-details">
+            <p style="margin: 1px;"><strong>Room: </strong> {{ payment.booked.room }} - GHc {{ payment.booked.room.amount|floatformat:2 }}</p>
+            <p style="margin: 1px;"><strong>Daily Rate: </strong> GHc {{ payment.booked.room.amount|floatformat:2 }}</p>
+            <p style="margin: 1px;"><strong>Checked In: </strong> {{ payment.booked.Check_in|date:"F j, Y" }}</p>
+            <p style="margin: 1px;"><strong>Days: </strong> <span >{{days}}</span></p>
+        </div>
+        
+       
+        
+        
+        
+        <hr>
+        
+        <table class="item-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Initial Payment</td>
+                    <td style="text-align: right;">GHc {{ payment.created_amount|intcomma }}</td>
+                </tr>
+                {% if payment.updated_amount %}
+                <tr>
+                    <td>Updated Payment</td>
+                    <td style="text-align: right;">GHc {{ payment.updated_amount|intcomma }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>Total Amount Paid</td>
+                    <td style="text-align: right;">GHc {{ payment.amount_paid|intcomma }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <hr>
+        
+        <div class="receipt-total">
+            <p style="margin: 2px;">Amount Due: GHc {{ payment.amount_due|intcomma }}</p>
+            <p style="margin: 2px;">Amount Paid: GHc {{ payment.amount_paid|intcomma }}</p>
+            <p style="margin: 2px;">==================================</p>
+            <p style="margin: 2px;">Balance (Arrears): GHc {{ payment.arrears|intcomma }}</p>
+        </div>
+    </div>
+    
+    
+</body>
+</html>
+

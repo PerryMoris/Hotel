@@ -188,6 +188,12 @@ def dashboard(request):
     for payment in payments_by_month:
         month = payment['created_on__month'] - 1
         monthly_amounts[month] = payment['total_amount']
+    
+     # Convert Decimal to float for monthly_amounts
+    monthly_amounts = [float(amount) for amount in monthly_amounts]
+
+    
+   
 
     context = {
         'profile_pic': profile_pic_url,
@@ -248,7 +254,7 @@ def roomlist(request):
 
 @login_required(login_url="login/")
 def clientdetail(request):
-    clients = Client.objects.all()
+    clients = Client.objects.all().order_by('-id')
     booked_entries = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
 
     unique_bookings = {}
@@ -364,7 +370,7 @@ def bookclient(request):
                 room.occupied = True
                 room.save()
 
-                Payments.objects.create(
+                paid = Payments.objects.create(
                     mode=request.POST.get("payment_mode"),
                     booked=booked,
                     amount_due=amount_due,
@@ -372,9 +378,13 @@ def bookclient(request):
                     created_by=request.user,
                     created_amount=amount_paid,
                 )
+                paid.save()
+                if amount_paid > 0:
+                    return redirect ('receipt_pdf', paid.id)
 
             # Redirect to a success page or render the same template with a success message
-            return render(request, "bookclient.html", {"success": True})
+            messages.success(request, 'Client Successfully booked')
+            return redirect('Book_A_Client')
     
     else:
         rooms = Rooms.objects.filter(occupied=False, reserved=False)
@@ -431,6 +441,7 @@ def checkout(request, idd):
 
             rr = booking
             rr.out = True
+            rr.Check_out = date.today()
             rr.save()
             messages.success(request, "Checked out successfully.")
             return redirect("client-detail")
@@ -482,7 +493,9 @@ def clear_arrears(request):
         if client_id:
             client = Client.objects.filter(id=client_id).first()
             if client:
+                paid = Payments.objects.filter(booked__client=client, fully_paid=False).first()
                 Payments.objects.filter(booked__client=client, fully_paid=False).update(updated_amount=(F('amount_due') - F('amount_paid')),amount_paid=F('amount_due'),fully_paid=True,updated_by=request.user)
+                return redirect('receipt_pdf', paid.id)
     return redirect('managepayment')
 
 
@@ -528,7 +541,7 @@ def mysales(request):
 
 @login_required(login_url="login/")
 def summarypayment (request):
-    payments = Payments.objects.all().order_by('-id')
+    payments = Payments.objects.all().order_by('-updated_on')
     total_payments = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
 
     current_user = request.user
@@ -700,3 +713,37 @@ def cancel_reservation(request, reservation_id):
     messages.success(request, 'Reservation has been canceled.')
     
     return redirect('dashboard')  
+
+
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
+def generate_pdf_receipt(request, payment_id):
+    # Fetch the payment record and related info
+    payment = get_object_or_404(Payments, id=payment_id)
+    info = Info.objects.first()
+    days = payment.amount_paid / payment.booked.room.amount
+    # Prepare the response object for PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="receipt_{payment_id}.pdf"'
+    
+    # Context data for the template
+    context = {
+        'payment': payment,
+        'info': info,
+        'days':days,
+    }
+    
+    # Render the template to HTML
+    template = get_template('receipt_templete.html')
+    html = template.render(context)
+    
+    # Generate PDF
+    pdf = pisa.CreatePDF(html, dest=response, encoding='utf-8')
+    
+    if not pdf.err:
+        return response
+    
+    return HttpResponse(f'Error generating PDF: <pre>{html}</pre>')

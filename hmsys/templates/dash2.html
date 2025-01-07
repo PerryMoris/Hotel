@@ -291,33 +291,43 @@
 <script src="{% static 'js/pdfmake.min.js' %}"></script>
 <script src="{% static 'js/vfs_fonts.js' %}"></script>
 <script src="{% static 'js/decimal.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-
     $(document).ready(function() {
-        const ctx = document.getElementById('paymentsChart').getContext('2d');
-        const paymentsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ months|safe }},
-                datasets: [{
-                    label: 'Payments',
-                    data: {{ monthly_amounts|safe }},
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Blue color
-                    borderColor: 'rgba(54, 162, 235, 1)',        // Blue color
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+        
+
+        // Check if the #paymentsChart element exists in the DOM
+        const chartElement = document.getElementById('paymentsChart');
+        if (chartElement) {
+            const ctx = chartElement.getContext('2d');
+            const paymentsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ months|safe }},
+                    datasets: [{
+                        label: 'Payments',
+                        data: {{ monthly_amounts|safe }},
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Blue color
+                        borderColor: 'rgba(54, 162, 235, 1)',        // Blue color
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            console.error('Chart element not found!');
+        }
     });
 </script>
+
+
 
 
     <script>

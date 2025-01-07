@@ -28,5 +28,7 @@ urlpatterns = [
   path('extend-booking/<int:booking_id>/', views.extend_booking, name='extend_booking'),
   path('mark-client-in/<int:reservation_id>/', views.mark_client_in, name='mark_client_in'),
   path('cancel-reservation/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
+  path("pdf/<str:payment_id>",
+           views.generate_pdf_receipt, name="receipt_pdf"),
 ]
 
