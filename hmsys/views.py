@@ -288,12 +288,14 @@ def security (request):
         return render(request, "underconstruct.html")
 
 
+from django.db.models import Q
+from django.utils.dateparse import parse_date
+
 @login_required(login_url="login/")
 def bookclient(request):
     current_user = request.user
     profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
 
- 
     if request.method == "POST":
         surname = request.POST.get("surname")
         othernames = request.POST.get("othernames")
@@ -302,7 +304,7 @@ def bookclient(request):
         adult = int(request.POST.get("adult"))
         children = int(request.POST.get("children"))
         for_reservation = request.POST.get("for_reservation") == "on" 
-        print(request.POST)
+
         try:
             client = Client.objects.get(mobile=mobile)
         except Client.DoesNotExist:
@@ -313,72 +315,86 @@ def bookclient(request):
                 mobile=mobile
             )
 
-        # Check if the client is already booked in any occupied room
-        booked_rooms = Booked.objects.filter(client=client, room__occupied=True)
-        if booked_rooms.exists():
+        room_id = request.POST.get("room")
+        check_in = parse_date(request.POST.get("checkin"))
+        check_out = parse_date(request.POST.get("checkout"))
+        amount_paid = request.POST.get("amount_paid")
+        amount_paid = float(amount_paid) if amount_paid else 0.0
+
+        # Validate room availability
+        room = Rooms.objects.get(id=room_id)
+        conflicting_bookings = Booked.objects.filter(
+            room=room,
+            Check_in__lt=check_out,
+            Check_out__gt=check_in
+        )
+        conflicting_reservations = Reservation.objects.filter(
+            room=room,
+            Check_in__lt=check_out,
+            Check_out__gt=check_in
+        )
+        if conflicting_bookings.exists() or conflicting_reservations.exists():
             return render(request, "bookclient.html", {
-                "error": True
+                "error2": True,
+                "rooms": Rooms.objects.filter(occupied=False, reserved=False),
+                'hotelname': hotelname(),
+                'profile_pic': profile_pic_url,
             })
+
+        days = (check_out - check_in).days if check_out else 1
+
+        if for_reservation:
+            # Handle Reservation Logic
+            reservation = Reservation.objects.create(
+                client=client,
+                room=room,
+                Check_in=check_in,
+                Check_out=check_out,
+                comply=False,
+            )
+            room.reserved = True
+            room.save()
+            ReservationPayments.objects.create(
+                mode=request.POST.get("payment_mode"),
+                reservation=reservation,
+                amount_due=days * room.amount,
+                amount_paid=amount_paid,
+                created_by=request.user
+            )
         else:
-            room_id = request.POST.get("room")
-            check_in = parse_date(request.POST.get("checkin"))
-            check_out = parse_date(request.POST.get("checkout"))
-            amount_paid = request.POST.get("amount_paid")
-            amount_paid = float(amount_paid) if amount_paid else 0.0
+            # Handle Booking Logic
+            amount_due = days * room.amount
+            booked = Booked.objects.create(
+                client=client,
+                room=room,
+                Check_in=check_in,
+                Check_out=check_out,
+                adult=adult,
+                children=children,
+                created_by=request.user,
+            )
+            room.occupied = True
+            room.save()
 
-            # Fetch the room
-            room = Rooms.objects.get(id=room_id)
-            days = (check_out - check_in).days if check_out else 1
+            Payments.objects.create(
+                mode=request.POST.get("payment_mode"),
+                booked=booked,
+                amount_due=amount_due,
+                amount_paid=amount_paid,
+                created_by=request.user,
+                created_amount=amount_paid,
+            )
 
-            if for_reservation:
-                # Handle Reservation Logic
-                reservation = Reservation.objects.create(
-                    client=client,
-                    room=room,
-                    Check_in=check_in,
-                    Check_out=check_out,
-                    comply=False,
-                    
-                )
-                room.reserved = True
-                room.save()
-                ReservationPayments.objects.create(
-                    mode=request.POST.get("payment_mode"),
-                    reservation=reservation,
-                    amount_due=days * room.amount,
-                    amount_paid=amount_paid,
-                    created_by=request.user
-                )
-            else:
-                # Handle Booking Logic
-                amount_due = days * room.amount
-                booked = Booked.objects.create(
-                    client=client,
-                    room=room,
-                    Check_in=check_in,
-                    Check_out=check_out,
-                    adult=adult,
-                    children=children,
-                    created_by=request.user,
-                )
-                room.occupied = True
-                room.save()
+        # Redirect to a success page or render the same template with a success message
+        return render(request, "bookclient.html", {"success": True})
 
-                Payments.objects.create(
-                    mode=request.POST.get("payment_mode"),
-                    booked=booked,
-                    amount_due=amount_due,
-                    amount_paid=amount_paid,
-                    created_by=request.user,
-                    created_amount=amount_paid,
-                )
-
-            # Redirect to a success page or render the same template with a success message
-            return render(request, "bookclient.html", {"success": True})
-    
     else:
         rooms = Rooms.objects.filter(occupied=False, reserved=False)
-        return render(request, "bookclient.html", {"rooms": rooms,'hotelname': hotelname(),'profile_pic': profile_pic_url,})
+        return render(request, "bookclient.html", {
+            "rooms": rooms,
+            'hotelname': hotelname(),
+            'profile_pic': profile_pic_url,
+        })
 
 
 @login_required(login_url="login/")

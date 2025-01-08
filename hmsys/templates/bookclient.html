@@ -18,7 +18,15 @@
     });
 </script>
 {% endif %}
-
+{% if error2 %}
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "Room is already reserved or booked for the selected dates."
+    });
+</script>
+{% endif %}
 {% if success %}
 <script>
     Swal.fire({

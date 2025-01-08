@@ -3,7 +3,9 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 from django.conf import settings
 from multiselectfield import MultiSelectField
-
+from django.utils.timezone import now
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 class CustomUser (AbstractUser):
     perm = (
@@ -93,6 +95,41 @@ class Reservation(models.Model):
     
     def __str__(self):
         return f"{self.client.get_full_name()} - {self.room}"
+    
+from django.utils.timezone import now
+from datetime import date
+
+@receiver(post_save, sender=Reservation)
+def update_room_reserved_status_on_save(sender, instance, **kwargs):
+    today = now().date()
+
+    # Safely handle cases where Check_in or Check_out might already be a date
+    check_in = instance.Check_in if isinstance(instance.Check_in, date) else instance.Check_in.date()
+    check_out = instance.Check_out if isinstance(instance.Check_out, date) else instance.Check_out.date() if instance.Check_out else None
+
+    if check_in == today <= (check_out or today):
+        instance.room.reserved = True
+    else:
+        instance.room.reserved = False
+    instance.room.save()
+
+@receiver(post_delete, sender=Reservation)
+def update_room_reserved_status_on_delete(sender, instance, **kwargs):
+    today = now().date()
+
+    # Safely handle cases where Check_in or Check_out might already be a date
+    check_in = instance.Check_in if isinstance(instance.Check_in, date) else instance.Check_in.date()
+    check_out = instance.Check_out if isinstance(instance.Check_out, date) else instance.Check_out.date() if instance.Check_out else None
+
+    # Check if there are other active reservations for the room
+    active_reservations = Reservation.objects.filter(
+        room=instance.room,
+        Check_in__lte=today,
+        Check_out__gte=today
+    )
+    if not active_reservations.exists():
+        instance.room.reserved = False
+        instance.room.save()
 
 class ReservationPayments(models.Model):
     mode = models.CharField(max_length=150, null=True, blank=True)
