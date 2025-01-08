@@ -36,8 +36,23 @@
     });
 </script>
 {% endif %}
+{% if messages %}
+    <script>
+        const message = "{{ messages|first }}";  // Get the first message from the messages stack
+
+        if (message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: message  // Display the dynamic message from the backend
+            });
+        }
+    </script>
+{% endif %}
+
 
     <div class="tainer">
+        <a href="{% url 'Book_A_Client' %}" class="btn btn-secondary">Please Click To Refresh Page</a><br>
         <div class="row">
             <div class="col-md-6">
                 <h2>Client Details</h2>

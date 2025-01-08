@@ -162,7 +162,7 @@ class Payments(models.Model):
         # Track the updated amount
         if self.pk:
             original = Payments.objects.get(pk=self.pk)
-            self.updated_amount = self.amount_due - original.amount_paid
+            self.updated_amount = float(self.amount_paid) - float(original.created_amount)
         else:
             self.updated_amount = float(self.amount_due) - float(self.amount_paid if self.amount_paid else 0)
 
