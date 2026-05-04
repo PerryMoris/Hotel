@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 {% load static %}
 
 <head>
@@ -8,6 +8,16 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
+
+    <script>
+        // Apply saved theme early to avoid flash-of-incorrect-theme on navigation
+        (function(){
+            try{
+                var t = localStorage.getItem('theme');
+                document.documentElement.setAttribute('data-bs-theme', t || 'light');
+            }catch(e){/* ignore */}
+        })();
+    </script>
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
@@ -34,30 +44,14 @@
 
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!-- UI tokens and components (overrides) -->
+    <link href="{% static 'css/ui.css' %}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{% static 'js/chart.js' %}"></script>
     <style>
-        /* Floating Round User Picture Styling */
-        .floating-user-pic {
-            position: fixed;
-            top: 50px;
-            right: 20px;
-            z-index: 1000;
-            transform: translateY(-50%);
-        }
-
-        .user-pic {
-            width: 110px;
-            /* Adjust size as needed */
-            height: 110px;
-            /* Ensure the height matches the width to keep it round */
-            border-radius: 50%;
-            /* Makes the image round */
-            border: 3px solid #fff;
-            /* Optional: border to enhance visibility */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            /* Optional: adds shadow for better visibility */
-        }
+        /* small inline adjustments preserved */
+        .floating-user-pic { position: fixed; bottom: 20px; right: 20px; z-index:1000 }
+        .user-pic { width: 80px; height:80px; border-radius:50%; border:3px solid #fff }
     </style>
     {% block style %}
 
@@ -65,7 +59,7 @@
 </head>
 
 <body>
-    <div class="tainer p-0">
+    <div class="container-fluid p-0">
         <!-- Spinner Start -->
         <div id="spinner"
             class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -77,67 +71,81 @@
 
 
         <!-- Navbar Start -->
-        <nav class="navbar navbar-expand-lg  navbar-light shadow sticky-top p-0" style="margin-right: 90px;">
-            <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-                <h1 class="m-0 text-primary">HMS <span
-                        style="font-size: large;align-content: center;justify-content: center;">({{hotelname}})</span>
-                </h1>
-            </a>
-            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse"
-                data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="{% url 'dashboard' %}" class="nav-item nav-link">Dashboard</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="{% url 'room-list' %}" class="dropdown-item">Rooms</a>
-                            <a href="{% url 'client-detail' %}" class="dropdown-item">Clients</a>
-                            <a href="{% url 'request_service' %}" class="dropdown-item">Service Request</a>
-                        </div>
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Account</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="{% url 'managepayment' %}" class="dropdown-item">Accept Payments</a>
-                            <a href="{% url 'mysales' %}" class="dropdown-item">My Sales</a>
-                            {% if 'Administrator' in request.user.permissions or 'Account' in request.user.permissions %}
-                            <a href="{% url 'payments' %}" class="dropdown-item">Account Summary</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if 'Administrator' in request.user.permissions %}
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Staff</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a href="{% url 'kitchen' %}" class="dropdown-item">Kitchen</a>
-                            <a href="{% url 'cleaners' %}" class="dropdown-item">Cleaners</a>
-                            <a href="{% url 'security' %}" class="dropdown-item">Security</a>
-                            <a href="{% url 'admin:index' %}" class="dropdown-item" target="_blank">Admin Page</a>
-                        </div>
-                    </div>
+        <nav class="navbar navbar-expand-lg navbar-modern sticky-top py-2">
+            <div class="container-fluid">
+                <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center">
+                    <h1 class="m-0">HMS <small class="ms-2" style="font-size:.85rem;opacity:.9">{{hotelname}}</small></h1>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-                    <a href="{% url 'record' %}" class="nav-item nav-link">Records</a>
-                    <a href="#" class="nav-item nav-link">Complains</a>
-                    {% endif %}
-                    <button class="theme-toggle" onclick="toggleTheme()">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
-                            <label class="form-check-label" id="themeid" for="flexSwitchCheckChecked">light</label>
-                        </div>
-                    </button>
-                    <button style="border: none; margin-left: 6px;" id="fullscreenButton"><i
-                            class="fas fa-expand"></i></button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Services</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'room-list' %}">Rooms</a></li>
+                                <li><a class="dropdown-item" href="{% url 'client-detail' %}">Clients</a></li>
+                                <li><a class="dropdown-item" href="{% url 'request_service' %}">Service Request</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Account</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'managepayment' %}">Accept Payments</a></li>
+                                <li><a class="dropdown-item" href="{% url 'mysales' %}">My Sales</a></li>
+                                {% if 'Administrator' in request.user.permissions or 'Account' in request.user.permissions %}
+                                <li><a class="dropdown-item" href="{% url 'payments' %}">Account Summary</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        {% if 'Administrator' in request.user.permissions %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Staff</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'kitchen' %}">Kitchen</a></li>
+                                <li><a class="dropdown-item" href="{% url 'cleaners' %}">Cleaners</a></li>
+                                <li><a class="dropdown-item" href="{% url 'security' %}">Security</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank">Admin Page</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'record' %}">Records</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Complains</a></li>
+                        {% endif %}
 
+                        <li class="nav-item px-2">
+                            <form class="d-flex nav-search" role="search" method="get" action="#">
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" type="search" name="q" placeholder="Search...">
+                                    <button class="input-group-text" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                            </form>
+                        </li>
+
+                        <li class="nav-item">
+                            <div class="d-flex align-items-center">
+                                <button class="theme-toggle btn btn-sm btn-link text-white me-2" onclick="toggleTheme()">
+                                    <i class="fas fa-adjust"></i>
+                                </button>
+                                <button id="fullscreenButton" class="btn btn-sm btn-link text-white me-2"><i class="fas fa-expand"></i></button>
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <img src="{% if profile_pic %} {{profile_pic}} {% else %} {% static 'img/proimg.png' %}  {% endif %}" alt="User" class="user-pic">
+                                <span class="d-none d-lg-inline ms-2 user-name">{{ request.user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'client-detail' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank">Admin</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
-                <div class="floating-user-pic">
-                    <img src="{% if profile_pic %} {{profile_pic}} {% else %} {% static 'img/proimg.png' %}  {% endif %}"
-                        alt="User Picture" class="user-pic">
-                </div>
-                <a href="{% url 'logout' %}" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Log Out<i
-                        class="fa fa-arrow-right ms-3"></i></a>
             </div>
         </nav>
     </div>
@@ -147,11 +155,9 @@
     {% endblock %}
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'lib/wow/wow.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'lib/easing/easing.min.js' %}"></script>
     <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
     <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
@@ -159,7 +165,7 @@
     <script>
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-bs-theme', newTheme);
             const lbl = document.getElementById("themeid")
             lbl.textContent = newTheme + " "
@@ -207,6 +213,8 @@
     </script>
     {% block js %}
     {% endblock %}
+    <!-- UI helpers -->
+    <script src="{% static 'js/ui.js' %}"></script>
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
 </body>

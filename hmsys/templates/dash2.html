@@ -1,286 +1,457 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+
 {% block style %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'package/dist/sweetalert2.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/sweetalert2.min.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'fontawesome/css/all.css' %}">
-
+<!-- Modern custom fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
 <style>
-    .payform {
+    /* ----- MODERN RESET & GLOBAL ----- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f4f7fc;
+        color: #1a2a3f;
+    }
+
+    /* Smooth cards & containers */
+    .modern-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 1.5rem 2rem;
+    }
+
+    /* Modern Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.8rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border-radius: 28px;
+        box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        overflow: hidden;
+        border-bottom: 5px solid;
+        backdrop-filter: blur(2px);
         display: flex;
-        flex-direction: column;
-        margin-top: 20px;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        gap: 1rem;
     }
-    .dataTables_filter {
-        float: right;
+
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 22px 35px -12px rgba(0, 0, 0, 0.15);
     }
-    .dataTables_filter input {
-        margin-left: 0.5em;
-        width: 200px;
-        display: inline-block;
-        margin-bottom: 10px;
+
+    .stat-icon {
+        font-size: 2.6rem;
+        width: 65px;
+        height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 45%;
+        transition: 0.2s;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-content h5 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #5b6f8c;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-content h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.2;
+        color: #1e2f41;
+    }
+
+    /* individual card border colors (preserving original) */
+    .card-room { border-bottom-color: #2c6e2c; }
+    .card-available { border-bottom-color: #640043; }
+    .card-reserved { border-bottom-color: #fc2630; }
+    .card-clients { border-bottom-color: #9e3200; }
+    .card-arrears { border-bottom-color: #00969b; }
+    .card-adults { border-bottom-color: #516302; }
+    .card-children { border-bottom-color: #661d00; }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin: 2rem 0 2rem;
+        flex-wrap: wrap;
+    }
+    .btn-modern {
+        border-radius: 60px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .btn-primary-modern {
+        background: linear-gradient(105deg, #1d7e8c, #0f5c68);
+        color: white;
+    }
+    .btn-primary-modern:hover {
+        transform: translateY(-3px);
+        background: linear-gradient(105deg, #0f6b78, #0a4a54);
+        box-shadow: 0 12px 18px -8px rgba(13,110,120,0.4);
+    }
+    .btn-secondary-modern {
+        background: linear-gradient(105deg, #5a6e7c, #3f5565);
+        color: white;
+    }
+    .btn-secondary-modern:hover {
+        transform: translateY(-3px);
+        background: linear-gradient(105deg, #4b5e6c, #2f4454);
+    }
+
+    /* Modern Table Section (Cards) */
+    .section-card {
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.06);
+        padding: 1.5rem 1.8rem;
+        margin-bottom: 2.5rem;
+        transition: 0.2s;
+    }
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #1c3c4c;
+        border-left: 5px solid #2c9cab;
+        padding-left: 1rem;
+    }
+    .section-title i {
+        color: #2c9cab;
+        font-size: 1.7rem;
+    }
+
+    /* Tables modern */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.9rem;
+    }
+    .modern-table thead th {
+        background: #f0f4f9;
+        color: #1f3b4a;
+        font-weight: 700;
+        padding: 1rem 0.8rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    .modern-table tbody tr {
+        transition: 0.1s;
+        border-bottom: 1px solid #ecf3f8;
+    }
+    .modern-table tbody tr:hover {
+        background: #f9fbfe;
+    }
+    .modern-table td, .modern-table th {
+        padding: 0.9rem 0.8rem;
+        vertical-align: middle;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 40px;
+        border: 1px solid #cbd5e1;
+        padding: 0.4rem 1rem;
+        background: white;
+    }
+    .btn-group-sm .btn {
+        margin: 0 2px;
+        border-radius: 40px;
+    }
+
+    /* Chart container */
+    .chart-container {
+        background: white;
+        border-radius: 28px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        box-shadow: 0 12px 28px -8px rgba(0,0,0,0.05);
+    }
+
+    /* message alert modern */
+    .alert-modern {
+        border-radius: 20px;
+        border: none;
+        background: #eef2ff;
+        color: #1f4a6e;
+        border-left: 5px solid #2c9cab;
+    }
+
+    /* responsiveness */
+    @media (max-width: 768px) {
+        .modern-container {
+            padding: 1rem;
+        }
+        .section-card {
+            padding: 1rem;
+        }
+        .stat-content h2 {
+            font-size: 1.6rem;
+        }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 2rem;
+        }
+    }
+
+    /* Fix dataTables length & buttons */
+    .dataTables_wrapper .dt-buttons {
+        margin-bottom: 1rem;
+    }
+    .dt-button {
+        background: #eef2fa;
+        border: none;
+        border-radius: 30px;
+        padding: 0.3rem 1rem;
+        margin: 0 0.2rem;
+        font-size: 0.8rem;
     }
 </style>
-    <style>
-        .sumcard{
-            margin-top: 50px;
-            margin-bottom: 20px;
-            margin-left: 10%;
-            margin-right: 10%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-        .actcard1{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid darkgreen;
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-        .actcard2{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid rgb(100, 0, 67);
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-        .actcard3{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid rgb(158, 50, 0);
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-        .actcard4{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid rgb(0, 150, 155);
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-        .actcard5{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid rgb(81, 99, 2);
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-        .actcard6{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid rgb(102, 29, 0);
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-        .actcard7{
-            border-radius: 10px;
-            box-shadow: 0 0 3px gray;
-            border-bottom: 8px solid rgb(252, 38, 48);
-            width: 250px;
-            height: 190px;
-            background-color: aliceblue;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
-{% if messages %}
-    <div class="alert alert-info">
-        {% for message in messages %}
-            <div>{{ message }}</div>
-        {% endfor %}
-    </div>
-{% endif %}
+<div class="modern-container">
+    {% if messages %}
+        <div class="alert alert-modern alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
 
-<div class="sumcard">
-    <div class="actcard1">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-            <h3><i class="fas fa-door-open"></i></h3>
-            <h3>No. Of Rooms</h3>
-            <h3>{{ number_of_rooms }}</h3>
-        </center>
+    <!-- Stats Cards Grid (Modern pro cards) -->
+    <div class="stats-grid">
+        <!-- No Of Rooms -->
+        <div class="stat-card card-room">
+            <div class="stat-icon"><i class="fas fa-door-open"></i></div>
+            <div class="stat-content">
+                <h5>Total Rooms</h5>
+                <h2>{{ number_of_rooms }}</h2>
+            </div>
+        </div>
+        <!-- Available Rooms -->
+        <div class="stat-card card-available">
+            <div class="stat-icon"><i class="fas fa-bed"></i></div>
+            <div class="stat-content">
+                <h5>Available Rooms</h5>
+                <h2>{{ available_rooms }}</h2>
+            </div>
+        </div>
+        <!-- Reserved Rooms -->
+        <div class="stat-card card-reserved">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-content">
+                <h5>Reserved Rooms</h5>
+                <h2>{{ reserved_rooms }}</h2>
+            </div>
+        </div>
+        <!-- No. Of Clients -->
+        <div class="stat-card card-clients">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-content">
+                <h5>Total Clients</h5>
+                <h2>{{ number_of_clients }}</h2>
+            </div>
+        </div>
+        <!-- Total Arrears -->
+        <div class="stat-card card-arrears">
+            <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+            <div class="stat-content">
+                <h5>Total Arrears (KSh)</h5>
+                <h2>{{ total_arrears|intcomma }}</h2>
+            </div>
+        </div>
+        <!-- Adults on Board -->
+        <div class="stat-card card-adults">
+            <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="stat-content">
+                <h5>Adults on Board</h5>
+                <h2>{{ total_adults }}</h2>
+            </div>
+        </div>
+        <!-- Children on Board -->
+        <div class="stat-card card-children">
+            <div class="stat-icon"><i class="fas fa-baby"></i></div>
+            <div class="stat-content">
+                <h5>Children on Board</h5>
+                <h2>{{ total_children }}</h2>
+            </div>
+        </div>
     </div>
-    <div class="actcard2">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-        <h3><i class="fas fa-bed"></i></h3>
-            <h5>Available Rooms</h5>
-            <h3>{{ available_rooms }}</h3>
-        </center>
+
+    <!-- Action Buttons (modern) -->
+    <div class="action-buttons">
+        <a href="{% url 'Book_A_Client' %}" class="btn btn-modern btn-primary-modern"> <i class="fas fa-user-plus me-2"></i>Book A Client</a>
+        <a href="{% url 'client-detail' %}" class="btn btn-modern btn-secondary-modern"><i class="fas fa-sign-out-alt me-2"></i>Check Client Out</a>
     </div>
+
+    <hr class="my-4 opacity-25">
+
     
-    <div class="actcard7">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-        <h3><i class="fas fa-calendar-check"></i></h3>
-            <h5>Reserved Rooms</h5>
-            <h3>{{ reserved_rooms }}</h3>
-        </center>
-    </div>
-    <div class="actcard3">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-        <h3> <i class="fas fa-users"></i> </h3>
-            <h3>No. Of Clients</h3>
-            <h3>{{ number_of_clients }}</h3>
-        </center>
-    </div>
-    <div class="actcard4">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-        <h3> <i class="fas fa-money-bill-wave"></i></h3> 
-            <h3>Total Arrears</h3>
-            <h3>{{ total_arrears | intcomma }}</h3>
-        </center>
-    </div>
-    <div class="actcard5">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-        <h3> <i class="fas fa-user-tie"></i></h3> 
-            <h3>Adult on Board</h3>
-            <h3>{{ total_adults }}</h3>
-        </center>
-    </div>
-    <div class="actcard6">
-        <center style="margin-top: 30px; margin-bottom: auto; color: rgb(27, 26, 26);">
-        <h3> <i class="fas fa-baby"></i></i></h3> 
-            <h5>Children on Board</5>
-            <h3>{{ total_children }}</h3>
-        </center>
-    </div>
-</div>
+    <!-- Two column layout for Arrears & Due Checkouts -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    <span>Arrears</span>
+                </div>
+                {% if arrears_clients %}
+                <div class="table-responsive">
+                    <table class="table modern-table" id="arrearTable">
+                        <thead>
+                            <tr>
+                                <th>#</th><th>Client</th><th>Room</th><th>Arrears (KSh)</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in arrears_clients %}
+                            <tr>
+                                <td>{{ x.id }}</td>
+                                <td class="fw-semibold">{{ x.booked.client.get_full_name }}</td>
+                                <td>{{ x.booked.room }}</td>
+                                <td class="text-danger fw-bold">{{ x.arrears|intcomma }}</td>
+                                <td><a class="btn btn-sm btn-primary rounded-pill px-3" href="{% url 'managepayment' %}"><i class="fas fa-hand-holding-usd"></i> Receive</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-success bg-soft-success border-0 rounded-4">✨ No Clients with arrears</div>
+                {% endif %}
+            </div>
+        </div>
 
+        <div class="col-lg-6">
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Clients Due for Checkout</span>
+                </div>
+                {% if clients_today %}
+                <div class="table-responsive">
+                    <table class="table modern-table" id="arrearTable2">
+                        <thead>
+                            <tr><th>#</th><th>Client</th><th>Room</th><th>Check Out Date</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for x in clients_today %}
+                            <tr>
+                                <td>{{ x.id }}</td>
+                                <td>{{ x.client.get_full_name }}</td>
+                                <td>{{ x.room }}</td>
+                                <td>{{ x.Check_out }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-info rounded-pill text-white me-1" href="{% url 'extend_booking' x.id %}"><i class="fas fa-plus-circle"></i> Add Days</a>
+                                    <a class="btn btn-sm btn-danger rounded-pill" href="{% url 'checkout' idd=x.client.id %}" onclick="return confirm('Are you sure you want to check out this client?');"><i class="fas fa-check-double"></i> Check Out</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info bg-soft-info border-0 rounded-4">📅 No Clients due for check-out today</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-<center>
-<a href="{% url 'Book_A_Client' %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Book A Client</a>
-<a href="{% url 'client-detail' %}" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Check Client Out</a>
-</center>
-<br>
-<hr>
-{% if 'Administrator' in request.user.permissions or 'Account' in request.user.permissions %}
-<div style="width: 100%; max-width: 800px; margin: auto;">
-    <h4>Payments received analysis for the year</h4>
-    <canvas id="paymentsChart"></canvas>
-</div>
-{% endif %}
+    <!-- Reservations Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Active Reservations</span>
+                </div>
+                {% if reservation %}
+                <div class="table-responsive">
+                    <table class="table modern-table" id="arrearTable3">
+                        <thead>
+                            <tr>
+                                <th>#</th><th>Client</th><th>Mobile</th><th>Room Reserved</th><th>Check Out Date</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for x in reservation %}
+                            <tr>
+                                <td>{{ x.id }}</td>
+                                <td>{{ x.client.get_full_name }}</td>
+                                <td>{{ x.client.mobile }}</td>
+                                <td>{{ x.room }}</td>
+                                <td>{{ x.Check_out }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-success rounded-pill me-1" href="{% url 'mark_client_in' x.id %}" onclick="return confirm('Are you sure this client has appeared?');"><i class="fas fa-check-circle"></i> Client is In</a>
+                                    <a class="btn btn-sm btn-outline-danger rounded-pill" href="{% url 'cancel_reservation' x.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');"><i class="fas fa-times-circle"></i> Cancel</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-secondary bg-light border-0 rounded-4">📭 No Reservations at this moment</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-<hr>
-<div class="tainer">
-    <div class="row">
-        <div class="col-6">    
-            <h2>Arrears</h2>
-            {%  if arrears_clients %}
-    <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
-        <thead>
-            <tr>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Arrears</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for x in arrears_clients %}
-            <tr>
-                <th scope="row">{{x.id}}</th>
-                <td>{{x.booked.client.get_full_name}}</td>
-                <td>{{x.booked.room}}</td>
-                <td>{{x.arrears}}</td>
-                <td><a class="btn btn-primary" href="{% url 'managepayment' %}">Receive Arrears</a></td>
-            </tr>
-            
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <h5>No Clients with arrears</h5>
+    <!-- Payments Chart (modern) -->
+    {% if 'Administrator' in request.user.permissions or 'Account' in request.user.permissions %}
+    <div class="chart-container">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="fas fa-chart-line fs-3" style="color:#2c9cab;"></i>
+            <h4 class="mb-0 fw-bold">Payments received analysis for the year</h4>
+        </div>
+        <canvas id="paymentsChart" style="max-height: 380px; width: 100%;"></canvas>
+    </div>
+    <hr class="my-4 opacity-25">
     {% endif %}
-    </div>
 
-    <div class="col-6">    
-        <h2>Clients Due for Checkout</h2>
-        {% if clients_today %}
-<table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable2">
-    <thead>
-        <tr>
-            <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
-            <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
-            <th scope="col" style=" font-weight: bolder; font-size: large;">Room</th>
-            <th scope="col" style=" font-weight: bolder; font-size: large;">Check Out Date</th>
-            <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for x in clients_today %}
-        <tr>
-            <th scope="row">{{x.id}}</th>
-            <td>{{x.client.get_full_name}}</td>
-            <td>{{x.room}}</td>
-            <td>{{x.Check_out}}</td>
-            <td>
-                <a class="btn btn-primary" href="{% url 'extend_booking' x.id %}">Add Days</a>
-                <a class="btn btn-danger" href="{% url 'checkout' idd=x.client.id %}" onclick="return confirm('Are you sure you want to check out this client?');">Check Out</a>
-            </td>
-        </tr>
-        
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-    <h5>No Clients due for check-out </h5>
-    {% endif %}
 </div>
-
-
-    </div>
-    <hr style="height:5px">
-    <div class="row">
-        <div class="col-8">    
-            <h2>Reservations</h2>
-            {% if reservation %}
-    <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable3">
-        <thead>
-            <tr>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">#</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Client</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Mobile</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Room Reserved</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Check Out Date</th>
-                <th scope="col" style=" font-weight: bolder; font-size: large;">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for x in reservation %}
-            <tr>
-                <th scope="row">{{x.id}}</th>
-                <td>{{x.client.get_full_name}}</td>
-                <td>{{x.client.mobile}}</td>
-                <td>{{x.room}}</td>
-                <td>{{x.Check_out}}</td>
-                <td>
-                    <a class="btn btn-primary" href="{% url 'mark_client_in' x.id %}" onclick="return confirm('Are you sure this client has appeared?');">Client is In</a>
-                    <a class="btn btn-danger" href="{% url 'cancel_reservation' x.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');">Cancel</a>
-                </td>
-            </tr>
-            
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <h5>No Reservations today</h5>
-    {% endif %}
-    </div>
-    </div>
-</div>
-
 {% endblock %}
+
 {% block js %}
 <script src="{% static 'js/jquery.js' %}"></script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
@@ -290,84 +461,70 @@
 <script src="{% static 'js/jszip.min.js' %}"></script>
 <script src="{% static 'js/pdfmake.min.js' %}"></script>
 <script src="{% static 'js/vfs_fonts.js' %}"></script>
-<script src="{% static 'js/decimal.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        
-
-        // Check if the #paymentsChart element exists in the DOM
-        const chartElement = document.getElementById('paymentsChart');
-        if (chartElement) {
-            const ctx = chartElement.getContext('2d');
-            const paymentsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: {{ months|safe }},
-                    datasets: [{
-                        label: 'Payments',
-                        data: {{ monthly_amounts|safe }},
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Blue color
-                        borderColor: 'rgba(54, 162, 235, 1)',        // Blue color
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+        // --- MODERN CHARTS (fixed syntax error) ---
+        const chartCanvas = document.getElementById('paymentsChart');
+        if (chartCanvas) {
+            try {
+                const ctx = chartCanvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ months|safe }},
+                        datasets: [{
+                            label: 'Payments (KES)',
+                            data: {{ monthly_amounts|safe }},
+                            backgroundColor: 'rgba(44, 156, 171, 0.1)',
+                            borderColor: '#2c9cab',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#1f6e7a',
+                            pointBorderColor: '#ffffff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            tension: 0.2,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position: 'top', labels: { font: { family: 'Inter', size: 12 } } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { callback: function(value) { return 'KES ' + value.toLocaleString(); } } }
                         }
                     }
-                }
-            });
-        } else {
-            console.error('Chart element not found!');
+                });
+            } catch(e) { console.warn("Chart init error:", e); }
         }
-    });
-</script>
 
-
-
-
-    <script>
-function initializeDataTable(tableId) {
-    $(tableId).DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'copy',
-                text: 'Copy',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'csv',
-                text: 'CSV',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'excel',
-                text: 'Excel',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'pdf',
-                text: 'PDF',
-                className: 'btn btn-secondary'
-            },
-            {
-                extend: 'print',
-                text: 'Print',
-                className: 'btn btn-secondary'
+        // DataTables initialization with modern buttons
+        function initTable(tableId) {
+            if ($.fn.DataTable.isDataTable(tableId)) {
+                $(tableId).DataTable().destroy();
             }
-        ]
-    });
-}
+            $(tableId).DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    { extend: 'copy', text: '<i class="fas fa-copy"></i> Copy', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                    { extend: 'csv', text: '<i class="fas fa-file-csv"></i> CSV', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                    { extend: 'excel', text: '<i class="fas fa-file-excel"></i> Excel', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                    { extend: 'pdf', text: '<i class="fas fa-file-pdf"></i> PDF', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                    { extend: 'print', text: '<i class="fas fa-print"></i> Print', className: 'btn btn-sm btn-outline-secondary rounded-pill' }
+                ],
+                responsive: true,
+                pageLength: 10,
+                language: { search: "Filter:" }
+            });
+        }
 
-$(document).ready(function() {
-    initializeDataTable('#arrearTable');
-    initializeDataTable('#arrearTable2');
-    initializeDataTable('#arrearTable3');
-});
+        if ($('#arrearTable').length) initTable('#arrearTable');
+        if ($('#arrearTable2').length) initTable('#arrearTable2');
+        if ($('#arrearTable3').length) initTable('#arrearTable3');
+    });
 </script>
-    {% endblock %}
+{% endblock %}

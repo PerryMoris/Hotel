@@ -30,5 +30,5 @@ urlpatterns = [
   path('cancel-reservation/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
   path("pdf/<str:payment_id>",
            views.generate_pdf_receipt, name="receipt_pdf"),
+  path('portal/', views.client_services_portal, name='client_portal'),
 ]
-

@@ -1,5 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container py-4">
+  <div class="ui-card">
+    <h3 class="mb-3">Extend Booking</h3>
+    <form method="post" action="{% url 'extend_booking' booking.id %}">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">New Check-out</label>
+          <input type="date" name="checkout" class="form-control" value="{{ booking.Check_out }}">
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+          <button class="btn btn-primary">Extend</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
 <div class="tainer">
     
     <div style=" display: flex; flex-direction: column; align-items: center;">

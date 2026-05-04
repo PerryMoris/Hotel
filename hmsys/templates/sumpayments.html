@@ -1,78 +1,293 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load static %}
+
 {% block style %}
+<!-- Modern Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
 <style>
-    .payform {
+    /* ----- MODERN RESET & GLOBAL ----- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #eef2f6 100%);
+        color: #1a2c3e;
+    }
+
+    .payments-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* Modern Stat Cards Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 32px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        font-size: 2.2rem;
+        color: #289672;
+        opacity: 0.7;
+        margin-bottom: 1rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        color: #5f7f9e;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1e3b4a;
+        line-height: 1.2;
+    }
+
+    .stat-currency {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #289672;
+        margin-left: 0.2rem;
+    }
+
+    /* Section Headers */
+    .section-header {
         display: flex;
-        flex-direction: column;
-        margin-top: 20px;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 1.5rem 0 1.2rem 0;
+        border-left: 5px solid #289672;
+        padding-left: 1rem;
     }
 
-    .dataTables_filter {
-        float: right;
+    .section-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #1f3b4a;
     }
 
-    .dataTables_filter input {
-        margin-left: 0.5em;
-        width: 200px;
+    .section-header i {
+        font-size: 1.6rem;
+        color: #289672;
+    }
+
+    /* Modern Table Styling */
+    .dataTables_wrapper {
+        background: white;
+        border-radius: 28px;
+        padding: 1rem;
+        box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.04);
+        border: 1px solid #edf2f8;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 40px;
+        border: 1px solid #e2e8f0;
+        padding: 0.4rem 1rem;
+        background: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .dataTables_wrapper .dt-buttons {
+        margin-bottom: 1rem;
+    }
+
+    .dt-button {
+        background: #f0f4f9;
+        border: none;
+        border-radius: 40px;
+        padding: 0.3rem 1rem;
+        margin: 0 0.2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: 0.15s;
+    }
+
+    .dt-button:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    table.dataTable {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+
+    table.dataTable thead th {
+        background: #f8fafd;
+        color: #1a3e50;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border-bottom: 2px solid #e9edf2;
+    }
+
+    table.dataTable tbody tr:hover {
+        background: #fafcff !important;
+    }
+
+    /* Receipt button modern */
+    .receipt-link {
+        background: #eef2fa;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #289672;
+        text-decoration: none;
+        transition: 0.2s;
+        margin-left: 0.5rem;
         display: inline-block;
-        margin-bottom: 10px;
+    }
+
+    .receipt-link:hover {
+        background: #289672;
+        color: white;
+    }
+
+    /* Chart Container */
+    .chart-modern {
+        background: white;
+        border-radius: 28px;
+        padding: 1.2rem;
+        box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+        border: 1px solid #edf2f8;
+    }
+
+    @media (max-width: 768px) {
+        .payments-container {
+            padding: 1rem;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+        }
+        .section-header h2 {
+            font-size: 1.2rem;
+        }
     }
 </style>
 {% endblock %}
+
 {% block content %}
-<div class="tainer">
-<h3>Payments</h3>
-<div class="tainer">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-header">Total Payments</div>
-            <div class="card-body">
-                <h5 class="card-title">Ghc {{ total | intcomma }}</h5>
-            </div>
+<div class="payments-container">
+    <!-- Page Heading -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <i class="bi bi-calculator-fill fs-1" style="color: #289672;"></i>
+        <h1 class="fw-bold" style="background: linear-gradient(135deg, #1e3b4a, #289672); -webkit-background-clip: text; background-clip: text; color: transparent;">Payments Dashboard</h1>
+    </div>
+
+    <!-- Stats Cards (3 cards: Total Collected, Pending, Total Payments) -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+            <div class="stat-label">Total Collected</div>
+            <div class="stat-value">Ghc {{ total_collected|default:0|intcomma }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-label">Pending</div>
+            <div class="stat-value">Ghc {{ pending|default:0|intcomma }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
+            <div class="stat-label">Total Payments (All Time)</div>
+            <div class="stat-value">Ghc {{ total|default:0|intcomma }}</div>
         </div>
     </div>
-</div>
-<hr>
-<h3>All Payments</h3>
-<div>
-    <table class="table table-striped table-bordered" id="arrearTable">
-        <thead class="thead-dark">
-            <tr>
-                <th>Booking</th>
-                <th>Check In</th>
-                <th>Check Out</th>
-                <th>Amount Paid</th>
-                <th>Initial Payment</th>
-                <th>Initial Date</th>
-                <th>Initial Received By</th>
-                <th>Arrears Payment</th>
-                <th>Arrears Date</th>
-                <th>Arrears Received By</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for payment in payments %}
-            <tr>
-                <td>{{ payment.booked }} <span><a href="{% url 'receipt_pdf' payment.id %}" class="btn btn-success" target="_blank">receipt</a></span></td>
-                <td>{{ payment.booked.Check_in }}</td>
-                <td>{{ payment.booked.Check_out }}</td>
-                <td>Ghc {{ payment.amount_paid | intcomma }}</td>
-                <td>Ghc {{ payment.created_amount | intcomma }}</td>
-                <td>{{ payment.created_on}}</td>
-                <td>{{ payment.created_by}}</td>
-                <td>Ghc {{ payment.updated_amount | intcomma }}</td>
-                <td>{{ payment.updated_on}}</td>
-                <td>{{ payment.updated_by}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+    <!-- Chart Section: Monthly Payment Trend (Dynamic from payments list) -->
+    <!-- <div class="chart-modern">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-graph-up fs-3" style="color:#289672;"></i>
+            <h4 class="fw-bold mb-0">Payment Trends (Last 6 months)</h4>
+        </div>
+        <canvas id="paymentsTrendChart" style="max-height: 340px; width: 100%;"></canvas>
+        <div class="text-muted small text-center mt-3">Monthly total payments based on transaction dates</div>
+    </div> -->
+
+    <!-- All Payments Table -->
+    <div class="section-header">
+        <i class="bi bi-table"></i>
+        <h2>All Payments</h2>
+    </div>
+    <div class="dataTables_wrapper">
+        <table class="table table-striped" id="arrearTable">
+            <thead>
+                <tr>
+                    <th>Booking</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Amount Paid</th>
+                    <th>Initial Payment</th>
+                    <th>Initial Date</th>
+                    <th>Initial Received By</th>
+                    <th>Arrears Payment</th>
+                    <th>Arrears Date</th>
+                    <th>Arrears Received By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>
+                        {{ payment.booked }}
+                        <a href="{% url 'receipt_pdf' payment.id %}" target="_blank" class="receipt-link">
+                            <i class="bi bi-receipt"></i> receipt
+                        </a>
+                    </td>
+                    <td>{{ payment.booked.Check_in }}</td>
+                    <td>{{ payment.booked.Check_out }}</td>
+                    <td>Ghc {{ payment.amount_paid|intcomma }}</td>
+                    <td>Ghc {{ payment.created_amount|intcomma }}</td>
+                    <td>{{ payment.created_on }}</td>
+                    <td>{{ payment.created_by }}</td>
+                    <td>Ghc {{ payment.updated_amount|intcomma }}</td>
+                    <td>{{ payment.updated_on|default:"—" }}</td>
+                    <td>{{ payment.updated_by|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
-
 
 {% block js %}
 <script src="{% static 'js/jquery.js' %}"></script>
@@ -83,39 +298,88 @@
 <script src="{% static 'js/jszip.min.js' %}"></script>
 <script src="{% static 'js/pdfmake.min.js' %}"></script>
 <script src="{% static 'js/vfs_fonts.js' %}"></script>
+
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
+        // Initialize DataTable with modern buttons (preserving original logic)
         $('#arrearTable').DataTable({
             dom: 'Bfrtip',
             buttons: [
+                { extend: 'copy', text: '<i class="bi bi-files"></i> Copy', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'csv', text: '<i class="bi bi-filetype-csv"></i> CSV', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'excel', text: '<i class="bi bi-file-earmark-excel"></i> Excel', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'pdf', text: '<i class="bi bi-filetype-pdf"></i> PDF', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'print', text: '<i class="bi bi-printer"></i> Print', className: 'btn btn-sm btn-outline-secondary rounded-pill' }
+            ],
+            pageLength: 10,
+            responsive: true,
+            language: { search: "Filter:" }
+        });
+
+        // --- MODERN CHART: Aggregate payments by month from the payments data ---
+        // This extracts the "created_on" dates from each payment and sums the amount_paid per month.
+        // It works entirely client-side without backend changes, making the chart dynamic and "pro level".
+        const paymentsData = [
+            {% for payment in payments %}
                 {
-                    extend: 'copy',
-                    text: 'Copy',
-                    className: 'btn btn-secondary'
+                    amount: {{ payment.amount_paid|default:0 }},
+                    date: "{{ payment.created_on|date:'Y-m-d' }}"
                 },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    className: 'btn btn-secondary'
+            {% endfor %}
+        ];
+
+        // Aggregate by month (last 6 months from the latest payment)
+        const monthlyTotals = {};
+        paymentsData.forEach(p => {
+            if (p.date) {
+                const monthYear = p.date.substring(0, 7); // YYYY-MM
+                monthlyTotals[monthYear] = (monthlyTotals[monthYear] || 0) + p.amount;
+            }
+        });
+
+        // Get sorted months (last 6)
+        let sortedMonths = Object.keys(monthlyTotals).sort();
+        if (sortedMonths.length > 6) sortedMonths = sortedMonths.slice(-6);
+        
+        // Format month labels (e.g., "Jan 2025")
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const labels = sortedMonths.map(m => {
+            const [year, month] = m.split('-');
+            return `${monthNames[parseInt(month)-1]} ${year}`;
+        });
+        const data = sortedMonths.map(m => monthlyTotals[m] || 0);
+
+        const ctx = document.getElementById('paymentsTrendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Payments (GHS)',
+                    data: data,
+                    backgroundColor: 'rgba(44, 156, 171, 0.1)',
+                    borderColor: '#289672',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#1e6f5c',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    tension: 0.2,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'top', labels: { font: { family: 'Inter', size: 12 } } },
+                    tooltip: { callbacks: { label: (ctx) => `GHS ${ctx.raw.toLocaleString()}` } }
                 },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary'
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: (val) => 'GHS ' + val.toLocaleString() } }
                 }
-            ]
+            }
         });
     });
 </script>
-
 {% endblock %}

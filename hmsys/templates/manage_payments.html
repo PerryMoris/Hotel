@@ -3,87 +3,270 @@
 {% load humanize %}
 
 {% block style %}
+<!-- Modern Google Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 <style>
-    .payform {
+    /* ----- MODERN RESET & GLOBAL ----- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f4f7fc;
+        color: #1a2c3e;
+    }
+
+    .payments-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* Page Header */
+    .page-header {
         display: flex;
-        flex-direction: column;
-        margin-top: 20px;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
     }
-    .dataTables_filter {
-        float: right;
+    .page-header i {
+        font-size: 2rem;
+        color: #289672;
+        background: white;
+        padding: 0.8rem;
+        border-radius: 20px;
+        box-shadow: 0 6px 12px -8px rgba(0,0,0,0.05);
     }
-    .dataTables_filter input {
-        margin-left: 0.5em;
-        width: 200px;
-        display: inline-block;
-        margin-bottom: 10px;
+    .page-header h1 {
+        font-weight: 800;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #1e3b4a, #289672);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin: 0;
+    }
+
+    /* Modern Cards */
+    .modern-card {
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        height: 100%;
+        overflow: hidden;
+    }
+    .card-header-modern {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #eef2f8;
+        background: #fafcff;
+    }
+    .card-header-modern h5 {
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #1f3b4a;
+    }
+    .card-body-modern {
+        padding: 1.5rem;
+    }
+
+    /* Form Elements Modern */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #2c5f7a;
+        margin-bottom: 0.4rem;
+    }
+    .form-select-modern {
+        border-radius: 60px;
+        border: 1px solid #e2e8f0;
+        padding: 0.6rem 1.2rem;
+        font-family: 'Inter', sans-serif;
+        transition: 0.15s;
+        background-color: white;
+    }
+    .form-select-modern:focus {
+        border-color: #289672;
+        box-shadow: 0 0 0 3px rgba(40,150,114,0.2);
+        outline: none;
+    }
+    .btn-danger-modern {
+        background: linear-gradient(95deg, #dc3545, #b02a37);
+        border: none;
+        border-radius: 60px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    .btn-danger-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px -6px #dc354580;
+    }
+
+    /* Client Info Display */
+    .client-info {
+        background: #f8fafd;
+        border-radius: 20px;
+        padding: 1rem;
+        margin: 1.2rem 0;
+    }
+    .client-info p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    .arrears-amount {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #e67e22;
+    }
+
+    /* DataTables Modern Override */
+    .dataTables_wrapper {
+        background: white;
+        border-radius: 24px;
+        padding: 0.5rem;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 40px;
+        border: 1px solid #e2e8f0;
+        padding: 0.4rem 1rem;
+        font-family: 'Inter', sans-serif;
+    }
+    .dt-button {
+        background: #f0f4f9;
+        border: none;
+        border-radius: 40px;
+        padding: 0.3rem 1rem;
+        margin: 0 0.2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: 0.15s;
+    }
+    .dt-button:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+    table.dataTable thead th {
+        background: #f8fafd;
+        color: #1a3e50;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border-bottom: 2px solid #e9edf2;
+    }
+    table.dataTable tbody tr:hover {
+        background: #fafcff !important;
+    }
+
+    @media (max-width: 768px) {
+        .payments-container {
+            padding: 1rem;
+        }
+        .page-header h1 {
+            font-size: 1.4rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="tainer payform">
-    <h1>Manage Payments</h1>
-    <hr>
-    <div class="row">
-        <div class="col-5">
-            <form method="get" action="{% url 'managepayment' %}">
-                <div class="mb-3">
-                    <label for="clientSelect" class="form-label">Select Client</label>
-                    <select style="max-width: 500px;" name="client_id" id="clientSelect" class="form-select"
-                        aria-label="Default select example" onchange="this.form.submit()">
-                        <option value="">Select Client with Arrears</option>
-                        {% for client in clients %}
-                        <option value="{{ client.id }}" {% if client.id == selected_client.id %}selected{% endif %}>
-                            {{ client.get_full_name }} - Arrears: {{ client.total_arrears }}
-                        </option>
-                        {% endfor %}
-                    </select>
+<div class="payments-container">
+    <!-- Header -->
+    <div class="page-header">
+        <i class="bi bi-cash-coin"></i>
+        <h1>Manage Payments</h1>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Client Selection & Clear Arrears -->
+        <div class="col-lg-5">
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h5><i class="bi bi-person-badge"></i> Client with Arrears</h5>
                 </div>
-            </form>
+                <div class="card-body-modern">
+                    <form method="get" action="{% url 'managepayment' %}" id="clientSelectForm">
+                        <div class="mb-3">
+                            <label for="clientSelect" class="form-label">Select Client</label>
+                            <select name="client_id" id="clientSelect" class="form-select form-select-modern" onchange="this.form.submit()">
+                                <option value="">— Choose a client in arrears —</option>
+                                {% for client in clients %}
+                                <option value="{{ client.id }}" {% if selected_client and client.id == selected_client.id %}selected{% endif %}>
+                                    {{ client.get_full_name }} — Arrears: Ghc {{ client.total_arrears|intcomma }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
 
-            {% if selected_client %}
-            <h2>Selected Client: {{ selected_client.get_full_name }}</h2>
-            <p>Total Arrears: {{ selected_client_arrears }}</p>
-
-            <!-- Clear Arrears Form -->
-            <form method="post" action="{% url 'clear_arrears' %}">
-                {% csrf_token %}
-                <input type="hidden" name="client_id" value="{{ selected_client.id }}">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure the client has paid his/her arrears? Note that this operation can not be reversed');">Received Arrears</button>
-            </form>
-
-            {% else %}
-            <p>Select a client to view arrears.</p>
-            {% endif %}
+                    {% if selected_client %}
+                    <div class="client-info">
+                        <p><strong><i class="bi bi-person"></i> Name:</strong> {{ selected_client.get_full_name }}</p>
+                        <p><strong><i class="bi bi-currency-dollar"></i> Total Arrears:</strong> <span class="arrears-amount">Ghc {{ selected_client_arrears|intcomma }}</span></p>
+                    </div>
+                    <form method="post" action="{% url 'clear_arrears' %}" onsubmit="return confirm('Are you sure the client has paid his/her arrears? Note that this operation cannot be reversed.');">
+                        {% csrf_token %}
+                        <input type="hidden" name="client_id" value="{{ selected_client.id }}">
+                        <button type="submit" class="btn btn-danger-modern w-100">
+                            <i class="bi bi-check2-circle me-2"></i> Mark Arrears as Received
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="text-muted text-center py-4">
+                        <i class="bi bi-info-circle fs-1"></i>
+                        <p class="mt-2">Select a client from the dropdown to view and clear arrears.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
-        <div class="col-7">
-            <h2>Arrears</h2>
-            <table class="table table-bordered" style="margin: 15px 5px;" id="arrearTable">
-                <thead>
-                    <tr>
-                        <th scope="col" style="font-weight: bolder; font-size: large;">#</th>
-                        <th scope="col" style="font-weight: bolder; font-size: large;">Client</th>
-                        <th scope="col" style="font-weight: bolder; font-size: large;">Room</th>
-                        <th scope="col" style="font-weight: bolder; font-size: large;">Arrears</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for x in arrears_clients %}
-                    <tr>
-                        <th scope="row">{{ x.id }}</th>
-                        <td>{{ x.booked.client.get_full_name }}</td>
-                        <td>{{ x.booked.room }}</td>
-                        <td>{{ x.arrears }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <!-- Right Column: Arrears Table (All Clients in Arrears) -->
+        <div class="col-lg-7">
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h5><i class="bi bi-table"></i> All Arrears Records</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="arrearTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Client</th>
+                                    <th>Room</th>
+                                    <th>Arrears (Ghc)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for x in arrears_clients %}
+                                <tr>
+                                    <td>{{ x.id }}</td>
+                                    <td>{{ x.booked.client.get_full_name }}</td>
+                                    <td>{{ x.booked.room }}</td>
+                                    <td>{{ x.arrears|intcomma }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
 {% block js %}
 <script src="{% static 'js/jquery.js' %}"></script>
 <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
@@ -93,37 +276,22 @@
 <script src="{% static 'js/jszip.min.js' %}"></script>
 <script src="{% static 'js/pdfmake.min.js' %}"></script>
 <script src="{% static 'js/vfs_fonts.js' %}"></script>
+
 <script>
     $(document).ready(function() {
+        // Modern DataTable with icon buttons (original functionality preserved)
         $('#arrearTable').DataTable({
             dom: 'Bfrtip',
             buttons: [
-                {
-                    extend: 'copy',
-                    text: 'Copy',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'pdf',
-                    text: 'PDF',
-                    className: 'btn btn-secondary'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary'
-                }
-            ]
+                { extend: 'copy', text: '<i class="bi bi-files"></i> Copy', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'csv', text: '<i class="bi bi-filetype-csv"></i> CSV', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'excel', text: '<i class="bi bi-file-earmark-excel"></i> Excel', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'pdf', text: '<i class="bi bi-filetype-pdf"></i> PDF', className: 'btn btn-sm btn-outline-secondary rounded-pill' },
+                { extend: 'print', text: '<i class="bi bi-printer"></i> Print', className: 'btn btn-sm btn-outline-secondary rounded-pill' }
+            ],
+            pageLength: 10,
+            responsive: true,
+            language: { search: "Filter:" }
         });
     });
 </script>

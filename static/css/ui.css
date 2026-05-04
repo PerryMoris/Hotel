@@ -1,0 +1,111 @@
+:root{
+    --primary: #0d6efd;
+    --primary-600: #0b5ed7;
+    --secondary: #00B074;
+    --muted: #6c757d;
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --text: #212529;
+    --radius: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Dark theme variables - toggled via `data-bs-theme="dark"` on <html> */
+[data-bs-theme="dark"] {
+    --primary: #3aa0ff;
+    --primary-600: #1e90ff;
+    --secondary: #2fd38a;
+    --muted: rgba(255,255,255,0.65);
+    --bg: #071423; /* page background */
+    --surface: #0b1622; /* cards and panels */
+    --text: #e6f2fb; /* primary text */
+    --brand-color: #ffffff;
+    --navbar-link-color: rgba(255,255,255,0.92);
+    --navbar-link-hover: #ffffff;
+    --radius: 8px;
+    --shadow-sm: 0 4px 18px rgba(0,0,0,0.45);
+}
+
+/* Utilities */
+.ui-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 1rem }
+.ui-row { display:flex; gap:1rem; flex-wrap:wrap }
+.ui-col { flex:1 1 220px }
+
+/* Base font */
+body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:var(--text); background:var(--bg) }
+
+/* Modern Navbar */
+.navbar-modern { background: linear-gradient(90deg, rgba(99, 204, 0, 0.95), rgba(65, 204, 0, 0.95)); box-shadow: 0 6px 18px rgba(2,48,71,0.12); }
+.navbar-modern .navbar-brand { padding-left:1.25rem; padding-right:1.25rem }
+.navbar-modern .navbar-brand h1 { font-family: 'Heebo', sans-serif; color: var(--brand-color, #fff); font-size:1.25rem; margin:0; font-weight:700 }
+.navbar-modern .nav-link { color: var(--navbar-link-color, rgba(255,255,255,0.9)); margin-right: .6rem; padding: .75rem 0; text-transform: none; font-weight:600; letter-spacing: .2px }
+.navbar-modern .nav-link:hover, .navbar-modern .nav-link:focus { color: var(--navbar-link-hover, #fff); opacity: .98; transform: translateY(-1px); transition: .18s ease }
+.navbar-modern .nav-link.active { color: var(--navbar-link-hover, #fff); position: relative }
+.navbar-modern .nav-link::after { content: ""; display:block; height:2px; background:transparent; transition: width .18s ease, background .18s ease; width:0; }
+.navbar-modern .nav-link:hover::after, .navbar-modern .nav-link.active::after { width:100%; background: rgba(255,255,255,0.95); }
+.navbar-modern .nav-item .dropdown-menu { border-radius:8px; padding:.5rem; box-shadow: 0 8px 24px rgba(2,48,71,0.12) }
+
+/* Search field in navbar */
+.navbar-modern .nav-search { min-width:220px; max-width:420px }
+.navbar-modern .nav-search .form-control { border-radius: 999px; padding-left:1rem; padding-right:2.5rem }
+.navbar-modern .nav-search .input-group-text { background: transparent; border: none; color: rgba(255,255,255,0.8) }
+
+/* User avatar in navbar */
+.nav-user { display:flex; align-items:center; gap:.6rem; color:var(--text) }
+.nav-user .user-pic { width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,0.12); box-shadow:0 6px 14px rgba(2,48,71,0.18) }
+.nav-user .user-name { color: var(--text); font-weight:600 }
+
+/* Responsive tweaks */
+@media (max-width: 991.98px) {
+    .navbar-modern .nav-search { display: none }
+}
+
+/* subtle transitions for UI cards/buttons */
+.ui-card, .btn { transition: box-shadow .18s ease, transform .12s ease }
+.ui-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(2,48,71,0.08) }
+.btn-primary { transition: transform .12s ease, box-shadow .12s ease }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13,110,253,0.14) }
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(180deg,var(--primary),var(--primary-600));
+    border: none;
+    box-shadow: 0 6px 18px rgba(0,102,204,0.15);
+}
+.btn-primary:focus, .btn-primary:active { box-shadow: 0 8px 22px rgba(0,102,204,0.18) }
+
+/* Navbar tweaks */
+.navbar { background: linear-gradient(90deg,var(--primary), rgba(0,102,204,0.85)); }
+.navbar .navbar-brand h1{ color: var(--brand-color, #fff); font-weight:700 }
+
+/* Ensure body and surfaces use variables for correct contrast in dark mode */
+body { background: var(--bg); color: var(--text); }
+.ui-card { background: var(--surface); color: var(--text) }
+/* spinner adapts to theme */
+#spinner { background: var(--bg) }
+#spinner .spinner-border { color: var(--primary) }
+
+/* Fix Bootstrap utility conflicts: ensure .text-dark is readable in dark theme */
+[data-bs-theme="dark"] .text-dark { color: var(--text) !important }
+[data-bs-theme="dark"] .text-muted { color: var(--muted) !important }
+
+/* Floating user picture small screens adjustment */
+@media (max-width: 992px) {
+    .floating-user-pic { display:none }
+}
+
+/* Toast container */
+.ui-toasts { position: fixed; right: 1rem; bottom: 1rem; z-index: 2000; display:flex; flex-direction: column; gap: .5rem }
+.ui-toast { background: #fff; border-radius: 6px; padding:.6rem .9rem; box-shadow: 0 6px 18px rgba(0,0,0,0.12); display:flex; gap:.6rem; align-items:center }
+.ui-toast.success { border-left: 4px solid #28a745 }
+.ui-toast.error { border-left: 4px solid #dc3545 }
+
+/* Forms */
+.form-control:focus { box-shadow: 0 6px 18px rgba(0,102,204,0.08); border-color: var(--primary) }
+
+/* Minor responsive helpers */
+.mx-auto-max { max-width: 1200px; margin-left:auto; margin-right:auto }
+
+/* Small animations */
+@keyframes slideUp { from { transform: translateY(8px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+.ui-toast { animation: slideUp .18s ease-out }

@@ -1,44 +1,317 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load humanize %}
+{% load static %}
+
+{% block style %}
+<!-- Modern Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<style>
+    /* ----- MODERN RESET & GLOBAL ----- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #eef2f6 100%);
+        color: #1a2c3e;
+    }
+
+    .services-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header-title i {
+        font-size: 2rem;
+        color: #289672;
+        background: white;
+        padding: 0.7rem;
+        border-radius: 20px;
+        box-shadow: 0 6px 12px -8px rgba(0,0,0,0.05);
+    }
+
+    .header-title h1 {
+        font-weight: 800;
+        font-size: 1.8rem;
+        background: linear-gradient(135deg, #1e3b4a, #289672);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin: 0;
+    }
+
+    /* Modern Cards */
+    .modern-card {
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .card-header-modern {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #eef2f8;
+        background: #fafcff;
+    }
+
+    .card-header-modern h5 {
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #1f3b4a;
+    }
+
+    .card-body-modern {
+        padding: 1.5rem;
+    }
+
+    /* Forms & Buttons */
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #2c5f7a;
+        margin-bottom: 0.4rem;
+    }
+
+    .btn-modern-success {
+        background: linear-gradient(95deg, #2c9cab, #1e7e6c);
+        border: none;
+        border-radius: 60px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        color: white;
+        transition: 0.2s;
+        width: 100%;
+    }
+
+    .btn-modern-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px -6px #289672;
+        color: white;
+    }
+
+    .btn-modern-outline {
+        background: transparent;
+        border: 1.5px solid #cbdbe0;
+        border-radius: 60px;
+        padding: 0.3rem 1.2rem;
+        font-weight: 500;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-modern-outline:hover {
+        background: #f0f4fa;
+        border-color: #289672;
+    }
+
+    /* Modern Table */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .modern-table thead th {
+        background: #f8fafd;
+        color: #1a3e50;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        padding: 1rem 0.8rem;
+        border-bottom: 2px solid #e9edf2;
+    }
+
+    .modern-table tbody td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #ecf3f8;
+    }
+
+    .modern-table tbody tr:hover {
+        background: #fafcff;
+    }
+
+    /* Chart Container */
+    .chart-container {
+        margin-top: 1.5rem;
+        background: #f9fbfd;
+        border-radius: 20px;
+        padding: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .services-container {
+            padding: 1rem;
+        }
+        .header-title h1 {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="tainer" style="margin-top: 20px;">
-    <div class="row">
-        <div class="col-4">
-            <h2>Register a Service 
-                <span><a class="btn btn-primary" href="{% url 'request_service' %}"><i class="fas fa-plus"></i> Request A Service</a></span>
-            </h2>
-            <form method="post" class="mt-4">
-                {% csrf_token %}
-                {{ form | crispy }}
-                <button type="submit" class="btn btn-success">Submit Request</button>
-            </form>
+<div class="services-container">
+    <!-- Header with Request A Service button -->
+    <div class="page-header">
+        <div class="header-title">
+            <i class="bi bi-briefcase-fill"></i>
+            <h1>Register a Service</h1>
         </div>
+        <a href="{% url 'request_service' %}" class="btn btn-modern-outline">
+            <i class="bi bi-plus-circle"></i> Request A Service
+        </a>
+    </div>
 
-        <div class="col-8">
-            <div class="container">
-                <h2>Service Requests</h2>
-                <table class="table table-bordered mt-4">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Amount</th>
-                           
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for request in services %}
-                        <tr>
-                            <td>{{ request.name }}</td>
-                            <td>{{ request.amount }}</td>
-
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Registration Form -->
+        <div class="col-lg-5">
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h5><i class="bi bi-pencil-square"></i> New Service Request</h5>
+                </div>
+                <div class="card-body-modern">
+                    <form method="post" class="mt-1">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-modern-success">
+                                <i class="bi bi-send"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
         </div>
 
+        <!-- RIGHT COLUMN: Service Requests Table + Chart -->
+        <div class="col-lg-7">
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h5><i class="bi bi-list-check"></i> Recent Service Requests</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div class="table-responsive">
+                        <table class="modern-table">
+                            <thead>
+                                <tr><th>Service Name</th><th>Amount (GHS)</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for request in services %}
+                                <tr><td class="fw-semibold">{{ request.name }}</td><td>{{ request.amount|intcomma }}</td></tr>
+                                {% empty %}
+                                <td><td colspan="2" class="text-muted text-center">No service requests yet. Use the form to add one.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Chart: Service Request Amounts (Bar Chart) -->
+                    <!-- <div class="chart-container">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-bar-chart-steps fs-5" style="color:#289672;"></i>
+                            <span class="fw-semibold">Service Amounts Overview</span>
+                        </div>
+                        <canvas id="serviceChart" style="max-height: 280px; width: 100%;"></canvas>
+                    </div> -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Extract data from service requests (passed as 'services' context)
+        const serviceData = [
+            {% for req in services %}
+                { name: "{{ req.name|escapejs }}", amount: {{ req.amount|default:0 }} },
+            {% endfor %}
+        ];
+
+        // If no data, show empty chart with a message
+        if (serviceData.length === 0) {
+            document.getElementById('serviceChart').style.display = 'none';
+            const container = document.querySelector('.chart-container');
+            if (container) {
+                const msg = document.createElement('div');
+                msg.className = 'text-muted text-center small mt-2';
+                msg.innerHTML = '<i class="bi bi-info-circle"></i> No data to display chart.';
+                container.appendChild(msg);
+            }
+        } else {
+            // Optional: aggregate by name if duplicates exist (though unlikely, but robust)
+            const agg = {};
+            serviceData.forEach(s => {
+                if (agg[s.name]) agg[s.name] += s.amount;
+                else agg[s.name] = s.amount;
+            });
+            const labels = Object.keys(agg);
+            const amounts = Object.values(agg);
+            
+            const ctx = document.getElementById('serviceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Amount (GHS)',
+                        data: amounts,
+                        backgroundColor: 'rgba(40, 150, 114, 0.7)',
+                        borderRadius: 12,
+                        barPercentage: 0.6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } },
+                        tooltip: { callbacks: { label: (ctx) => `GHS ${ctx.raw.toLocaleString()}` } }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { callback: (val) => 'GHS ' + val.toLocaleString() },
+                            grid: { color: '#eef2f8' }
+                        },
+                        x: { ticks: { font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

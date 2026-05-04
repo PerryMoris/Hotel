@@ -153,9 +153,18 @@ class Kitchen_Items(models.Model):
     def __str__(self):
         return f'{self.name} - {self.amount}'
 
+class ServiceCategory(models.Model):
+    name = models.CharField(max_length=100)
+    icon = models.CharField(max_length=50, help_text="FontAwesome icon class", default="fa-concierge-bell")
+
+    def __str__(self):
+        return self.name
+
 class Services(models.Model):
+    category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, related_name='services', null=True)
     name = models.CharField(max_length=255, null=True, blank=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    image = models.ImageField(upload_to='services/', null=True, blank=True)
 
     def __str__(self):
         return f'{self.name} - {self.amount}'

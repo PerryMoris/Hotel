@@ -254,6 +254,7 @@ def roomlist(request):
 
 @login_required(login_url="login/")
 def clientdetail(request):
+    """Displays details of current guests and historical client data."""
     clients = Client.objects.all().order_by('-id')
     booked_entries = Booked.objects.filter(room__occupied=True, out=False).order_by('-id')
 
@@ -268,11 +269,8 @@ def clientdetail(request):
     cbooked = Client.objects.filter(id__in=distinct_client_ids).order_by('id')
     cbookedc = cbooked.count()  # Count of distinct clients not occupying rooms
 
-    current_user = request.user
-    profile_pic_url = current_user.profile_pic.url if current_user.profile_pic else None
-
     context = {
-        'profile_pic': profile_pic_url,
+        'profile_pic': request.user.profile_pic.url if request.user.profile_pic else None,
         'clients': clients,
         'booked': unique_booked_entries,
         'bookedc': bookedc,
@@ -280,18 +278,90 @@ def clientdetail(request):
         'cbookedc': cbookedc,
         'hotelname': hotelname(),
     }
-    
     return render(request, "client-detail.html", context)
 
+@login_required(login_url="login/")
+def kitchen(request):
+    """Dashboard for Kitchen staff to see pending food/drink orders."""
+    # Filter requests for services in 'Kitchen' or 'Bar' categories that aren't delivered
+    requests = Service_Request.objects.filter(
+        delivered=False, 
+        service__category__name__icontains='Kitchen'
+    ).order_by('created_on')
+    
+    context = {
+        'requests': requests,
+        'hotelname': hotelname(),
+        'profile_pic': request.user.profile_pic.url if request.user.profile_pic else None,
+        'role': 'Kitchen'
+    }
+    return render(request, "staff_dashboard.html", context)
 
-def kitchen (request):
-        return render(request, "underconstruct.html")
+@login_required(login_url="login/")
+def cleaners(request):
+    """Dashboard for Cleaning staff to see pending housekeeping tasks."""
+    requests = Service_Request.objects.filter(
+        delivered=False, 
+        service__category__name__icontains='Cleaning'
+    ).order_by('created_on')
+    
+    context = {
+        'requests': requests,
+        'hotelname': hotelname(),
+        'profile_pic': request.user.profile_pic.url if request.user.profile_pic else None,
+        'role': 'Housekeeping'
+    }
+    return render(request, "staff_dashboard.html", context)
 
-def cleaners (request):
-        return render(request, "underconstruct.html")
+@login_required(login_url="login/")
+def security(request):
+    """Dashboard for Security/General staff."""
+    requests = Service_Request.objects.filter(
+        delivered=False, 
+        service__category__name__icontains='General'
+    ).order_by('created_on')
+    
+    context = {
+        'requests': requests,
+        'hotelname': hotelname(),
+        'profile_pic': request.user.profile_pic.url if request.user.profile_pic else None,
+        'role': 'Staff'
+    }
+    return render(request, "staff_dashboard.html", context)
 
-def security (request):
-        return render(request, "underconstruct.html")
+def client_services_portal(request):
+    """Public portal for clients to request services from their room."""
+    categories = ServiceCategory.objects.all()
+    services = Services.objects.select_related('category').all()
+    
+    if request.method == "POST":
+        room_number = request.POST.get('room_number')
+        service_id = request.POST.get('service_id')
+        
+        # Verify if there is an active booking for this room
+        active_stay = Booked.objects.filter(room__number=room_number, out=False).first()
+        
+        if not active_stay:
+            messages.error(request, "No active booking found for this room number. Please check with reception.")
+            return redirect('client_services_portal')
+            
+        service = get_object_or_404(Services, id=service_id)
+        
+        # Create the request linked to the active booking
+        Service_Request.objects.create(
+            service=service,
+            booked=active_stay,
+            delivered=False
+        )
+        messages.success(request, f"Your request for {service.name} has been sent to our staff!")
+        return redirect('client_services_portal')
+
+    context = {
+        'categories': categories,
+        'services': services,
+        'hotelname': hotelname(),
+    }
+    return render(request, "client_services.html", context)
 
 
 @login_required(login_url="login/")
@@ -649,10 +719,22 @@ def info(request):
 
 @login_required(login_url="login/")
 def delivered(request, idd):
-    request = Service_Request.objects.get(id=idd)
-    request.delivered = True
-    request.save()
-    return redirect('request_service')
+    """Marks a service as delivered and adds the cost to the client's total bill."""
+    service_req = get_object_or_404(Service_Request, id=idd)
+    
+    if not service_req.delivered:
+        service_req.delivered = True
+        service_req.save()
+        
+        # Add amount to client's payments
+        if service_req.booked:
+            payment = Payments.objects.filter(booked=service_req.booked).first()
+            if payment:
+                payment.amount_due += service_req.service.amount
+                payment.save()
+                messages.success(request, f"Service delivered. {service_req.service.amount} added to room bill.")
+
+    return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
 
 
 @login_required(login_url="login/")

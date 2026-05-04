@@ -7,8 +7,7 @@
 
 {% block content %}
 
-<br>
-<body>
+<div class="container py-4">
     {% if error %}
 <script>
     Swal.fire({
@@ -43,8 +42,8 @@
 {% endif %}
 
 
-    <div class="tainer">
-        <a href="{% url 'Book_A_Client' %}" class="btn btn-secondary">Please Click To Refresh Page</a><br>
+    <div class="container">
+        <a href="{% url 'Book_A_Client' %}" class="btn btn-secondary mb-3">Refresh Page</a>
         <div class="row">
             <div class="col-md-6">
                 <h2>Client Details</h2>
@@ -152,7 +151,7 @@
                     var sub = document.getElementById('sub')
 
                     if (data.exists) {
-                        message.textContent = "User already exists";
+                        message.textContent = "Client already exists";
                         message.style.color = "green";
 
                         // Disable the fields
@@ -166,7 +165,7 @@
                         othernames.required = false;
                         address.required = false;
                     } else {
-                        message.textContent = "User doesn't exist";
+                        message.textContent = "Client doesn't exist";
                         message.style.color = "blue";
 
                         // Enable the fields
@@ -216,8 +215,10 @@
             document.getElementById("arrears").value = arrears > 0 ? arrears : 0;
         }
     </script>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-</body>
+</div>
 
 {% endblock %}

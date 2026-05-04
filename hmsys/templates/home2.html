@@ -1,123 +1,424 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en">
-
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Landing Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{{ hotel.name }} | Luxury Hotel Experience</title>
+    <!-- Bootstrap 5 + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <!-- Google Fonts: Modern & Elegant -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Custom CSS for styling and animations */
+        /* ---------- RESET & GLOBAL MODERN STYLES ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #fafcff 0%, #f0f4f9 100%);
+            color: #1a2c3e;
+            scroll-behavior: smooth;
+            line-height: 1.5;
         }
 
+        /* Custom scrollbar - modern */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b8925c;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9c6e3e;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, .navbar-brand, .carousel-caption h5, .service-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .lead, p, .nav-link, .btn {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ---------- MODERN NAVBAR (GLASS MORPHISM) ---------- */
         .navbar {
-            background-color: #343a40;
+            background: rgba(20, 30, 45, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #e2c28b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent !important;
+            letter-spacing: -0.5px;
+        }
+        .navbar .nav-link {
+            color: #f8f9fa !important;
+            font-weight: 500;
+            margin: 0 0.2rem;
+            transition: 0.2s;
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+        }
+        .navbar .nav-link:hover {
+            background: rgba(255, 215, 150, 0.15);
+            color: #ffdd99 !important;
+            transform: translateY(-2px);
+        }
+        /* Custom gradient buttons */
+        .btn-outline-primary {
+            border: 1.5px solid rgba(255, 215, 150, 0.7);
+            color: #ffdd99;
+            background: transparent;
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-outline-primary:hover {
+            background: #ffdd99;
+            border-color: #ffdd99;
+            color: #1e2a3a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #c69c6d, #b57c48);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(181, 124, 72, 0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(95deg, #b57c48, #a06334);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        .navbar-brand,
-        .nav-link {
-            color: #fff !important;
-        }
-
+        /* ---------- HERO CAROUSEL (CINEMATIC) ---------- */
         .carousel-item img {
-            height: 75vh;
+            height: 85vh;
             object-fit: cover;
+            filter: brightness(0.7) contrast(1.05);
+            transition: transform 6s ease;
         }
-
+        .carousel-item.active img {
+            transform: scale(1.02);
+        }
         .carousel-caption {
-            background: rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, rgba(0,0,0,0.65), rgba(0,0,0,0.4));
+            backdrop-filter: blur(6px);
+            border-radius: 32px;
+            padding: 2rem 2.5rem;
+            bottom: 20%;
+            max-width: 70%;
+            left: 15%;
+            right: 15%;
+            text-align: center;
+            border: 1px solid rgba(255,215,150,0.3);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
+            animation: fadeUp 1s ease-out;
+        }
+        .carousel-caption h5 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff2e0;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .carousel-caption p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #fce9cf;
+        }
+        /* custom carousel controls */
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 50%;
             padding: 1.5rem;
-            border-radius: 10px;
+            background-size: 50%;
+            transition: 0.25s;
+        }
+        .carousel-control-prev:hover .carousel-control-prev-icon,
+        .carousel-control-next:hover .carousel-control-next-icon {
+            background-color: #c69c6d;
+            transform: scale(1.1);
         }
 
-        .services {
-            margin: 50px 0;
+        /* ---------- ANIMATIONS ---------- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .service-box {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+        @keyframes fadeInSoft {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .service-box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 4px 8px rgba(8, 2, 181, 0.81);
-        }
-
         .animate-fade-in {
-            animation: fadeIn 1.5s;
+            animation: fadeInSoft 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
         }
 
-        .contact-details {
-            background-color: #f4f4f4;
+        /* ---------- SERVICE BOXES (LUXURY CARDS) ---------- */
+        .services {
+            margin: 70px 0 40px;
+        }
+        .service-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(0px);
+            border-radius: 32px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 25px 40px -18px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(198, 156, 109, 0.2);
+            height: 100%;
+        }
+        .service-box:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 35px 45px -20px rgba(181, 124, 72, 0.4);
+            border-color: #c69c6d;
+            background: #ffffff;
+        }
+        .service-box i {
+            font-size: 3.2rem;
+            background: linear-gradient(135deg, #c69c6d, #e7b87b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            transition: 0.2s;
+        }
+        .service-box h3 {
+            font-size: 1.8rem;
+            margin: 1rem 0 0.8rem;
+            color: #2c3e3f;
+        }
+        .service-box p {
+            color: #4a627a;
+            font-weight: 400;
         }
 
-        .contact-details i {
-            color: #007bff;
+        /* ---------- ROOM CAROUSEL (MODERN GLASS) ---------- */
+        .room-carousel {
+            border-radius: 38px;
+            overflow: hidden;
+            box-shadow: 0 30px 40px -20px rgba(0,0,0,0.3);
         }
-
-        .contact-details h5 {
-            color: #333333;
-        }
-
-        .contact-details p {
-            color: #666666;
-        }
-
-        .contact-details i:hover {
-            color: #0056b3;
-        }
-
-        .contact-details h5:hover {
-            color: #0056b3;
-        }
-
         .room-carousel .carousel-item img {
-            height: 400px;
+            height: 500px;
             object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 38px;
+            transition: transform 0.5s;
         }
-
         .room-carousel .carousel-caption {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            backdrop-filter: blur(2px);
+            border-radius: 28px;
+            bottom: 20px;
+            left: 5%;
+            right: 5%;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border: none;
+        }
+        .room-carousel .carousel-caption h5 {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+        .room-carousel .carousel-caption p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        /* room carousel controls custom */
+        #roomCarousel .carousel-control-prev-icon,
+        #roomCarousel .carousel-control-next-icon {
+            background-color: #b57c48;
+            border-radius: 50%;
+            padding: 1.2rem;
+            opacity: 0.9;
+        }
+        .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
             border-radius: 10px;
+            background-color: #c69c6d;
+            opacity: 0.6;
+            transition: 0.2s;
+        }
+        .carousel-indicators .active {
+            width: 30px;
+            background-color: #f3c694;
+            opacity: 1;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
+        /* ---------- CONTACT SECTION (GLASS / MODERN) ---------- */
+        .contact-details {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px -15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(198, 156, 109, 0.3);
+            transition: all 0.3s;
+        }
+        .contact-details:hover {
+            background: rgba(255, 255, 255, 0.96);
+            border-color: #c69c6d;
+        }
+        .contact-details i {
+            font-size: 2.6rem;
+            background: linear-gradient(145deg, #b57c48, #dfac74);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: 0.2s;
+        }
+        .contact-details .col-md-4 {
+            transition: 0.25s;
+            padding: 1rem;
+            border-radius: 30px;
+        }
+        .contact-details .col-md-4:hover {
+            background: rgba(198, 156, 109, 0.08);
+            transform: scale(1.02);
+        }
+        .contact-details h5 {
+            font-weight: 700;
+            margin-top: 0.8rem;
+            color: #1f2c3e;
+        }
+        .contact-details p {
+            font-weight: 500;
+            color: #3f5a77;
+        }
 
-            to {
-                opacity: 1;
+        /* ---------- MODERN FOOTER ---------- */
+        footer {
+            background: linear-gradient(105deg, #1e2a3a 0%, #0f1a24 100%);
+            font-family: 'Inter', sans-serif;
+            border-top: 1px solid rgba(255,215,150,0.2);
+        }
+        footer p {
+            margin: 0;
+            letter-spacing: 0.3px;
+            color: #cbad84;
+        }
+
+        /* ---------- BACK TO TOP BUTTON (FLOATING MODERN) ---------- */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #c69c6d;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            text-decoration: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 1050;
+            opacity: 0;
+            visibility: hidden;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            background: #a76e3a;
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        /* responsive adjustments */
+        @media (max-width: 768px) {
+            .carousel-caption h5 {
+                font-size: 1.6rem;
             }
+            .carousel-caption p {
+                font-size: 0.8rem;
+            }
+            .service-box {
+                margin-bottom: 1.5rem;
+            }
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+            .room-carousel .carousel-item img {
+                height: 300px;
+            }
+            .contact-details .col-md-4 {
+                margin-bottom: 1rem;
+            }
+            .carousel-caption {
+                padding: 1rem;
+                bottom: 10%;
+            }
+        }
+
+        /* section heading underline mod */
+        .section-heading {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        .section-heading:after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, #c69c6d, #f3d19a);
+            border-radius: 10px;
+        }
+        .text-gold {
+            color: #c69c6d;
         }
     </style>
 </head>
-
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
+
+    <!-- Navbar (Glassmorphism) -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid px-3 px-lg-5">
             <a class="navbar-brand" href="#">{{ hotel.name }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto" style="gap: 10px;">
+                <ul class="navbar-nav ms-auto" style="gap: 12px;">
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary" href="#">Make Reservation</a>
+                        <a class="nav-link btn btn-outline-primary" href="#" style="padding: 0.4rem 1.2rem;">Make Reservation</a>
                     </li>
                     <li class="nav-item">
                         {% if user.is_authenticated %}
@@ -131,28 +432,28 @@
         </div>
     </nav>
 
-    <!-- Carousel -->
-    <div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- Hero Carousel (Cinematic Style) -->
+    <div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel" style="margin-top: 72px;">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="{{ hotel.display1.url }}" class="d-block w-100" alt="Hotel Image 1">
+            <div class="carousel-item active" data-bs-interval="5000">
+                <img src="{{ hotel.display1.url }}" class="d-block w-100" alt="Luxury Hotel View">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Welcome to {{ hotel.name }}</h5>
-                    <p>Experience luxury and comfort like never before.</p>
+                    <p>Experience timeless elegance & modern comfort</p>
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="{{ hotel.display2.url }}" class="d-block w-100" alt="Hotel Image 2">
+            <div class="carousel-item" data-bs-interval="5000">
+                <img src="{{ hotel.display2.url }}" class="d-block w-100" alt="Grand Suite">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Relax and Unwind</h5>
-                    <p>Your perfect getaway starts here.</p>
+                    <p>Your perfect sanctuary awaits</p>
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="{{ hotel.display1.url }}" class="d-block w-100" alt="Hotel Image 3">
+            <div class="carousel-item" data-bs-interval="5000">
+                <img src="{{ hotel.display1.url }}" class="d-block w-100" alt="Exquisite Dining">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Exquisite Dining</h5>
-                    <p>Taste the finest cuisines from around the world.</p>
+                    <p>Culinary journey beyond expectations</p>
                 </div>
             </div>
         </div>
@@ -166,59 +467,61 @@
         </button>
     </div>
 
-    <!-- Brief Description -->
-    <div class="container text-center mt-5 animate-fade-in">
-        <h2>Welcome to {{ hotel.name }}</h2>
-        <p class="lead">Nestled in the heart of the city, {{ hotel.name }} offers unparalleled luxury, comfort, and service.
-            From our world-class amenities to our exquisite dining options, we ensure that your stay with us is nothing
-            short of extraordinary.</p>
+    <!-- Brief Description (refined) -->
+    <div class="container text-center mt-5 pt-3 animate-fade-in">
+        <h2 class="section-heading">{{ hotel.name }}</h2>
+        <p class="lead mx-auto" style="max-width: 800px; font-weight: 400;">Nestled in the heart of the city, {{ hotel.name }} offers unparalleled luxury, comfort, and service.
+            From world-class amenities to exquisite dining options, we ensure your stay is nothing short of extraordinary.</p>
     </div>
 
-    <!-- Services Section -->
-    <center>
-        <div class="container services">
-            <div class="row text-center">
-                <div class="col-md-4 animate-fade-in">
-                    <div class="service-box">
-                        <i class="bi bi-door-closed-fill fs-1 mb-3"></i>
-                        <h3>Luxury Rooms</h3>
-                        <p>Our rooms are designed to provide you with the ultimate comfort and luxury, with stunning views and modern amenities.</p>
-                    </div>
+    <!-- Services Section (modern luxury cards) -->
+    <div class="container services">
+        <div class="row g-4 text-center">
+            <div class="col-md-4 animate-fade-in">
+                <div class="service-box">
+                    <i class="bi bi-door-closed-fill"></i>
+                    <h3>Luxury Rooms</h3>
+                    <p>Our rooms are designed to provide you with the ultimate comfort and luxury, with stunning views and modern amenities.</p>
                 </div>
-                <div class="col-md-4 animate-fade-in">
-                    <div class="service-box">
-                        <i class="bi bi-egg-fried fs-1 mb-3"></i>
-                        <h3>Fine Dining</h3>
-                        <p>Indulge in gourmet dining experiences with our curated menus featuring international and local cuisines.</p>
-                    </div>
+            </div>
+            <div class="col-md-4 animate-fade-in">
+                <div class="service-box">
+                    <i class="bi bi-egg-fried"></i>
+                    <h3>Fine Dining</h3>
+                    <p>Indulge in gourmet dining experiences with our curated menus featuring international and local cuisines.</p>
                 </div>
-                <div class="col-md-4 animate-fade-in">
-                    <div class="service-box">
-                        <i class="bi bi-heart-pulse-fill fs-1 mb-3"></i>
-                        <h3>Spa & Wellness</h3>
-                        <p>Relax and rejuvenate with our spa and wellness services, offering a range of treatments and therapies.</p>
-                    </div>
+            </div>
+            <div class="col-md-4 animate-fade-in">
+                <div class="service-box">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                    <h3>Spa & Wellness</h3>
+                    <p>Relax and rejuvenate with our spa and wellness services, offering a range of treatments and therapies.</p>
                 </div>
             </div>
         </div>
-        
-    </center>
+    </div>
 
-    <!-- Available Rooms Carousel -->
-    <div class="container mt-5 animate-fade-in">
-        <h2 class="text-center mb-4">Available Rooms</h2>
+    <!-- Available Rooms Carousel (Premium Showcase) -->
+    <div class="container mt-4 mb-5 animate-fade-in">
+        <h2 class="text-center mb-4 section-heading" style="font-size: 2.3rem;">Signature Suites</h2>
         <div id="roomCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner room-carousel">
                 {% for room in available_rooms %}
-                
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="{% if room.image %}{{ room.image.url }}{% endif %}" class="d-block w-100" alt="{{ room.name }}">
+                    <img src="{% if room.image %}{{ room.image.url }}{% else %}https://via.placeholder.com/1200x600?text=Luxury+Room{% endif %}" class="d-block w-100" alt="{{ room.name }}">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>{{ room }}</h5>
-                        <p>{{ room.properties }}</p>
+                        <p>{{ room.properties|truncatechars:100 }}</p>
                     </div>
                 </div>
-               
+                {% empty %}
+                <div class="carousel-item active">
+                    <img src="https://via.placeholder.com/1200x600?text=Opulent+Rooms" class="d-block w-100" alt="rooms">
+                    <div class="carousel-caption">
+                        <h5>Exclusive Collection</h5>
+                        <p>Contact us for room availability</p>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#roomCarousel" data-bs-slide="prev">
@@ -229,31 +532,35 @@
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
+            <div class="carousel-indicators">
+                {% for room in available_rooms %}
+                <button type="button" data-bs-target="#roomCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
-    <!-- Contact Details -->
-    <div class="container mt-5 animate-fade-in">
+    <!-- Contact Details (Modern, Elevated) -->
+    <div class="container mt-5 mb-5 animate-fade-in">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="contact-details p-4 rounded">
-                    <h3 class="text-center mb-4">Contact Us</h3>
-                    <p class="text-center">We'd love to hear from you! Whether you have a question about our services,
-                        pricing, or anything else, our team is ready to answer all your questions.</p>
-                    <div class="row mt-4">
-                        <div class="col-md-4 text-center">
-                            <i class="bi bi-geo-alt-fill fs-2"></i>
-                            <h5 class="mt-3">Our Location</h5>
+            <div class="col-md-10 col-lg-8">
+                <div class="contact-details p-4 p-md-5">
+                    <h3 class="text-center mb-3" style="font-weight: 700;">Connect With Us</h3>
+                    <p class="text-center mb-4 opacity-75">We’d love to hear from you — our concierge team is ready to craft your perfect stay.</p>
+                    <div class="row mt-3 text-center gy-4">
+                        <div class="col-md-4">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <h5>Our Location</h5>
                             <p>{{ hotel.address }}</p>
                         </div>
-                        <div class="col-md-4 text-center">
-                            <i class="bi bi-telephone-fill fs-2"></i>
-                            <h5 class="mt-3">Call Us</h5>
+                        <div class="col-md-4">
+                            <i class="bi bi-telephone-fill"></i>
+                            <h5>Call Us</h5>
                             <p>{{ hotel.mobile }}</p>
                         </div>
-                        <div class="col-md-4 text-center">
-                            <i class="bi bi-envelope-fill fs-2"></i>
-                            <h5 class="mt-3">Email Us</h5>
+                        <div class="col-md-4">
+                            <i class="bi bi-envelope-fill"></i>
+                            <h5>Email Us</h5>
                             <p>{{ hotel.email }}</p>
                         </div>
                     </div>
@@ -262,16 +569,61 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-light text-center py-3">
-        <p>&copy; <span id="year"></span> {{ hotel.name }}. All Rights Reserved.</p>
+    <!-- Footer Elegant -->
+    <footer class="text-light text-center py-4">
+        <p class="mb-0">&copy; <span id="year"></span> {{ hotel.name }}. All Rights Reserved. | Designed with <i class="bi bi-suit-heart-fill text-danger"></i> for luxury escapes</p>
     </footer>
 
-    <!-- Bootstrap JS -->
+    <!-- Back to Top Button (advanced + smooth scroll) -->
+    <a href="#" class="back-to-top" id="backToTopBtn" aria-label="Back to top">
+        <i class="bi bi-arrow-up-short"></i>
+    </a>
+
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Current year display
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Back to Top button visibility & smooth scroll
+        const backBtn = document.getElementById('backToTopBtn');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 600) {
+                backBtn.classList.add('show');
+            } else {
+                backBtn.classList.remove('show');
+            }
+        });
+        backBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Optional: Add modern scroll reveal effect for sections (lightweight)
+        const fadeElements = document.querySelectorAll('.animate-fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInSoft 0.8s ease forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        fadeElements.forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+        // pre-trigger for visible ones
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                fadeElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 100) {
+                        el.style.animation = 'fadeInSoft 0.8s ease forwards';
+                    }
+                });
+            }, 200);
+        });
     </script>
 </body>
-
 </html>
